@@ -1,0 +1,7 @@
+{
+  "title": "模块化",
+  "lang": "node",
+  "tester": "mocha",
+  "description": "",
+  "order" : 6
+}

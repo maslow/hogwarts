@@ -1,0 +1,284 @@
+swagger: '2.0'
+info:
+  version: "1.0.0"
+  title: Hogwarts (Tech v2) API 文档
+  description: Hogwarts server-end api docs.
+host: localhost:8080
+schemes:
+  - http
+produces:
+  - application/json
+consumes:
+  - application/json
+security:
+  - bearer_token: []
+  - x_uid: []
+paths:
+  /courses:
+    get:
+      summary: 获取课程列表。
+      description: |
+        获取课程列表。
+        可选参数`tags`是用来筛选课程的。
+      tags:
+        - course
+      parameters:
+        - name: tag
+          description: 按标签筛选查询
+          in: query
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/course'
+    post:
+      summary: 创建课程
+      description: 创建课程
+      tags:
+        - course
+      parameters:
+        - name: course
+          in: body
+          description: 课程信息
+          schema:
+            type: object
+            required:
+              - id
+              - title
+            properties:
+              id:
+                description: 课程全局唯一标识
+                type: string
+              title:
+                description: 课程显示名称
+                type: string
+              description:
+                description: 课程介绍
+                type: string
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: '#/definitions/course'
+        422:
+          $ref: '#/responses/422'
+  /courses/{id}:
+    get:
+      summary: 获取课程详细信息
+      description: 获取课程详细内容（**包括**章节信息）
+      tags:
+        - course
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              course:
+                $ref: '#/definitions/course'
+              chapters:
+                type: array
+                items:
+                  $ref: '#/definitions/chapter'
+
+    put:
+      summary: 修改课程
+      description: 修改课程
+      tags:
+        - course
+      parameters:
+        - name: id
+          required: true
+          in: path
+          type: string
+        - name: course
+          in: body
+          schema:
+            type: object
+            properties:
+              title:
+                type: string
+              description:
+                type: string
+              tags:
+                type: array
+                items:
+                  type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/course'
+        422:
+          $ref: '#/responses/422'
+
+  /courses/{courseId}/{chapterId}/{sectionId}:
+    get:
+      summary: 获取小节详细信息
+      description: 获取小节详细信息（**包括**小节任务文档）
+      tags:
+        - section
+      parameters:
+        - name: courseId
+          in: path
+          type: string
+          required: true
+        - name: chapterId
+          in: path
+          type: string
+          required: true
+        - name: sectionId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              section:
+                $ref: '#/definitions/section'
+              text:
+                type: string
+              prev:
+                $ref: '#/definitions/section'
+              next:
+                $ref: '#/definitions/section'
+
+  /courses/{courseId}/{chapterId}:
+    get:
+      summary: 获取章节详细信息
+      description: 获取小节详细信息
+      tags:
+        - chapter
+      parameters:
+        - name: courseId
+          in: path
+          type: string
+          required: true
+        - name: chapterId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              chapter:
+                $ref: '#/definitions/chapter'
+              sections:
+                type: array
+                items:
+                  $ref: '#/definitions/section'
+              prev:
+                $ref: '#/definitions/section'
+              next:
+                $ref: '#/definitions/section'
+
+securityDefinitions:
+  bearer_token:
+    description: | 
+      设置访问令牌格式："Bearer token"（不包括双引号）。
+      例如，`Bearer 1234` 。
+      该值会做为请求头Authorization的值发送。
+    type: apiKey
+    name: Authorization
+    in: header
+  x_uid:
+    description: | 
+      在开发测试时，直接访问服务（即不通过代理`gate`访问）则不需要提供token，需要鉴权的API需要提供x-uid做为当前用户Id.
+      该值会做为请求头x-uid的值发送。
+    type: apiKey
+    name: x-uid
+    in: header
+responses:
+  422:
+    description: '数据验证未通过'
+    schema:
+      type: array
+      items:
+        $ref: '#/definitions/error422'
+
+definitions:
+  course:
+    type: object
+    required:
+      - id
+      - title
+    properties:
+      id:
+        type: integer
+      title:
+        type: string
+      description:
+        type: string
+        maxLength: 255
+      tags:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+            label:
+              type: string
+      author:
+        type: integer
+      created_at:
+        type: integer
+  chapter:
+    type: object
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+      order:
+        type: integer
+      description:
+        type: string
+      version:
+        type: string
+  section:
+    type: object
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+      order:
+        type: integer
+      description:
+        type: string
+      version:
+        type: string
+      lang:
+        type: string
+      tester:
+        type: string
+      extends:
+        type: array
+        items:
+          type: string
+      deps:
+        type: array
+        items:
+          type: string
+  error422:
+    type: object
+    properties:
+      filed:
+        type: string
+      message:
+        type: string

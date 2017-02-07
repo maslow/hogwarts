@@ -1,0 +1,135 @@
+swagger: '2.0'
+info:
+  version: "1.0.0"
+  title: Hogwarts (Tech v2) API 文档
+  description: Hogwarts server-end api docs.
+host: api.vip-design.net:90
+schemes:
+  - https
+  - http
+produces:
+  - application/json
+consumes:
+  - application/json
+security:
+  - bearer_token: []
+  - x_uid: []
+paths:
+  /file/{jobId}:
+    get:
+      description: 获取一个文件内容
+      parameters:
+        - name: jobId
+          in: path
+          type: string
+        - name: file
+          description: 文件名，ex. path/to/readme.md
+          in: query
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              file:
+                type: string
+              content:
+                type: string
+              job_id:
+                type: integer
+  /jobs/{courseId}/{chapterId}/{sectionId}:
+    get:
+      description: 获取一个小节的作业
+      parameters:
+        - name: courseId
+          in: path
+          type: string
+        - name: chapterId
+          in: path
+          type: string
+        - name: sectionId
+          in: path
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/job'
+
+securityDefinitions:
+  bearer_token:
+    description: | 
+      设置访问令牌格式："Bearer token"（不包括双引号）。
+      例如，`Bearer 1234` 。
+      该值会做为请求头Authorization的值发送。
+    type: apiKey
+    name: Authorization
+    in: header
+  x_uid:
+    description: | 
+      在开发测试时，直接访问服务（即不通过代理`gate`访问）则不需要提供token，需要鉴权的API需要提供x-uid做为当前用户Id.
+      该值会做为请求头x-uid的值发送。
+    type: apiKey
+    name: x-uid
+    in: header
+responses:
+  422:
+    description: 数据验证未通过
+
+definitions:
+  course:
+    type: object
+    required:
+      - id
+      - title
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+      description:
+        type: string
+        maxLength: 255
+      tags:
+        type: array
+        items:
+          type: string
+      author:
+        type: integer
+      created_at:
+        type: integer
+  chapter:
+    type: object
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+      order:
+        type: integer
+      description:
+        type: string
+      version:
+        type: string
+  job:
+    type: object
+    properties:
+      id:
+        type: integer
+      uid:
+        type: integer
+      course_id:
+        type: string
+      chapter_id:
+        type: string
+      section_id:
+        type: string
+      status:
+        type: string
+      version:
+        type: string
+      codes:
+        type: array
+      items:
+        type: string
