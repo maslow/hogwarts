@@ -1,9 +1,9 @@
 swagger: '2.0'
 info:
   version: "1.0.0"
-  title: Hogwarts (Tech v2) API 文档
+  title: Hogwarts (Tech v2) API 文档(Job)
   description: Hogwarts server-end api docs.
-host: api.vip-design.net:90
+host: api.vip-design.net:91
 schemes:
   - https
   - http
@@ -15,17 +15,19 @@ security:
   - bearer_token: []
   - x_uid: []
 paths:
-  /file/{jobId}:
+  /jobs/{jobId}/file:
     get:
       description: 获取一个文件内容
       parameters:
         - name: jobId
           in: path
           type: string
+          required: true
         - name: file
           description: 文件名，ex. path/to/readme.md
           in: query
           type: string
+          required: true
       responses:
         200:
           description: OK
@@ -38,24 +40,50 @@ paths:
                 type: string
               job_id:
                 type: integer
-  /jobs/{courseId}/{chapterId}/{sectionId}:
+  /jobs/{courseId}:
     get:
-      description: 获取一个小节的作业
+      description: 获取用户一个课程的所有作业信息
       parameters:
         - name: courseId
           in: path
           type: string
-        - name: chapterId
-          in: path
-          type: string
-        - name: sectionId
-          in: path
-          type: string
+          required: true
       responses:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/job'
+            type: array
+            items:
+              $ref: '#/definitions/job'
+  /jobs/{courseId}/{chapterId}/{sectionId}:
+    get:
+      description: 获取用户一个小节的作业
+      parameters:
+        - name: courseId
+          in: path
+          type: string
+          required: true
+        - name: chapterId
+          in: path
+          required: true
+          type: string
+        - name: sectionId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              job:
+                $ref: '#/definitions/job'
+              files:
+                type: array
+                items:
+                  description: 文件名
+                  type: string
 
 securityDefinitions:
   bearer_token:
@@ -73,45 +101,8 @@ securityDefinitions:
     type: apiKey
     name: x-uid
     in: header
-responses:
-  422:
-    description: 数据验证未通过
-
+    
 definitions:
-  course:
-    type: object
-    required:
-      - id
-      - title
-    properties:
-      id:
-        type: string
-      title:
-        type: string
-      description:
-        type: string
-        maxLength: 255
-      tags:
-        type: array
-        items:
-          type: string
-      author:
-        type: integer
-      created_at:
-        type: integer
-  chapter:
-    type: object
-    properties:
-      id:
-        type: string
-      title:
-        type: string
-      order:
-        type: integer
-      description:
-        type: string
-      version:
-        type: string
   job:
     type: object
     properties:
@@ -128,8 +119,4 @@ definitions:
       status:
         type: string
       version:
-        type: string
-      codes:
-        type: array
-      items:
         type: string

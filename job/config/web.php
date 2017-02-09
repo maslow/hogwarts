@@ -40,12 +40,12 @@ $config = [
             'rules' => [
                 [
                     'class' => 'yii\rest\UrlRule',
-                    'controller' => 'course',
+                    'controller' => 'job',
                     'tokens' => [
                         '{id}' => '<id:[\\w]+>'
                     ],
                     'extraPatterns' => [
-                        'GET <courseId>/<chapterId>/<sectionId>' => 'section',
+                        'GET <courseId>/<chapterId>/<sectionId>' => 'view',
                         'OPTIONS <courseId>/<chapterId>/<sectionId>' => 'options',
                         'GET <courseId>/<chapterId>' => 'chapter',
                         'OPTIONS <courseId>/<chapterId>' => 'options',

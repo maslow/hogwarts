@@ -24,7 +24,6 @@ class m170123_170727_create_job extends Migration
             'updated_at' => $this->integer()->notNull(),
             'version' => $this->string(64)->notNull(),
             'codes' => 'json',
-            'PRIMARY KEY(id)'
         ], $tableOptions);
     }
 
