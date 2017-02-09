@@ -41,16 +41,17 @@ class JobController extends Controller
     }
 
     /**
-     * @param string|null $tag
+     * @param string $courseId
      * @return ActiveDataProvider
      */
-    public function actionIndex($tag = null)
+    public function actionIndex($courseId)
     {
-//        $query = Course::find()
-//            ->rightJoin('course_tag', 'course.id = course_tag.course_id')
-//            ->rightJoin('tag', 'tag.id = course_tag.tag_id');
-//        $query->orFilterWhere(['like', 'tag.label', trim($tag)]);
-//        return new ActiveDataProvider(['query' => $query]);
+        $query = Job::find()
+            ->where([
+                'uid' => \Yii::$app->user->id,
+                'course_id' => $courseId
+            ]);
+        return new ActiveDataProvider(['query' => $query]);
     }
 
     /**

@@ -47,8 +47,8 @@ $config = [
                     'extraPatterns' => [
                         'GET <courseId>/<chapterId>/<sectionId>' => 'view',
                         'OPTIONS <courseId>/<chapterId>/<sectionId>' => 'options',
-                        'GET <courseId>/<chapterId>' => 'chapter',
-                        'OPTIONS <courseId>/<chapterId>' => 'options',
+                        'GET <courseId>' => 'index',
+                        'OPTIONS <courseId>' => 'options',
                     ],
                 ],
             ],

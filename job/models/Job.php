@@ -127,7 +127,6 @@ class Job extends ActiveRecord
     public function getSrcFiles()
     {
         $path = $this->getPath() . "/src";
-        Yii::trace($path);
         $dirs = FileHelper::findFiles($path);
         return array_map(function ($file) use ($path) {
             $str = str_replace($path, '', $file);
