@@ -26,7 +26,6 @@
  *          convertNoticesToExceptions="true"
  *          convertWarningsToExceptions="true"
  *          forceCoversAnnotation="false"
- *          printerClass="PHPUnit_TextUI_ResultPrinter"
  *          processIsolation="false"
  *          stopOnError="false"
  *          stopOnFailure="false"
@@ -36,6 +35,8 @@
  *          stopOnSkipped="false"
  *          failOnWarning="false"
  *          failOnRisky="false"
+ *          extensionsDirectory="tools/phpunit.d"
+ *          printerClass="PHPUnit_TextUI_ResultPrinter"
  *          testSuiteLoaderClass="PHPUnit_Runner_StandardTestSuiteLoader"
  *          beStrictAboutChangesToGlobalState="false"
  *          beStrictAboutCoversAnnotation="false"
@@ -837,6 +838,14 @@ class PHPUnit_Util_Configuration
             );
         }
 
+        if ($root->hasAttribute('extensionsDirectory')) {
+            $result['extensionsDirectory'] = $this->toAbsolutePath(
+                    (string) $root->getAttribute(
+                        'extensionsDirectory'
+                    )
+            );
+        }
+
         return $result;
     }
 
@@ -965,7 +974,7 @@ class PHPUnit_Util_Configuration
         }
 
         foreach ($testSuiteNode->getElementsByTagName('file') as $fileNode) {
-            if ($testSuiteFilter && $fileNode->parentNode->getAttribute('name') != $testSuiteFilter) {
+            if (!empty($testSuiteFilter) && !in_array($fileNode->parentNode->getAttribute('name'), $testSuiteFilter)) {
                 continue;
             }
 

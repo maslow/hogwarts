@@ -364,7 +364,7 @@ class PHPUnit_Util_Test
      */
     private static function parseAnnotationContent($message)
     {
-        if (strpos($message, '::') !== false && count(explode('::', $message) == 2)) {
+        if (strpos($message, '::') !== false && count(explode('::', $message)) == 2) {
             if (defined($message)) {
                 $message = constant($message);
             }
@@ -379,8 +379,8 @@ class PHPUnit_Util_Test
      * @param string $className
      * @param string $methodName
      *
-     * @return array|Iterator when a data provider is specified and exists
-     *                        null           when no data provider is specified
+     * @return array When a data provider is specified and exists
+     *         null  When no data provider is specified
      *
      * @throws PHPUnit_Framework_Exception
      *
@@ -390,21 +390,18 @@ class PHPUnit_Util_Test
     {
         $reflector  = new ReflectionMethod($className, $methodName);
         $docComment = $reflector->getDocComment();
-        $data       = null;
 
-        if ($dataProviderData = self::getDataFromDataProviderAnnotation($docComment, $className, $methodName)) {
-            $data = $dataProviderData;
+        $data = self::getDataFromDataProviderAnnotation($docComment, $className, $methodName);
+
+        if ($data === null) {
+            $data = self::getDataFromTestWithAnnotation($docComment);
         }
 
-        if ($testWithData = self::getDataFromTestWithAnnotation($docComment)) {
-            $data = $testWithData;
+        if (is_array($data) && empty($data)) {
+            throw new PHPUnit_Framework_SkippedTestError;
         }
 
         if ($data !== null) {
-            if (is_object($data)) {
-                $data = iterator_to_array($data);
-            }
-
             foreach ($data as $key => $value) {
                 if (!is_array($value)) {
                     throw new PHPUnit_Framework_Exception(
@@ -434,41 +431,56 @@ class PHPUnit_Util_Test
      */
     private static function getDataFromDataProviderAnnotation($docComment, $className, $methodName)
     {
-        if (preg_match(self::REGEX_DATA_PROVIDER, $docComment, $matches)) {
-            $dataProviderMethodNameNamespace = explode('\\', $matches[1]);
-            $leaf                            = explode('::', array_pop($dataProviderMethodNameNamespace));
-            $dataProviderMethodName          = array_pop($leaf);
+        if (preg_match_all(self::REGEX_DATA_PROVIDER, $docComment, $matches)) {
+            $result = [];
 
-            if (!empty($dataProviderMethodNameNamespace)) {
-                $dataProviderMethodNameNamespace = implode('\\', $dataProviderMethodNameNamespace) . '\\';
-            } else {
-                $dataProviderMethodNameNamespace = '';
+            foreach ($matches[1] as $match) {
+                $dataProviderMethodNameNamespace = explode('\\', $match);
+                $leaf                            = explode('::', array_pop($dataProviderMethodNameNamespace));
+                $dataProviderMethodName          = array_pop($leaf);
+
+                if (!empty($dataProviderMethodNameNamespace)) {
+                    $dataProviderMethodNameNamespace = implode('\\', $dataProviderMethodNameNamespace) . '\\';
+                } else {
+                    $dataProviderMethodNameNamespace = '';
+                }
+
+                if (!empty($leaf)) {
+                    $dataProviderClassName = $dataProviderMethodNameNamespace . array_pop($leaf);
+                } else {
+                    $dataProviderClassName = $className;
+                }
+
+                $dataProviderClass  = new ReflectionClass($dataProviderClassName);
+                $dataProviderMethod = $dataProviderClass->getMethod(
+                    $dataProviderMethodName
+                );
+
+                if ($dataProviderMethod->isStatic()) {
+                    $object = null;
+                } else {
+                    $object = $dataProviderClass->newInstance();
+                }
+
+                if ($dataProviderMethod->getNumberOfParameters() == 0) {
+                    $data = $dataProviderMethod->invoke($object);
+                } else {
+                    $data = $dataProviderMethod->invoke($object, $methodName);
+                }
+
+                if ($data instanceof Iterator) {
+                    $data = iterator_to_array($data);
+                }
+
+                if (is_array($data)) {
+                    $result = array_merge($result, $data);
+                } elseif ($data instanceof \Iterator) {
+                    $data   = iterator_to_array($data);
+                    $result = array_merge($result, $data);
+                }
             }
 
-            if (!empty($leaf)) {
-                $dataProviderClassName = $dataProviderMethodNameNamespace . array_pop($leaf);
-            } else {
-                $dataProviderClassName = $className;
-            }
-
-            $dataProviderClass  = new ReflectionClass($dataProviderClassName);
-            $dataProviderMethod = $dataProviderClass->getMethod(
-                $dataProviderMethodName
-            );
-
-            if ($dataProviderMethod->isStatic()) {
-                $object = null;
-            } else {
-                $object = $dataProviderClass->newInstance();
-            }
-
-            if ($dataProviderMethod->getNumberOfParameters() == 0) {
-                $data = $dataProviderMethod->invoke($object);
-            } else {
-                $data = $dataProviderMethod->invoke($object, $methodName);
-            }
-
-            return $data;
+            return $result;
         }
     }
 
@@ -483,6 +495,7 @@ class PHPUnit_Util_Test
     public static function getDataFromTestWithAnnotation($docComment)
     {
         $docComment = self::cleanUpMultiLineAnnotation($docComment);
+
         if (preg_match(self::REGEX_TEST_WITH, $docComment, $matches, PREG_OFFSET_CAPTURE)) {
             $offset            = strlen($matches[0][0]) + $matches[0][1];
             $annotationContent = substr($docComment, $offset);
@@ -606,7 +619,7 @@ class PHPUnit_Util_Test
             $numMatches = count($matches[0]);
 
             for ($i = 0; $i < $numMatches; ++$i) {
-                $annotations[$matches['name'][$i]][] = $matches['value'][$i];
+                $annotations[$matches['name'][$i]][] = (string) $matches['value'][$i];
             }
         }
 

@@ -3,9 +3,8 @@ info:
   version: "1.0.0"
   title: Hogwarts (Tech v2) API 文档(Job)
   description: Hogwarts server-end api docs.
-host: api.vip-design.net:91
+host: localhost:8080
 schemes:
-  - https
   - http
 produces:
   - application/json

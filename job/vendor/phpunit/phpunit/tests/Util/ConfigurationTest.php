@@ -345,13 +345,14 @@ class Util_ConfigurationTest extends PHPUnit_Framework_TestCase
             'convertNoticesToExceptions'                 => true,
             'convertWarningsToExceptions'                => true,
             'forceCoversAnnotation'                      => false,
-            'printerClass'                               => 'PHPUnit_TextUI_ResultPrinter',
             'stopOnFailure'                              => false,
             'stopOnWarning'                              => false,
             'reportUselessTests'                         => false,
             'strictCoverage'                             => false,
             'disallowTestOutput'                         => false,
             'enforceTimeLimit'                           => false,
+            'extensionsDirectory'                        => '/tmp',
+            'printerClass'                               => 'PHPUnit_TextUI_ResultPrinter',
             'testSuiteLoaderClass'                       => 'PHPUnit_Runner_StandardTestSuiteLoader',
             'verbose'                                    => false,
             'timeoutForSmallTests'                       => 1,
@@ -474,5 +475,17 @@ class Util_ConfigurationTest extends PHPUnit_Framework_TestCase
         $names = $configuration->getTestSuiteNames();
 
         $this->assertEquals(['Suite One', 'Suite Two'], $names);
+    }
+
+    public function testTestSuiteConfigurationForASingleFileInASuite()
+    {
+        $configuration = PHPUnit_Util_Configuration::getInstance(
+            dirname(__DIR__) . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR . 'configuration.one-file-suite.xml'
+        );
+
+        $config = $configuration->getTestSuiteConfiguration();
+        $tests = $config->tests();
+
+        $this->assertEquals(1, count($tests));
     }
 }

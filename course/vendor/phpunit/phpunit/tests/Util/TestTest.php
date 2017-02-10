@@ -18,6 +18,7 @@ if (!defined('TEST_FILES_PATH')) {
 
 require TEST_FILES_PATH . 'CoverageNamespacedFunctionTest.php';
 require TEST_FILES_PATH . 'NamespaceCoveredFunction.php';
+require TEST_FILES_PATH . 'MultipleDataProviderTest.php';
 
 /**
  * @since      Class available since Release 3.3.6
@@ -428,6 +429,58 @@ class Util_TestTest extends PHPUnit_Framework_TestCase
         $result = preg_match(PHPUnit_Util_Test::REGEX_DATA_PROVIDER, '@dataProvider メソッド', $matches);
         $this->assertEquals(1, $result);
         $this->assertEquals('メソッド', $matches[1]);
+    }
+
+    /**
+     * Check if all data providers are being merged.
+     *
+     * @covers PHPUnit_Util_Test::getDataFromDataProviderAnnotation
+     */
+    public function testMultipleDataProviders()
+    {
+        $dataSets = PHPUnit_Util_Test::getProvidedData('MultipleDataProviderTest', 'testOne');
+
+        $this->assertCount(9, $dataSets);
+
+        $aCount = 0;
+        $bCount = 0;
+        $cCount = 0;
+
+        for ($i = 0; $i < 9; $i++) {
+            $aCount += $dataSets[$i][0] != null ? 1 : 0;
+            $bCount += $dataSets[$i][1] != null ? 1 : 0;
+            $cCount += $dataSets[$i][2] != null ? 1 : 0;
+        }
+
+        $this->assertEquals(3, $aCount);
+        $this->assertEquals(3, $bCount);
+        $this->assertEquals(3, $cCount);
+    }
+
+    /**
+     * Check with a multiple yield / iterator data providers.
+     *
+     * @covers PHPUnit_Util_Test::getDataFromDataProviderAnnotation
+     */
+    public function testMultipleYieldIteratorDataProviders()
+    {
+        $dataSets = PHPUnit_Util_Test::getProvidedData('MultipleDataProviderTest', 'testTwo');
+
+        $this->assertEquals(9, count($dataSets));
+
+        $aCount = 0;
+        $bCount = 0;
+        $cCount = 0;
+
+        for ($i = 0; $i < 9; $i++) {
+            $aCount += $dataSets[$i][0] != null ? 1 : 0;
+            $bCount += $dataSets[$i][1] != null ? 1 : 0;
+            $cCount += $dataSets[$i][2] != null ? 1 : 0;
+        }
+
+        $this->assertEquals(3, $aCount);
+        $this->assertEquals(3, $bCount);
+        $this->assertEquals(3, $cCount);
     }
 
     /**

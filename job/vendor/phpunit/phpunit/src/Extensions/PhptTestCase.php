@@ -48,7 +48,6 @@ class PHPUnit_Extensions_PhptTestCase implements PHPUnit_Framework_Test, PHPUnit
         'report_memleaks=0',
         'report_zend_debug=0',
         'safe_mode=0',
-        'track_errors=1',
         'xdebug.default_enable=0'
     ];
 
@@ -402,21 +401,6 @@ class PHPUnit_Extensions_PhptTestCase implements PHPUnit_Framework_Test, PHPUnit
             ],
             $code
         );
-    }
-
-    /**
-     * @return array
-     */
-    private function cleanupForCoverage()
-    {
-        $files    = $this->getCoverageFiles();
-        $coverage = @unserialize(file_get_contents($files['coverage']));
-
-        foreach ($files as $file) {
-            @unlink($file);
-        }
-
-        return $coverage;
     }
 
     /**

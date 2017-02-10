@@ -18,6 +18,8 @@ The DB preparation should as following:
 Connection is done by MongoDb driver, which is stored in Codeception\Lib\Driver namespace.
 Check out the driver if you get problems loading dumps and cleaning databases.
 
+HINT: This module can be used with [Mongofill](https://github.com/mongofill/mongofill) library which is Mongo client written in PHP without extension.
+
 ## Status
 
 * Maintainer: **judgedim**, **davert**
@@ -91,8 +93,8 @@ Inserts data into collection
 
 ``` php
 <?php
-$I->haveInCollection('users', array('name' => 'John', 'email' => 'john * `coltrane.com'));` 
-$user_id = $I->haveInCollection('users', array('email' => 'john * `coltrane.com'));` 
+$I->haveInCollection('users', array('name' => 'John', 'email' => 'john@coltrane.com'));
+$user_id = $I->haveInCollection('users', array('email' => 'john@coltrane.com'));
 ```
 
  * `param` $collection

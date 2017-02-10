@@ -95,22 +95,24 @@ class JobController extends Controller
         ];
     }
 
-    /**
-     * @param $id
-     * @return Course
-     * @throws NotFoundHttpException
-     * @throws ServerErrorHttpException
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function actionUpdate($id)
+    public function actionFile($jobId, $file)
     {
-//        /** @var Course $model */
-//        if (!$model = Course::findOne($id))
-//            throw new NotFoundHttpException("Object not found: $id");
-//        $model->load(\Yii::$app->request->getBodyParams(), '');
-//        if (!$model->save() && !$model->hasErrors())
-//            throw new ServerErrorHttpException('Failed to update the object for unknown reason');
-//        return $model;
+        $uid = \Yii::$app->user->id;
+        /** @var Job $model */
+        $model = Job::find()->where([
+            'id' => $jobId,
+            'uid' => $uid,
+        ])->one();
+
+        if (!$model) {
+            throw new NotFoundHttpException("Object not found: $jobId, $uid");
+        }
+
+        return [
+            'file' => $file,
+            'content' => $model->getFileContent($file),
+            'job_id' => $jobId
+        ];
     }
 
     public function beforeAction($action)

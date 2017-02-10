@@ -49,6 +49,8 @@ $config = [
                         'OPTIONS <courseId>/<chapterId>/<sectionId>' => 'options',
                         'GET <courseId>' => 'index',
                         'OPTIONS <courseId>' => 'options',
+                        'GET <jobId>/file' => 'file',
+                        'OPTIONS <jobId>/file' => 'options',
                     ],
                 ],
             ],

@@ -68,12 +68,19 @@ class Job extends ActiveRecord
         ];
     }
 
+    /**
+     * @return bool
+     */
     public function beforeValidate()
     {
         $this->updated_at = time();
         return parent::beforeValidate();
     }
 
+    /**
+     * @param bool $insert
+     * @return bool
+     */
     public function beforeSave($insert)
     {
         if ($insert) {
@@ -82,6 +89,9 @@ class Job extends ActiveRecord
         return parent::beforeSave($insert);
     }
 
+    /**
+     * @return bool
+     */
     protected function prepareJobFiles()
     {
         if (empty($this->uid) || empty($this->course_id) || empty($this->chapter_id) || empty($this->section_id)) {
@@ -93,6 +103,40 @@ class Job extends ActiveRecord
         $srcpath = self::getCoursesBasePath() . "/{$this->course_id}/{$this->chapter_id}/{$this->section_id}/codes";
         FileHelper::copyDirectory($srcpath, $jobpath);
         return true;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPath()
+    {
+        return self::getJobsBasePath() . "/{$this->uid}/{$this->course_id}/{$this->chapter_id}/{$this->section_id}";
+    }
+
+    /**
+     * @return array
+     */
+    public function getSrcFiles()
+    {
+        $path = $this->getPath() . "/src";
+        $dirs = FileHelper::findFiles($path);
+        return array_map(function ($file) use ($path) {
+            $str = str_replace($path, '', $file);
+            return str_replace('\\', '/', $str);
+        }, $dirs);
+    }
+
+    /**
+     * @param $file
+     * @return null|string
+     */
+    public function getFileContent($file)
+    {
+        $path = $this->getPath() . "/src" . $file;
+        if (file_exists($path))
+            return file_get_contents($path);
+        else
+            return null;
     }
 
     /**
@@ -117,20 +161,5 @@ class Job extends ActiveRecord
             throw new InvalidConfigException('CONFIG ERROR: `jobs_base_path` missing');
         }
         return Yii::getAlias($jobsPath);
-    }
-
-    public function getPath()
-    {
-        return self::getJobsBasePath() . "/{$this->uid}/{$this->course_id}/{$this->chapter_id}/{$this->section_id}";
-    }
-
-    public function getSrcFiles()
-    {
-        $path = $this->getPath() . "/src";
-        $dirs = FileHelper::findFiles($path);
-        return array_map(function ($file) use ($path) {
-            $str = str_replace($path, '', $file);
-            return str_replace('\\', '/', $str);
-        }, $dirs);
     }
 }

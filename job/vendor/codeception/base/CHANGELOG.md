@@ -1,9 +1,165 @@
 # Changelog
 
-#### 2.2.5
+#### 2.2.9
+
+* [Laravel5] **Laravel 5.4 support** by @janhenkgerritsen
+* [WebDriver] Added `performOn` to wait for element, and run actions inside it. See [complete reference](http://codeception.com/docs/modules/WebDriver#performOn). #3986
+* [WebDriver] Improved error messages for `wait*` methods by @disc. See #3983
+* [REST] Binary responses support by @spikyjt #3993 #3985
+  * `seeBinaryResponseEquals` assert that binary response matches a hash
+  * `seeBinaryResponseEquals` assert that binary response doesn't match a hash
+  * hide binary response on debug
+* [Laravel5] module fix error for applications that do not use a database. See #3954 by @janhenkgerritsen. Fixed #3942  
+* [Laravel5] database seeders to be executed inside a transaction. See #3954 by @janhenkgerritsen. Fixed #3948 by @janhenkgerritsen
+* [Yii2] reverted #3834, closing transaction after each request. #3973 by @iRipVanWinkle. Fixes #3961
+* Added crap4j report support. Use `--coverage-crap4j` option and `codeception/c3` 2.0.10 
+* [PhpBrowser][Frameworks] If form has no id, use action attribute as identifier by @Naktibalda. Fixes #3953
+* Fixed test coloring output when a Feature title has some special chars in it like `/` or `-`
+* [REST] Added missing @part `json` and `xml` to `deleteHeader` by @freezy-sk 
+
+#### 2.2.8
+
+* [WebDriver] Added tab actions (not supported in PhantomJS):
+  * `openNewTab` opens a new tab and switches to it
+  * `closeTab` closes a tab and switches to previous
+  * `switchToNextTab` switches to next tab 
+  * `switchToPreviousTab` switches to previous tab
+* [WebDriver] Added actions to click element by coordinates. Via @gimler
+  * `clickWithLeftButton` clicks element with offset
+  * `clickWithRightButton` right clicks on element with offset 
+* [WebDriver] Added `js_error_logging` option to print JS logs in console and in HTML report by @ngraf. See #3821
+* [WebDriver] Improvements to `seeInField` by @gimler. See #3905
+  * support option text in seeInField not only value
+  * fix bug match with and without whitespaces
+  * fix bug seeInField not working after selectOption
+* [Wedriver] `pageload_timeout` config option added. The amount of time to wait for a page load to complete before throwing an error. This patch allows to reduce issues from phantomjs random freezing. See #3874. Thanks to @oprudkyi
+* [WebDriver] `checkOption` can check option by name #3852. By @gimler
+* [WebDriver] Fixed clicking numerical links, like `<a href='/'>222</a>` (DOM Exception 12 errors). See #3865. By @gimler
+* [PhpBrowser][Frameworks] Fixed #3824 when submitForm used wrong value for `select` by @JorisVanEijden
+* [Laravel5] Added `seeNumRecords` and `grabNumRecords` methods. See #3816. By @dmoreno
+* Improved `@depends` to work with `@dataprovider`. Fixes #3862. Thanks @edno
+* Fixed relative paths for screenshots in HTML report. Fixes #3857
+* Improved error description when injecting invalid classes by @timtkachenko
+* Improved `--override` option to support deep configs. See #3820
+* [Yii2] Clear unloaded fixtures after test. Closes #3794
+* [PhpBrowser] Ensure sessions have independent cookies by @insightfuls. Fixes #3911
+* Implemented load params from php files by @arrilot. See #3914
+* [Yii2] Fixes #3916: Don't try to start transaction when working with non-transactional DBs by @samdark.
+* [REST] Removed broken xdebug_remote functionality by @Naktibalda. Fixes #3883
+* Added graceful termination by Ctrl-C in PHP 7.1 by @AdrianSkierniewski. See #3907
+* [Db] Disconnect after initializing when using reconnect, fixes #3903. By @insightfuls
+* [Phalcon] Fixed handling `$_SERVER` with Phalcon Connector by @sergeyklay
+* Avoid notice when checking width of terminal on Windows by @ashnazg. See #3893
+* [Filesystem] `dontSeeFileFound` searches in path by @Naktibalda. Fixes #3877
+* [PhpBrowser][Frameworks] `grabValueFrom` to work after `fillField` by @wumouse. Fix #3866
+* [Db] Oci driver to cleans up views #3881, and result set improvements #3840 by @ashnazg.
+* [Yii2] Close transaction created by the controller-action on interruption. See #3834. By @alex20465
+* [Yii2] Fixed using `part: init` with other modules like WebDriver. See #3876. By @margori
+* [REST] Implemented `dontSeeResponseJsonMatchesXpath` method by @Naktibalda. Closes #3843
+* [REST] Convert array having single element to XML correctly. Fixes #3827 by @Naktibalda
+* Linter to check `exec` function to be enabled before using it. By @Naktibalda. See #3886
+* Fixed #3922: division by zero in steps output on small terminal windows.
+* Improved getting terminal width from ENV variable (bash). Fixes #3788 by @schmunk42 
+ 
+#### 2.2.7
+
+* **Config validation** with `codecept config:validate` command. Use it:
+
+```
+codecept config:validate
+codecept config:validate acceptance
+```
+
+This should help you next time you get messed with YAML formatting.
+
+* Gherkin improvements:
+  * multiple step definitions per method allowed (Fixes #3670).  
+  * regex validation for Gherkin steps; throws exception if invalid regex passed. Fixes #3676  
+  * currency chars supported in placeholders:
+
+  $,€,£ and other signs can be used before or after a number inside Gherkin scenario. This char will be ignored inside a PHP variable, so you receive only number.
+
+```gherkin
+When I have 100$ => $num === 100
+And I have $100 => $num === 100
+```
+
+  * escaped strings can now be passed into placeholders. Fixes #3676.
+
+* Codeception is tested with latest verision of HHVM
+* Extensions loader refactored:
+  * Extensions can be **enabled for suite** in suite config.
+  * Extensions can be loaded per suite and per environment.
+  * Extensions configs can be done inside `enabled` section (as it is for modules):
+
+```yaml
+extensions:
+  enabled:
+      Codeception\Extension\Recorder:
+          delete_successful: false
+```
+
+* **Added dataprovider to Cest** format by @endo. See [updated documentation](http://codeception.com/docs/07-AdvancedUsage#Examples).
+* Params loader refactored. Using `vlucas/phpdotenv` to parse .env files. Please install it if you don't have it yet.
+* Improved `generate:suite` command to generate actor file for suite.
+* HTML reporter: snapshot and screenshots paths made relative to make them accessible on CI. Fixes #3702
+* [WebDriver] added `protocol` and `path` config options by @sven-carstens-udg. See #3717
+* [PhpBrowser][Frameworks] Honour `<base href="">` meta tag by @Naktibalda. See #3764
+* [Yii2] Removed mockAssetManager by @githubjeka 
+* [Yii2] Added procesing for native url formats of Yii2 #3725 by @githubjeka
+* [Yii2] Fixed unintentional DB connection drop during exception logging, #3696 by @ivokund
+* [Yii2] Fixed calling `_fixtures()` method of Cest class. See #3655, fixes #3612 by @primipilus
+* [Db] Fixed `removeInserted` for Sqlite by @Naktibalda. Fixes #3680
+* Allows to get groups from scenario by `$scenario->getGroups()`. By @frantzen. See #3675
+* Fixed #3225: incorrect steps shown for multiple canXXX conditional assertion failures. By @Mitrichius
+* [SOAP] Force string for debugSection output by @Noles. Fixes #3690
+* Fixed #3562 group files with exact test not working with `@example` on Windows by @Naktibalda.
+* [Laravel5] Added `vendor_dir` option. See #3775. By @AdrianSkierniewski
+* [Laravel5] Fixed error where custom service container bindings were not available on the first request. See #3728. By @janhenkgerritsen
+* [Lumen] Fixed error where a non-existing exception class was thrown. See #3729. By @janhenkgerritsen
+* [Phalcon] Added `services` part which can be used to `grabServiceFromContainer` and `addServiceToContainer` when conflicting module is used. By @sergeyklay
+* [Phalcon] **Refactored**. Moved in-memory session adapter to the separated namespace. By @sergeyklay
+* [Phalcon] Fixed overwriting server parameters on requests. By @sergeyklay
+* [Asserts] `assertCount` method added by @disc
+* Documentation improvements by @CJDennis
+
+#### 2.2.6 (October 2016)
+
+* Ability to update config on run with `--override` (`-o`) option. Usage Examples:
+    * `codecept run -o "settings: shuffle: true"`: enable shuffle
+    * `codecept run -o "settings: lint: false"`: disable linting
+* [WebDriver] **HTML report to include screenshots of failed tests.** See #3602
+* [PhpBrowser][Frameworks] HTML report to include HTML of failed tests. See #3602
+* [Apc] **Module added** to interact with the Alternative PHP Cache (APC) using either APCu or APC extension. By @sergeyklay
+* [Laravel5] Add `run_database_seeder` configuration option. See #3625 and #3630. By @Bouhnosaure
+* [Laravel5] Add `database_migrations_path` configuration option. See #3628. By @janhenkgerritsen
+* [Laravel5][Lumen] Fixed issue that caused the `have` and `haveMultiple` methods not being available when using the ORM part of the modules. See #3587. By @janhenkgerritsen
+* [PhpBrowser][Frameworks] Fixed clicking on a button inside the link
+* [PhpBrowser][Frameworks] Click on the first clickable item when clickBySelector is used
+* [PhpBrowser][Frameworks] Anchor is no longer sent to server
+* Removed tags from `see`/`dontSee` output and friends output
+* `--` separates options from arguments in `codecept run` by @Naktibalda. Fixes #3614. See #3615
+* Fixed terminating run process with Ctrl-C for PHP 7.0. Disabled graceful termination
+* [Yii2] fixed Yii2 logging complex data by @svoboda2010 Fixes #3452
+* [Yii2] `cleanup` set to true by default (as it was documented but not enabled).
+* [Yii2] Close db connections when running `haveFixtures` by @Ni-san. Fixes #3456. See #3586
+* [Yii2] Fixed loading fixtures from `_fixtures` method in testcase by @iRipVanWinkle. See #3565
+* [MongoDb] Added support for [mongofill](https://github.com/mongofill/mongofill), an alternative Mongo client in pure PHP. By @hlogeon at #3641
+* [MongoDb] Fixed data import using mongotype dump type by @hlogeon #3637
+* Fixed #3392 by normalizing namespace loading classes in DI getterby @Mitrichius at #3633
+* [Symfony] Fixed #3608  `[PHPUnit_Framework_Exception] implode()` while printing debug for security roles by @Prazmok.
+* [Yii1] Fix domain regex #3581 to return correct value by @amashigeseiji See #3597
+* [WebDriver] Improved tests stability when Selenium server is gone #3534 by @eXorus. Fixes #3531
+* [WebDriver] Tests are errored when Selenium server can't be connected. See #3603
+* MetaSteps are printed even with disabled xdebug by @niclopez. See #3600
+* [WebDriver] submit button in `submitForm` can be located by name or strict locator by @imjoehaines. See #3560
+* [SOAP][REST] removed module conflict by @eXorus.
+* Fixed #3571: error handler to call `registerDeprecationErrorHandler` method and `register_shutdown_function` on first SuiteEvent only. By @positronium. See #3572
+
+#### 2.2.5 (September 2016)
 
 * Support for PhpUnit 5.x.
-* [Lumen] Major refactoring of Lumen module. See [#3533](https://github.com/Codeception/Codeception/pull/3533). By @janhenkgerritsen
+* [Lumen] Major refactoring of Lumen module. See #3533. By @janhenkgerritsen
 * [Laravel5] Removed calls to `Auth::logout()`, `Session::flush()` and `Cache::flush()` from after hook. See #3493. By @janhenkgerritsen
 * [Memcache] Updated `Memcache::seeInMemcached` to check if the key exists alone or with the desired value. By @sergeyklay
 * [Memcache] Added `Memcache::haveInMemcached`. By @sergeyklay
@@ -30,7 +186,7 @@
 * Fixed #3433 detection of relative path when `codeception.yml` is not in project root. See #3434. By @loren-osborn
 * Handle deprecation messages according to `error_level` setting #3460. Fixes #3424. By @Naktibalda.
 
-#### 2.2.4
+#### 2.2.4 (August 2016)
 
 * Improved using complex params, nested params can be set using dot (`.`). See #3339
 * [Yii2] Mailer mock is now configured with options that make sense for it. Fixes #3382
@@ -49,7 +205,7 @@
 * [Db] Error is thrown if SQLite memory is used. #3319
 * [Frameworks] `REQUEST_TIME` server variable to be set on request. By @gimler. Fixes #3374
 
-#### 2.2.3
+#### 2.2.3 (July 2016)
 
 * [Yii2] Improvements:
     * Added `init` part to initialize Yii app for unit and acceptance testing.
