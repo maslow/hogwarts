@@ -39,6 +39,40 @@ paths:
                 type: string
               job_id:
                 type: integer
+              hash:
+                type: string
+    post:
+      description: 创建文件或更新已存在文件
+      parameters:
+        - name: jobId
+          in: path
+          type: string
+          required: true
+        - name: file
+          description: 文件名
+          in: body
+          schema:
+            type: object
+            properties:
+              name:
+                description: 文件名
+                type: string
+              content:
+                description: 文件内容
+                type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              file:
+                type: string
+              job_id:
+                type: string
+              hash:
+                type: string
+
   /jobs/{courseId}:
     get:
       description: 获取用户一个课程的所有作业信息

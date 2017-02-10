@@ -128,15 +128,44 @@ class Job extends ActiveRecord
 
     /**
      * @param $file
-     * @return null|string
+     * @return array
      */
     public function getFileContent($file)
     {
         $path = $this->getPath() . "/src" . $file;
-        if (file_exists($path))
-            return file_get_contents($path);
-        else
+        if (!$this->existAndSafeFile($file))
+            return [
+                'content' => null,
+                'hash' => null
+            ];
+        return [
+            'content' => file_get_contents($path),
+            'hash' => md5_file($path)
+        ];
+    }
+
+    /**
+     * @param $file
+     * @return bool
+     */
+    private function existAndSafeFile($file)
+    {
+        $files = $this->getSrcFiles();
+        return in_array($file, $files);
+    }
+
+    /**
+     * @param $file
+     * @param $content
+     * @return bool
+     */
+    public function setFileContent($file, $content)
+    {
+        $path = $this->getPath() . "/src" . $file;
+        file_put_contents($path, $content);
+        if (!$this->existAndSafeFile($file))
             return null;
+        return md5_file($path);
     }
 
     /**

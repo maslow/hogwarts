@@ -12,7 +12,6 @@ use app\models\Job;
 use app\models\User;
 use yii\data\ActiveDataProvider;
 use yii\filters\Cors;
-use yii\helpers\Url;
 use yii\rest\Controller;
 use yii\rest\OptionsAction;
 use yii\web\NotFoundHttpException;
@@ -95,6 +94,12 @@ class JobController extends Controller
         ];
     }
 
+    /**
+     * @param $jobId
+     * @param $file
+     * @return array
+     * @throws NotFoundHttpException
+     */
     public function actionFile($jobId, $file)
     {
         $uid = \Yii::$app->user->id;
@@ -107,14 +112,50 @@ class JobController extends Controller
         if (!$model) {
             throw new NotFoundHttpException("Object not found: $jobId, $uid");
         }
-
+        $fileData = $model->getFileContent($file);
         return [
             'file' => $file,
-            'content' => $model->getFileContent($file),
+            'content' => $fileData['content'],
+            'hash' => $fileData['hash'],
             'job_id' => $jobId
         ];
     }
 
+    /**
+     * @param $jobId
+     * @return array
+     * @throws NotFoundHttpException
+     * @throws ServerErrorHttpException
+     */
+    public function actionUpdate($jobId)
+    {
+        $uid = \Yii::$app->user->id;
+        /** @var Job $model */
+        $model = Job::find()->where([
+            'id' => $jobId,
+            'uid' => $uid,
+        ])->one();
+
+        if (!$model) {
+            throw new NotFoundHttpException("Object not found: $jobId, $uid");
+        }
+        $params = \Yii::$app->request->getBodyParams();
+        $file = $params['name'];
+        $content = $params['content'];
+        $hash = $model->setFileContent($file, $content);
+        if (!$hash)
+            throw new ServerErrorHttpException('Failed to update the File');
+        return [
+            'file' => $file,
+            'hash' => $hash,
+            'job_id' => $jobId
+        ];
+    }
+
+    /**
+     * @param \yii\base\Action $action
+     * @return bool
+     */
     public function beforeAction($action)
     {
         $uid = \Yii::$app->request->headers->get('x-uid');

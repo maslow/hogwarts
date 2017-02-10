@@ -50,6 +50,7 @@ $config = [
                         'GET <courseId>' => 'index',
                         'OPTIONS <courseId>' => 'options',
                         'GET <jobId>/file' => 'file',
+                        'POST <jobId>/file' => 'update',
                         'OPTIONS <jobId>/file' => 'options',
                     ],
                 ],
