@@ -8,12 +8,14 @@
 
 namespace app\controllers;
 
+use app\models\API;
 use app\models\Job;
 use app\models\User;
 use yii\data\ActiveDataProvider;
 use yii\filters\Cors;
 use yii\rest\Controller;
 use yii\rest\OptionsAction;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\ServerErrorHttpException;
 
@@ -58,11 +60,37 @@ class JobController extends Controller
      * @param $chapterId
      * @param $sectionId
      * @return array
+     * @throws ForbiddenHttpException
      * @throws NotFoundHttpException
      */
     public function actionView($courseId, $chapterId, $sectionId)
     {
         $uid = \Yii::$app->user->id;
+
+        $data = API::getSection($courseId, $chapterId, $sectionId);
+
+        if (!$data)
+            throw new NotFoundHttpException("Section not found: $courseId, $chapterId, $sectionId");
+
+        $deps = $data->section->deps;
+        if (!$deps) $deps = [];
+        foreach ($deps as $s) {
+            $arr = explode('/', $s);
+            $ch = $arr[0];
+            $sec = $arr[1];
+            /** @var Job $job */
+            $job = Job::find()->where([
+                'uid' => $uid,
+                'course_id' => $courseId,
+                'chapter_id' => $ch,
+                'section_id' => $sec,
+            ])->one();
+            if (!job || $job->status !== Job::JOB_STATUS_PASSED) {
+                throw new ForbiddenHttpException("Job cannot be created until all deps been passed: $courseId, $chapterId, $sectionId");
+            }
+        }
+
+
         /** @var Job $model */
         $query = Job::find()
             ->where([
