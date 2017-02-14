@@ -85,7 +85,7 @@ class JobController extends Controller
                 'chapter_id' => $ch,
                 'section_id' => $sec,
             ])->one();
-            if (!job || $job->status !== Job::JOB_STATUS_PASSED) {
+            if (!$job || $job->status !== Job::JOB_STATUS_PASSED) {
                 throw new ForbiddenHttpException("Job cannot be created until all deps been passed: $courseId, $chapterId, $sectionId");
             }
         }
