@@ -1,12 +1,8 @@
 {
-  "name": "3",
+  "name": "4",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "mocha -R json"
-  },
   "author": "maslow",
-  "license": "ISC",
-  "dependencies": {}
+  "dependencies": {
+  }
 }

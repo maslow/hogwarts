@@ -1,12 +1,13 @@
 {
-  "name": "3",
+  "name": "tests",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "test.js",
+  "dependencies": {},
+  "devDependencies": {},
   "scripts": {
     "test": "mocha -R json"
   },
   "author": "maslow",
-  "license": "ISC",
-  "dependencies": {}
+  "license": "ISC"
 }

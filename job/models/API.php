@@ -27,6 +27,7 @@ class API extends Component
         $req = self::getCourseServer();
         $req->setUrl("courses/$courseId/$chapterId/$sectionId");
         $res = $req->send();
+        \Yii::error(var_export($res, true));
         if($res->statusCode == '200'){
             return json_decode($res->content);
         }else{

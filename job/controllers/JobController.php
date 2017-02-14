@@ -73,7 +73,10 @@ class JobController extends Controller
             throw new NotFoundHttpException("Section not found: $courseId, $chapterId, $sectionId");
 
         $deps = $data->section->deps;
+        $extends = $data->section->extends;
         if (!$deps) $deps = [];
+        if (!$extends) $extends = [];
+        $deps = array_merge($deps, $extends);
         foreach ($deps as $s) {
             $arr = explode('/', $s);
             $ch = $arr[0];
@@ -89,7 +92,6 @@ class JobController extends Controller
                 throw new ForbiddenHttpException("Job cannot be created until all deps been passed: $courseId, $chapterId, $sectionId");
             }
         }
-
 
         /** @var Job $model */
         $query = Job::find()
@@ -109,7 +111,7 @@ class JobController extends Controller
             $model->section_id = $sectionId;
             $model->status = Job::JOB_STATUS_CREATED;
             $model->created_at = time();
-            $model->version = 'REVERSED';
+            $model->version = $data->section->version;
             if (!$model->save()) {
                 \Yii::error($model->getErrors());
                 throw new NotFoundHttpException("Object not found: $courseId, $chapterId, $sectionId");
@@ -140,11 +142,11 @@ class JobController extends Controller
         if (!$model) {
             throw new NotFoundHttpException("Object not found: $jobId, $uid");
         }
-        $fileData = $model->getFileContent($file);
+        $content = $model->getFileContent($file);
         return [
             'file' => $file,
-            'content' => $fileData['content'],
-            'hash' => $fileData['hash'],
+            'content' => $content,
+            'hash' => md5($content),
             'job_id' => $jobId
         ];
     }

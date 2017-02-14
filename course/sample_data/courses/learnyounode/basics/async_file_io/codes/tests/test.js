@@ -9,7 +9,7 @@ describe("第一章", function () {
 
 	before(done => fs.writeFile(tmpfile, generateTmpFile(), done))
 
-	it("统计指定文件内容的行数", function (done) {
+	it("统计文件内容行数", function (done) {
 		let p = path.join(__dirname, '../src/app.js')
 		let cmd = `node ${p} ${tmpfile}`
 		cp.exec(cmd, (err, stdout, stderr) => {

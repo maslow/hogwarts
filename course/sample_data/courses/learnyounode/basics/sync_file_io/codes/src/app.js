@@ -1,4 +1,8 @@
-let sum = process.argv
-        .slice(2)
-        .reduce((p, c)=>Number(p)+Number(c))
-console.log(sum)
+
+let lines = require('fs')
+    .readFileSync(process.argv[2])
+    .toString()
+    .split('\n')
+    .length
+
+console.log(lines)
