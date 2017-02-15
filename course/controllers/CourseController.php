@@ -52,8 +52,8 @@ class CourseController extends Controller
     public function actionIndex($tag = null)
     {
         $query = Course::find()
-            ->rightJoin('course_tag', 'course.id = course_tag.course_id')
-            ->rightJoin('tag', 'tag.id = course_tag.tag_id');
+            ->leftJoin('course_tag', 'course.id = course_tag.course_id')
+            ->leftJoin('tag', 'tag.id = course_tag.tag_id');
         $query->orFilterWhere(['like', 'tag.label', trim($tag)]);
         return new ActiveDataProvider(['query' => $query]);
     }

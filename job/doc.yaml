@@ -3,7 +3,7 @@ info:
   version: "1.0.0"
   title: Hogwarts (Tech v2) API 文档(Job)
   description: Hogwarts server-end api docs.
-host: localhost:8080
+host: localhost:8002
 schemes:
   - http
 produces:

@@ -54,7 +54,7 @@ class API extends Component
      * @return Request
      */
     public static function getCourseServer(){
-        $client = new Client(['baseUrl' => 'http://localhost:8081']);
+        $client = new Client(['baseUrl' => 'http://localhost:8001']);
         $req = $client->createRequest()
             ->addHeaders(['x-uid' => self::getUid()])
             ->setFormat(Client::FORMAT_JSON);
