@@ -115,8 +115,10 @@ class JobController extends Controller
                 \Yii::error($model->getErrors());
                 throw new NotFoundHttpException("Object not found: $courseId, $chapterId, $sectionId");
             }
-            $model->importExtendsSrcCode($extends);
         }
+
+        if (!$model->codesExists())
+            $model->prepareJobFiles($extends);
 
         return [
             'job' => $model,

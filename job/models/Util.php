@@ -9,6 +9,9 @@
 namespace app\models;
 
 
+use Yii;
+use yii\base\InvalidConfigException;
+
 class Util
 {
     /**
@@ -36,5 +39,29 @@ class Util
         $return_val = -1;
         exec("git log -n 1 --pretty=format:%H $path", $output, $return_val);
         return $return_val ? null : array_pop($output);
+    }
+
+    /**
+     * @return bool|string
+     * @throws InvalidConfigException
+     */
+    public static function getCoursesBasePath()
+    {
+        if (!($coursesPath = Yii::$app->params['courses_base_path'])) {
+            throw new InvalidConfigException('CONFIG ERROR: `courses_base_path` missing');
+        }
+        return Yii::getAlias($coursesPath);
+    }
+
+    /**
+     * @return bool|string
+     * @throws InvalidConfigException
+     */
+    public static function getJobsBasePath()
+    {
+        if (!($jobsPath = Yii::$app->params['job_base_path'])) {
+            throw new InvalidConfigException('CONFIG ERROR: `jobs_base_path` missing');
+        }
+        return Yii::getAlias($jobsPath);
     }
 }

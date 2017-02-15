@@ -7,6 +7,7 @@ use yii\base\InvalidConfigException;
 use yii\base\InvalidParamException;
 use yii\db\ActiveRecord;
 use yii\helpers\FileHelper;
+use yii\helpers\StringHelper;
 
 /**
  * This is the model class for table "{{%job}}".
@@ -20,7 +21,6 @@ use yii\helpers\FileHelper;
  * @property integer $created_at
  * @property integer $updated_at
  * @property string $version
- * @property string $codes
  */
 class Job extends ActiveRecord
 {
@@ -43,7 +43,6 @@ class Job extends ActiveRecord
         return [
             [['uid', 'course_id', 'chapter_id', 'section_id', 'created_at', 'updated_at', 'version'], 'required'],
             [['uid', 'status', 'created_at', 'updated_at'], 'integer'],
-            [['codes'], 'string'],
             [['course_id', 'chapter_id', 'section_id'], 'string', 'max' => 32],
             [['version'], 'string', 'max' => 64],
         ];
@@ -64,7 +63,6 @@ class Job extends ActiveRecord
             'created_at' => 'Created At',
             'updated_at' => 'Updated At',
             'version' => 'Version',
-            'codes' => 'Codes',
         ];
     }
 
@@ -78,39 +76,23 @@ class Job extends ActiveRecord
     }
 
     /**
-     * @param bool $insert
+     * @param $extends
      * @return bool
      */
-    public function beforeSave($insert)
+    public function prepareJobFiles($extends)
     {
-        if ($insert) {
-            $this->prepareJobFiles();
-        }
-        return parent::beforeSave($insert);
-    }
-
-    /**
-     * @return bool
-     */
-    protected function prepareJobFiles()
-    {
-        if (empty($this->uid) || empty($this->course_id) || empty($this->chapter_id) || empty($this->section_id)) {
-            throw new InvalidParamException();
-        }
         $jobpath = $this->getPath();
         if (file_exists($jobpath))
             return true;
-        $srcpath = self::getCoursesBasePath() . "/{$this->course_id}/{$this->chapter_id}/{$this->section_id}/codes";
-        FileHelper::copyDirectory($srcpath, $jobpath);
-        return true;
-    }
 
-    public function importExtendsSrcCode($extends){
-        foreach ($extends as $ext){
-            $srcpath = self::getCoursesBasePath() . "/{$this->course_id}/$ext/codes/src";
-            $jobpath = $this->getPath();
-            FileHelper::copyDirectory($srcpath, $jobpath);
+        $basepath = Util::getCoursesBasePath();
+        $courseCodesPath = "$basepath/{$this->course_id}/{$this->chapter_id}/{$this->section_id}/codes";
+        FileHelper::copyDirectory($courseCodesPath, $jobpath);
+        foreach ($extends as $ext) {
+            $srcpath = "$basepath/{$this->course_id}/$ext/codes/src";
+            FileHelper::copyDirectory($srcpath, "$jobpath/src");
         }
+        return true;
     }
 
     /**
@@ -118,7 +100,10 @@ class Job extends ActiveRecord
      */
     public function getPath()
     {
-        return self::getJobsBasePath() . "/{$this->uid}/{$this->course_id}/{$this->chapter_id}/{$this->section_id}";
+        if (empty($this->id))
+            throw new InvalidParamException('Job should be inserted into db first');
+
+        return Util::getJobsBasePath() . "/{$this->id}";
     }
 
     /**
@@ -135,25 +120,23 @@ class Job extends ActiveRecord
     }
 
     /**
+     * @return bool
+     */
+    public function codesExists()
+    {
+        return file_exists($this->getPath());
+    }
+
+    /**
      * @param $file
      * @return string | null
      */
     public function getFileContent($file)
     {
         $path = $this->getPath() . "/src" . $file;
-        if (!$this->existAndSafeFile($file))
+        if (!$this->isReadSafe($file))
             return null;
         return file_get_contents($path);
-    }
-
-    /**
-     * @param $file
-     * @return bool
-     */
-    private function existAndSafeFile($file)
-    {
-        $files = $this->getSrcFiles();
-        return in_array($file, $files);
     }
 
     /**
@@ -165,32 +148,45 @@ class Job extends ActiveRecord
     {
         $path = $this->getPath() . "/src" . $file;
         file_put_contents($path, $content);
-        if (!$this->existAndSafeFile($file))
+        if (!$this->isWriteSafe($file))
             return null;
         return md5_file($path);
     }
 
     /**
-     * @return bool|string
-     * @throws InvalidConfigException
+     * @param $file
+     * @return bool
      */
-    protected static function getCoursesBasePath()
+    private function isReadSafe($file)
     {
-        if (!($coursesPath = Yii::$app->params['courses_base_path'])) {
-            throw new InvalidConfigException('CONFIG ERROR: `courses_base_path` missing');
-        }
-        return Yii::getAlias($coursesPath);
+        $files = $this->getSrcFiles();
+        return $this->validateFileName($file) && in_array($file, $files);
     }
 
     /**
-     * @return bool|string
-     * @throws InvalidConfigException
+     * @param $file
+     * @return bool
      */
-    protected static function getJobsBasePath()
+    private function isWriteSafe($file)
     {
-        if (!($jobsPath = Yii::$app->params['job_base_path'])) {
-            throw new InvalidConfigException('CONFIG ERROR: `jobs_base_path` missing');
-        }
-        return Yii::getAlias($jobsPath);
+        return $this->validateFileName($file);
+    }
+
+    /**
+     * @param $file
+     * @return bool
+     */
+    private function validateFileName($file)
+    {
+        $file = str_replace('\\', '/', $file);
+        if (!StringHelper::startsWith($file, '/'))
+            return false;
+        if (StringHelper::endsWith($file, '/'))
+            return false;
+        if (strstr($file, '..'))
+            return false;
+        if (strlen($file) > 255)
+            return false;
+        return true;
     }
 }
