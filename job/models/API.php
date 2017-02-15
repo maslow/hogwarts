@@ -8,14 +8,28 @@
 
 namespace app\models;
 
-
 use yii\base\Component;
-use yii\helpers\Json;
 use yii\httpclient\Client;
 use yii\httpclient\Request;
 
 class API extends Component
 {
+    /**
+     * @param $courseId
+     * @param $chapterId
+     * @param $sectionId
+     * @param int $cache_duration
+     * @return mixed|null|object
+     */
+    public static function getSectionCached($courseId, $chapterId, $sectionId, $cache_duration = 60){
+        $cache = \Yii::$app->cache;
+        $cache_key = "jobs+course:$courseId+chapter:$chapterId+section:$sectionId";
+        if (!($data = $cache->get($cache_key))) {
+            $data = self::getSection($courseId, $chapterId, $sectionId);
+            $cache->set($cache_key, $data, $cache_duration);
+        }
+        return $data;
+    }
 
     /**
      * @param $courseId
@@ -24,10 +38,11 @@ class API extends Component
      * @return null | object
      */
     public static function  getSection($courseId, $chapterId, $sectionId){
+        \Yii::beginProfile("$courseId, $chapterId, $sectionId", __METHOD__);
         $req = self::getCourseServer();
         $req->setUrl("courses/$courseId/$chapterId/$sectionId");
         $res = $req->send();
-        \Yii::error(var_export($res, true));
+        \Yii::endProfile("$courseId, $chapterId, $sectionId", __METHOD__);
         if($res->statusCode == '200'){
             return json_decode($res->content);
         }else{

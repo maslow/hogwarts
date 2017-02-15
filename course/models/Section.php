@@ -118,16 +118,17 @@ class Section extends Model
      * @param $courseId
      * @param $chapterId
      * @param $sectionId
+     * @param int $cache_duration
      * @return null|string
      */
-    public static function getVersion($courseId, $chapterId, $sectionId)
+    public static function getVersion($courseId, $chapterId, $sectionId, $cache_duration = 60)
     {
         $cache = \Yii::$app->cache;
         $key = "section.versions.$courseId.$chapterId.$sectionId";
         if (!$version = $cache->get($key)) {
             $path = self::getPath($courseId, $chapterId, $sectionId);
             if ($version = Util::getGitVersion($path))
-                $cache->set($key, $version, 60);
+                $cache->set($key, $version, $cache_duration);
         }
         return $version;
     }

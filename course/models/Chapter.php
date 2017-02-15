@@ -95,16 +95,17 @@ class Chapter extends Model
     /**
      * @param $courseId
      * @param $chapterId
+     * @param int $cache_duration
      * @return null|string
      */
-    public static function getVersion($courseId, $chapterId)
+    public static function getVersion($courseId, $chapterId, $cache_duration = 60)
     {
         $cache = \Yii::$app->cache;
         $key = "chapter.versions.$courseId.$chapterId";
-        if (!$version = $cache->get($key)) {
+        if (!($version = $cache->get($key))) {
             $path = self::getPath($courseId, $chapterId);
-            if ($version = Util::getGitVersion($path))
-                $cache->set($key, $version, 60);
+            $version = Util::getGitVersion($path);
+            $cache->set($key, $version, $cache_duration);
         }
         return $version;
     }

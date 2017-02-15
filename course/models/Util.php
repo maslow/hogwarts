@@ -32,9 +32,11 @@ class Util
      */
     public static function getGitVersion($path)
     {
+        \Yii::beginProfile("$path", __METHOD__);
         $output = null;
         $return_val = -1;
         exec("git log -n 1 --pretty=format:%H $path", $output, $return_val);
+        \Yii::endProfile("$path", __METHOD__);
         return $return_val ? null : array_pop($output);
     }
 }

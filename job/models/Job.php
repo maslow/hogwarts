@@ -105,6 +105,14 @@ class Job extends ActiveRecord
         return true;
     }
 
+    public function importExtendsSrcCode($extends){
+        foreach ($extends as $ext){
+            $srcpath = self::getCoursesBasePath() . "/{$this->course_id}/$ext/codes/src";
+            $jobpath = $this->getPath();
+            FileHelper::copyDirectory($srcpath, $jobpath);
+        }
+    }
+
     /**
      * @return string
      */
