@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
+    <title>Course Detail</title>
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="//cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.css" />
+    <style type="text/css" media="screen">
+        html,
+        body {
+            font-family: 'Microsoft Yahei', 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            height: 100%;
+            background-color: ghostwhite;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .container {
+            width: 100%;
+            height: 100%;
+        }
+        
+        [v-cloak] {
+            display: none;
+        }
+        
+        button {
+            outline: none !important;
+        }
+        
+        #editor {
+            width: 100%;
+            min-height: 700px;
+            box-shadow: 0px 0px 1px gray;
+        }
+        
+        #section-text {
+            width: 100%;
+            min-height: 700px;
+            background-color: lightyellow;
+            padding: 15px;
+            border: 1px lightgray solid;
+            box-shadow: 0px 0px 30px lightgray;
+        }
+        
+        .report-err {
+            margin-top: 10px;
+            padding-left: 10px;
+            padding-right: 10px;
+            text-align: left;
+        }
+        
+        .report-err span {
+            font-size: 15px;
+            color: darkslategrey
+        }
+        
+        .report-err p {
+            display: block;
+            padding-left: 20px;
+            margin-top: 5px;
+            font-size: 13px;
+            color: brown
+        }
+        
+        .report-success {
+            margin-top: 10px;
+            padding-left: 10px;
+            padding-right: 10px;
+            text-align: left;
+        }
+        
+        .report-success span {
+            font-size: 15px;
+            color: darkslategrey
+        }
+        
+        .report-success p {
+            display: inline;
+            padding-left: 30px;
+            font-size: 13px;
+            color: #05a522
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper" class="container" v-cloak>
+        <div class="row">
+            <div class="col-xs-6">
+                <h3>
+                    <span v-cloak>{{section.title}}</span>
+                    <small v-cloak>
+                    《<a v-bind:href="'course.html?c=' + course.id">{{course.title}}</a>》
+                </small>
+                    <small style="font-size: 13px" v-cloak>{{chapter.title}}</small>
+                </h3>
+            </div>
+            <div class="col-xs-6" style="padding-left:0;">
+                <div class="row" style="margin-top:15px;">
+                    <div class="col-xs-10" style="margin-top:5px;">
+                        <button v-bind:class="{'btn-warning':code == editingCode, 'disabled':code == editingCode}" v-for="code in codes" style="margin-right:5px;"
+                            class="btn btn-default btn-sm" v-on:click="setCurrentFile(code)" v-cloak> 
+                            <span v-show="code.hash !== code.hash_new">*</span>{{code.name.slice(1)}}
+                    </button>
+                    </div>
+                    <div class="col-xs-2">
+                        <button class="btn btn-success pull-right" v-bind:class="{'disabled':testingStatus}" v-on:click="run()">提交
+                    </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6" style="padding-right: 0px">
+                <div id="section-text" v-html="text"></div>
+            </div>
+            <div class="col-xs-6" style="padding-left: 0;margin-right:0;">
+                <div id="editor"></div>
+            </div>
+        </div>
+    </div>
+    <script src="//cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/lodash.js/4.17.2/lodash.min.js"></script>
+    <script src="//cdn.bootcss.com/vue/2.1.6/vue.min.js"></script>
+    <script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="//cdn.bootcss.com/ace/1.2.6/ace.js"></script>
+    <script src="//cdn.bootcss.com/ace/1.2.6/ext-language_tools.js"></script>
+    <script src="//cdn.bootcss.com/ace/1.2.6/ext-modelist.js"></script>
+    <script src="//cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.js"></script>
+    <script src="//cdn.bootcss.com/markdown-it/8.2.2/markdown-it.min.js"></script>
+    <script src="node_modules/blueimp-md5/js/md5.min.js"></script>
+    <script src="common.js"></script>
+    <script src="api.js"></script>
+    <script>
+        if (!Identity.get() || Identity.isExpired()) {
+            alert('请登录后再操作')
+            location.href = "login.html"
+        } else {
+            initPage()
+        }
+
+        function initPage() {
+            ace.require("ace/ext/language_tools")
+            var modelist = ace.require("ace/ext/modelist")
+            var md = window.markdownit()
+            new Vue({
+                el: '#wrapper',
+                data: {
+                    editingCode: null,
+                    editor: null,
+                    md_parser: null,
+                    reports: '',
+                    testingStatus: false,
+                    course: {},
+                    chapter: {},
+                    section: {},
+                    job: {},
+                    text: "",
+                    codes: [],
+                    nextSection: {},
+                    prevSection: {}
+                },
+                methods: {
+                    setCurrentFile: function (code) {
+                        var t = this
+                        if (code == this.editingCode) return;
+                        if (!code.content) {
+                            api.getFile(this.job.id, code.name)
+                                .success(function (data) {
+                                    code.content = data.content
+                                    code.hash = data.hash
+                                    code.hash_new = data.hash
+                                    t.editingCode = code;
+                                    var mode = modelist.getModeForPath(code.name).mode
+                                    t.editor.session.setMode(mode);
+                                    t.editor.setValue(code.content)
+                                    t.editor.gotoLine(1)
+                                })
+                        } else {
+                            this.editingCode = code;
+                            var mode = modelist.getModeForPath(code.name).mode
+                            this.editor.session.setMode(mode);
+                            this.editor.setValue(code.content)
+                            this.editor.gotoLine(1)
+                        }
+                    },
+                    run: function () {
+                        var t = this
+                        if (t.testingStatus) return;
+                        t.testingStatus = true
+                        var sectionName = t.section.id
+                        var codes = _.filter(t.codes, function (code) {
+                            return code.hash !== code.hash_new
+                        })
+                        api.saveCodes(t.job.id, codes)
+                            .then(function () {
+                                if (arguments.length) {
+                                    for (var i = 0; i < codes.length; i++)
+                                        codes[i].hash = codes[i].hash_new
+                                }
+                                api.eval(t.job.id)
+                                    .success(function (reports) {
+                                        t.testingStatus = false
+                                        t.reports = reports
+                                        t.report(reports)
+                                    }).error(function () {
+                                        t.testingStatus = false
+                                    })
+                            })
+                            .fail(function () {
+                                swal('网络出错了,请重试')
+                            })
+                            .done(function () {
+                                t.testingStatus = false
+                            })
+                    },
+                    report: function (data) {
+                        var t = this
+                        var text = "<hr>"
+                        text += _.map(data.tests, function (t) {
+                            if (t.passed)
+                                return "<div class='report-success'><span>" + t.title +
+                                    "</span><p>OK</p></div>"
+                            else
+                                return "<div class='report-err'><span>" + t.title + "</span><p>" +
+                                    _.replace(t.err.message, '\n', '<br>') + "</p></div>"
+                        }).join('')
+                        text += "<hr>"
+                        if (data.ok) {
+                            swal({
+                                title: "pass!",
+                                text: text,
+                                type: "success",
+                                showCancelButton: true,
+                                confirmButtonColor: "#DD6B55",
+                                confirmButtonText: t.nextSection ? "进入下一节" : "没有了",
+                                closeOnConfirm: false,
+                                html: true
+                            }, function () {
+                                if (t.nextSection)
+                                    location.href = "section.html?s=" + t.nextSection.id + '&c=' + t.nextSection.courseId + '&ch=' + t.nextSection.chapterId
+                            })
+                        } else {
+                            swal({
+                                title: "~fail~",
+                                type: "info",
+                                text: text,
+                                confirmButtonColor: "#DD6B55",
+                                confirmButtonText: "确定",
+                                html: true
+                            })
+                        }
+                    }
+                },
+                mounted: function () {
+                    var t = this
+                    t.editor = initEditor()
+                    t.editor.getSession().on('change', function (action, session) {
+                        if (t.editingCode) {
+                            t.editingCode.content = session.getValue()
+                            t.editingCode.hash_new = md5(t.editingCode.content)
+                        }
+                    })
+                    var sectionName = $.getUrlParam('s')
+                    var courseName = $.getUrlParam('c')
+                    var chapterName = $.getUrlParam('ch')
+
+                    api.getCourse(courseName)
+                        .success(function (data) {
+                            t.chapter = _.filter(data.chapters, function (chapter) {
+                                return chapter.id === chapterName
+                            }).shift()
+                            t.course = data.course
+                        })
+                    api.getSection(courseName, chapterName, sectionName)
+                        .success(function (data) {
+                            // data.codes = trimFirstSlashInCodeName(data.codes)
+                            data.text = md.render(data.text);
+                            t.section = data.section
+                            t.text = data.text
+                            t.nextSection = data.next
+                        })
+                    api.getJob(courseName, chapterName, sectionName)
+                        .success(function (data) {
+                            var files = data.files
+                            t.job = data.job
+                            t.codes = _.map(files, function (file) {
+                                return {
+                                    name: file,
+                                    content: null,
+                                    hash: null,
+                                    hash_new: null
+                                }
+                            })
+                            var code = _.first(t.codes)
+                            if (!code) return;
+                            t.setCurrentFile(code)
+                        })
+                }
+            })
+        }
+
+        function initEditor() {
+            var editor = ace.edit("editor")
+            editor.setTheme("ace/theme/twilight")
+            editor.setFontSize('16px')
+            editor.setOptions({
+                enableBasicAutocompletion: true,
+                enableSnippets: true,
+                enableLiveAutocompletion: false,
+            })
+            editor.setAutoScrollEditorIntoView(true)
+            editor.setOption("maxLines", 33)
+            return editor
+        }
+        /* Drop the first slash : `/app.js` => `app.js`*/
+        function trimFirstSlashInCodeName(codes) {
+            return _.map(codes, function (code) {
+                code.name = code.name.slice(1)
+                return code
+            })
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Course Detail</title>
+    <!--
+        <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    -->
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper" class="container">
+        <div class="page-header">
+            <h1 v-cloak>{{course.title}}
+                <small> {{course.author}}</small>
+            </h1>
+        </div>
+        <div class="panel panel-default" v-for="ch in chapters">
+            <div class="panel-heading">
+                <h3 class="panel-title" v-cloak>{{ch.title}}</h3>
+            </div>
+            <ul class="list-group">
+                <li class="list-group-item" v-for="(s,i) in ch.sections" v-cloak>
+                    <a v-bind:href="'section.html?s=' + s.id + '&c=' + s.courseId + '&ch=' +s.chapterId" v-cloak>
+                        {{i+1}}. {{s.title}}
+                        </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="node_modules/vue/dist/vue.min.js"></script>
+-->
+    <script src="//cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/vue/2.1.6/vue.min.js"></script>
+    <script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="api.js"></script>
+    <script src="common.js"></script>
+    <script>
+        new Vue({
+            el: '#wrapper',
+            data: {
+                course: {},
+                chapters: []
+            },
+            methods: {},
+            created: function () {
+                var t = this;
+                var c = $.getUrlParam('c');
+                api.getCourse(c)
+                    .success(function (data) {
+                        t.course = data.course
+                        t.chapters = data.chapters
+                        data.chapters
+                            .forEach(function (ch, i) {
+                                api.getChapter(ch.courseId, ch.id)
+                                    .success(function (data) {
+                                        Vue.set(t.chapters[i], 'sections', data.sections)
+                                    })
+                            })
+                    }).error(function (rs) {
+                        console.log(rs);
+                    })
+            }
+        })
+    </script>
+</body>
+
+</html>

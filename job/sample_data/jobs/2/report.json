@@ -1,11 +1,11 @@
 {
-  "time": 1487226969665,
+  "time": 1487226983925,
   "ok": true,
   "passes": 1,
   "failures": 0,
   "tests": [
     {
-      "title": "控制台输出HELLO WORLD",
+      "title": "处理命令行参数",
       "passed": true,
       "err": null
     }

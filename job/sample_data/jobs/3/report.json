@@ -1,0 +1,34 @@
+{
+  "time": 1487226989837,
+  "ok": false,
+  "passes": 0,
+  "failures": 2,
+  "tests": [
+    {
+      "title": "\"before all\" hook",
+      "passed": false,
+      "err": {
+        "errorType": "SyscallError",
+        "message": "EROFS: read-only file system, open &#39;/app/tmp.file&#39;",
+        "stack": "Error: EROFS: read-only file system, open &#39;/app/tmp.file&#39;\n    at Error (native)",
+        "code": "EROFS",
+        "syscall": "open",
+        "address": "",
+        "port": ""
+      }
+    },
+    {
+      "title": "\"after all\" hook",
+      "passed": false,
+      "err": {
+        "errorType": "SyscallError",
+        "message": "EROFS: read-only file system, unlink &#39;/app/tmp.file&#39;",
+        "stack": "Error: EROFS: read-only file system, unlink &#39;/app/tmp.file&#39;\n    at Error (native)",
+        "code": "EROFS",
+        "syscall": "unlink",
+        "address": "",
+        "port": ""
+      }
+    }
+  ]
+}
