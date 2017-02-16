@@ -1,0 +1,20 @@
+{
+  "name": "authorization",
+  "version": "1.0.0",
+  "description": "Authorization Service",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "up": "node migrate.js",
+    "down": "node migrate.js clear"
+  },
+  "author": "maslow",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "express-validator": "^2.20.8",
+    "fs-extra": "^1.0.0",
+    "mysql": "^2.11.1"
+  }
+}

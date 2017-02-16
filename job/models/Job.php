@@ -2,8 +2,6 @@
 
 namespace app\models;
 
-use Yii;
-use yii\base\InvalidConfigException;
 use yii\base\InvalidParamException;
 use yii\db\ActiveRecord;
 use yii\helpers\FileHelper;
@@ -24,6 +22,7 @@ use yii\helpers\StringHelper;
  */
 class Job extends ActiveRecord
 {
+    const JOB_STATUS_FAILED = -1;
     const JOB_STATUS_CREATED = 0;
     const JOB_STATUS_PASSED = 1;
 
@@ -124,7 +123,8 @@ class Job extends ActiveRecord
      */
     public function codesExists()
     {
-        return file_exists($this->getPath());
+        $path = $this->getPath();
+        return file_exists($path) && file_exists("$path/src") && file_exists("$path/codes");
     }
 
     /**

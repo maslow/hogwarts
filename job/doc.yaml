@@ -117,6 +117,26 @@ paths:
                 items:
                   description: 文件名
                   type: string
+  /jobs/{jobId}/status/{status}:
+    get:
+      description: 修改一个作业的状态
+      parameters:
+        - name: jobId
+          in: path
+          type: integer
+          required: true
+        - name: status
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              job:
+                $ref: '#/definitions/job'
 
 securityDefinitions:
   bearer_token:

@@ -5,7 +5,7 @@ const fs = require('fs-extra')
 
 module.exports = function (codespath, lang, tester) {
 
-    let name = codespath.replace(/[\/\\:]/g, '-')
+    let name = 'container-' + codespath.replace(/[\/\\:]/g, '-')
     let cmd = `docker run --name ${name} -v ${codespath}:/app:ro ${lang}:${tester} ${tester} -t 10000 /app/tests -R json`
     let hasRemoved = false
 
@@ -23,8 +23,7 @@ module.exports = function (codespath, lang, tester) {
                 let rs = report(stdout, tester)
                 let savedPath = path.join(codespath, 'report.json')
                 fs.writeJson(savedPath, rs, err => err ? reject(err) : resolve(rs))
-            }
-            else if (error) reject(error)
+            } else if (error) reject(error)
             if (!hasRemoved) {
                 clearTimeout(timer)
                 removeContainer()

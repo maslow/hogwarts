@@ -52,6 +52,8 @@ $config = [
                         'GET <jobId>/file' => 'file',
                         'POST <jobId>/file' => 'update-file',
                         'OPTIONS <jobId>/file' => 'options',
+                        'POST <jobId>/status/<status>' => 'update-status',
+                        'OPTIONS <jobId>/status/<status>' => 'options',
                     ],
                 ],
             ],

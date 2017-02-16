@@ -19,8 +19,15 @@ use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\ServerErrorHttpException;
 
+/**
+ * Class JobController
+ * @package app\controllers
+ */
 class JobController extends Controller
 {
+    /**
+     * @return array
+     */
     public function behaviors()
     {
         $behaviors = parent::behaviors();
@@ -151,6 +158,40 @@ class JobController extends Controller
             'hash' => md5($content),
             'job_id' => $jobId
         ];
+    }
+
+
+    /**
+     * @param $jobId
+     * @param $status
+     * @return Job
+     * @throws NotFoundHttpException
+     */
+    public function actionUpdateStatus($jobId, $status)
+    {
+        $uid = \Yii::$app->user->id;
+        /** @var Job $model */
+        $model = Job::find()->where([
+            'id' => $jobId,
+            'uid' => $uid,
+        ])->one();
+
+        if (!$model)
+            throw new NotFoundHttpException("Object not found: $jobId, $uid");
+
+        if ($status < 0)
+            $model->status = Job::JOB_STATUS_FAILED;
+        elseif ($status > 0)
+            $model->status = Job::JOB_STATUS_PASSED;
+        else
+            $model->status = Job::JOB_STATUS_CREATED;
+        $model->updated_at = time();
+
+        if (!$model->save()) {
+            \Yii::error($model->getErrors());
+            throw new NotFoundHttpException("Object not found: $jobId");
+        }
+        return $model;
     }
 
     /**

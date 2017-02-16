@@ -17,7 +17,7 @@ const fs = require('fs-extra')
 const path = require('path')
 const express = require('express')
 
-const services = require('./services.js')
+const {servers, services} = require('./services.js')
 
 // let config = fs.readJsonSync(path.join(__dirname, 'config.json'))
 // let keyPath = config.ssl_key
