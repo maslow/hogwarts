@@ -73,14 +73,18 @@ paths:
               hash:
                 type: string
 
-  /jobs/{courseId}:
+  /jobs:
     get:
       description: 获取用户一个课程的所有作业信息
       parameters:
         - name: courseId
-          in: path
+          in: query
           type: string
-          required: true
+          required: false
+        - name: chapterId
+          in: query
+          type: string
+          required: false
       responses:
         200:
           description: OK
@@ -88,9 +92,10 @@ paths:
             type: array
             items:
               $ref: '#/definitions/job'
+
   /jobs/{courseId}/{chapterId}/{sectionId}:
     get:
-      description: 获取用户一个小节的作业
+      description: 获取用户一个小节的作业, 若作业不存在则创建后返回
       parameters:
         - name: courseId
           in: path
@@ -117,6 +122,23 @@ paths:
                 items:
                   description: 文件名
                   type: string
+  /jobs/{jobId}:
+    get:
+      description: 根据作业ID获取作业信息
+      parameters:
+        - name: jobId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              job:
+                $ref: '#/definitions/job'
+
   /jobs/{jobId}/status/{status}:
     get:
       description: 修改一个作业的状态

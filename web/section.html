@@ -212,8 +212,6 @@
                             })
                             .fail(function () {
                                 swal('网络出错了,请重试')
-                            })
-                            .done(function () {
                                 t.testingStatus = false
                             })
                     },
@@ -315,13 +313,6 @@
             editor.setAutoScrollEditorIntoView(true)
             editor.setOption("maxLines", 33)
             return editor
-        }
-        /* Drop the first slash : `/app.js` => `app.js`*/
-        function trimFirstSlashInCodeName(codes) {
-            return _.map(codes, function (code) {
-                code.name = code.name.slice(1)
-                return code
-            })
         }
     </script>
 </body>

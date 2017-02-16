@@ -46,7 +46,12 @@ let services = [{
         auth: true
     },
     {
-        route: "/jobs/:courseId",
+        route: "/jobs",
+        target: servers.JOB,
+        auth: true
+    },
+    {
+        route: "/jobs/:jobId",
         target: servers.JOB,
         auth: true
     },

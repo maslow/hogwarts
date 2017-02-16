@@ -1,0 +1,13 @@
+{
+  "time": 1487227778878,
+  "ok": true,
+  "passes": 1,
+  "failures": 0,
+  "tests": [
+    {
+      "title": "请求指定URL内容",
+      "passed": true,
+      "err": null
+    }
+  ]
+}

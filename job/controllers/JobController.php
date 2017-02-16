@@ -50,15 +50,19 @@ class JobController extends Controller
 
     /**
      * @param string $courseId
+     * @param null $chapterId
      * @return ActiveDataProvider
      */
-    public function actionIndex($courseId)
+    public function actionIndex($courseId = null, $chapterId = null)
     {
         $query = Job::find()
             ->where([
                 'uid' => \Yii::$app->user->id,
-                'course_id' => $courseId
             ]);
+        $query->andFilterWhere([
+            'course_id' => $courseId,
+            'chapter_id' => $chapterId,
+        ]);
         return new ActiveDataProvider(['query' => $query]);
     }
 
@@ -129,8 +133,31 @@ class JobController extends Controller
 
         return [
             'job' => $model,
-            'files' => $model->getSrcFiles()
+            'files' => $model->getSrcFiles(),
+            'lang' => $data->section->lang,
+            'tester' => $data->section->tester,
         ];
+    }
+
+    /**
+     * @param $jobId
+     * @return Job
+     * @throws NotFoundHttpException
+     */
+    public function actionViewById($jobId)
+    {
+        $uid = \Yii::$app->user->id;
+
+        /** @var Job $model */
+        $model = Job::find()->where([
+            'id' => $jobId,
+            'uid' => $uid,
+        ])->one();
+
+        if (!$model)
+            throw new NotFoundHttpException("Object not found: $jobId, $uid");
+
+        return $model;
     }
 
     /**
@@ -142,6 +169,7 @@ class JobController extends Controller
     public function actionFile($jobId, $file)
     {
         $uid = \Yii::$app->user->id;
+
         /** @var Job $model */
         $model = Job::find()->where([
             'id' => $jobId,

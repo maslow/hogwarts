@@ -28,7 +28,7 @@ app.post('/eval/:jobid', function (req, res) {
     let codespath = path.join(jobsBasePath, job_id)
 
     getJob(req.uid, job_id)
-        .then(job => eval(codespath, 'node', 'mocha'))
+        .then(data => eval(codespath, 'node', 'mocha'))
         .then(data => {
             let status = data.ok ? 1 : -1
             return setJobStatus(req.uid, job_id, status)

@@ -21,7 +21,8 @@ class API extends Component
      * @param int $cache_duration
      * @return mixed|null|object
      */
-    public static function getSectionCached($courseId, $chapterId, $sectionId, $cache_duration = 60){
+    public static function getSectionCached($courseId, $chapterId, $sectionId, $cache_duration = 60)
+    {
         $cache = \Yii::$app->cache;
         $cache_key = "jobs+course:$courseId+chapter:$chapterId+section:$sectionId";
         if (!($data = $cache->get($cache_key))) {
@@ -37,15 +38,16 @@ class API extends Component
      * @param $sectionId
      * @return null | object
      */
-    public static function  getSection($courseId, $chapterId, $sectionId){
+    public static function getSection($courseId, $chapterId, $sectionId)
+    {
         \Yii::beginProfile("$courseId, $chapterId, $sectionId", __METHOD__);
         $req = self::getCourseServer();
         $req->setUrl("courses/$courseId/$chapterId/$sectionId");
         $res = $req->send();
         \Yii::endProfile("$courseId, $chapterId, $sectionId", __METHOD__);
-        if($res->statusCode == '200'){
+        if ($res->statusCode == '200') {
             return json_decode($res->content);
-        }else{
+        } else {
             return null;
         }
     }
@@ -53,8 +55,9 @@ class API extends Component
     /**
      * @return Request
      */
-    public static function getCourseServer(){
-        $client = new Client(['baseUrl' => 'http://localhost:8001']);
+    public static function getCourseServer()
+    {
+        $client = new Client(['baseUrl' => Util::getCourseServer()]);
         $req = $client->createRequest()
             ->addHeaders(['x-uid' => self::getUid()])
             ->setFormat(Client::FORMAT_JSON);
@@ -64,7 +67,8 @@ class API extends Component
     /**
      * @return int|string
      */
-    public static function getUid(){
+    public static function getUid()
+    {
         return \Yii::$app->user->id;
     }
 }

@@ -54,7 +54,7 @@ class Util
     }
 
     /**
-     * @return bool|string
+     * @return string
      * @throws InvalidConfigException
      */
     public static function getJobsBasePath()
@@ -63,5 +63,17 @@ class Util
             throw new InvalidConfigException('CONFIG ERROR: `jobs_base_path` missing');
         }
         return Yii::getAlias($jobsPath);
+    }
+
+    /**
+     * @return string
+     * @throws InvalidConfigException
+     */
+    public static function getCourseServer()
+    {
+        if (!($server = Yii::$app->params['course_server'])) {
+            throw new InvalidConfigException('CONFIG ERROR: `course_server` missing');
+        }
+        return $server;
     }
 }

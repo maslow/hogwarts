@@ -1,4 +1,4 @@
 {
-    "jobsBasePath": "/Users/wangfugen/workspace/hogwarts/job/sample_data/jobs",
+    "jobsBasePath": "/Users/wangfugen/workspace/hogwarts/sample_data/jobs",
     "jobs_server": "http://127.0.0.1:8002"
 }
