@@ -45,8 +45,8 @@
     <script src="//cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
     <script src="//cdn.bootcss.com/vue/2.1.6/vue.min.js"></script>
     <script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="api.js"></script>
     <script src="common.js"></script>
+    <script src="api.js"></script>
     <script>
         new Vue({
             el: '#wrapper',
@@ -55,7 +55,7 @@
                 chapters: []
             },
             methods: {},
-            created: function () {
+            mounted: function () {
                 var t = this;
                 var c = $.getUrlParam('c');
                 api.getCourse(c)
