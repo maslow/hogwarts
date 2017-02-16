@@ -122,6 +122,11 @@ paths:
                 items:
                   description: 文件名
                   type: string
+              lang:
+                  type: string
+              tester:
+                  type: string
+
   /jobs/{jobId}:
     get:
       description: 根据作业ID获取作业信息
@@ -138,6 +143,10 @@ paths:
             properties:
               job:
                 $ref: '#/definitions/job'
+              lang:
+                type: string
+              tester:
+                type: string
 
   /jobs/{jobId}/status/{status}:
     get:

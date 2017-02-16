@@ -141,7 +141,7 @@ class JobController extends Controller
 
     /**
      * @param $jobId
-     * @return Job
+     * @return array
      * @throws NotFoundHttpException
      */
     public function actionViewById($jobId)
@@ -157,7 +157,15 @@ class JobController extends Controller
         if (!$model)
             throw new NotFoundHttpException("Object not found: $jobId, $uid");
 
-        return $model;
+        $data = API::getSectionCached($model->course_id, $model->chapter_id, $model->section_id);
+        if (!$data)
+            throw new NotFoundHttpException("Section not found: $model->course_id, $model->chapter_id, $model->section_id");
+
+        return [
+            'job' => $model,
+            'lang' => $data->section->lang,
+            'tester' => $data->section->tester,
+        ];
     }
 
     /**
@@ -237,9 +245,9 @@ class JobController extends Controller
             'uid' => $uid,
         ])->one();
 
-        if (!$model) {
+        if (!$model)
             throw new NotFoundHttpException("Object not found: $jobId, $uid");
-        }
+
         $params = \Yii::$app->request->getBodyParams();
         $file = $params['name'];
         $content = $params['content'];
