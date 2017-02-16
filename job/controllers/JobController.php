@@ -67,6 +67,37 @@ class JobController extends Controller
     }
 
     /**
+     * @param $section
+     * @throws ForbiddenHttpException
+     */
+    private function checkDeps($section)
+    {
+        $uid = \Yii::$app->user->id;
+        $deps = $section->deps;
+        $extends = $section->extends;
+        if (!$deps) $deps = [];
+        if (!$extends) $extends = [];
+        $deps = array_merge($deps, $extends);
+
+        foreach ($deps as $s) {
+
+            $arr = explode('/', $s);
+            $ch = $arr[0];
+            $sec = $arr[1];
+            /** @var Job $job */
+            $job = Job::find()->where([
+                'uid' => $uid,
+                'course_id' => $section->courseId,
+                'chapter_id' => $ch,
+                'section_id' => $sec,
+            ])->one();
+            if (!$job || $job->status !== Job::JOB_STATUS_PASSED) {
+                throw new ForbiddenHttpException("Job cannot be created until all deps been passed: $courseId, $chapterId, $sectionId");
+            }
+        }
+    }
+
+    /**
      * @param $courseId
      * @param $chapterId
      * @param $sectionId
@@ -82,26 +113,7 @@ class JobController extends Controller
         if (!$data)
             throw new NotFoundHttpException("Section not found: $courseId, $chapterId, $sectionId");
 
-        $deps = $data->section->deps;
-        $extends = $data->section->extends;
-        if (!$deps) $deps = [];
-        if (!$extends) $extends = [];
-        $deps = array_merge($deps, $extends);
-        foreach ($deps as $s) {
-            $arr = explode('/', $s);
-            $ch = $arr[0];
-            $sec = $arr[1];
-            /** @var Job $job */
-            $job = Job::find()->where([
-                'uid' => $uid,
-                'course_id' => $courseId,
-                'chapter_id' => $ch,
-                'section_id' => $sec,
-            ])->one();
-            if (!$job || $job->status !== Job::JOB_STATUS_PASSED) {
-                throw new ForbiddenHttpException("Job cannot be created until all deps been passed: $courseId, $chapterId, $sectionId");
-            }
-        }
+        $section = $data->section;
 
         /** @var Job $model */
         $query = Job::find()
@@ -114,6 +126,9 @@ class JobController extends Controller
 
         $model = $query->one();
         if (!$model) {
+
+            $this->checkDeps($section);
+
             $model = new Job();
             $model->uid = $uid;
             $model->course_id = $courseId;
@@ -129,7 +144,7 @@ class JobController extends Controller
         }
 
         if (!$model->codesExists())
-            $model->prepareJobFiles($extends);
+            $model->prepareJobFiles($section->extends);
 
         return [
             'job' => $model,
@@ -184,9 +199,9 @@ class JobController extends Controller
             'uid' => $uid,
         ])->one();
 
-        if (!$model) {
+        if (!$model)
             throw new NotFoundHttpException("Object not found: $jobId, $uid");
-        }
+
         $content = $model->getFileContent($file);
         return [
             'file' => $file,
@@ -215,12 +230,16 @@ class JobController extends Controller
         if (!$model)
             throw new NotFoundHttpException("Object not found: $jobId, $uid");
 
+        if ($model->status === $status)
+            return $model;
+
         if ($status < 0)
             $model->status = Job::JOB_STATUS_FAILED;
         elseif ($status > 0)
             $model->status = Job::JOB_STATUS_PASSED;
         else
             $model->status = Job::JOB_STATUS_CREATED;
+
         $model->updated_at = time();
 
         if (!$model->save()) {

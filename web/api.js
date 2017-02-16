@@ -5,6 +5,7 @@
         getChapter: getChapter,
         getCourse: getCourse,
         getJob: getJob,
+        getNextSection: getNextSection,
         saveCodes: saveCodes,
         eval: eval,
         Login: Login,
@@ -79,6 +80,16 @@
     function getSection(courseName, chapterName, sectionName) {
         return $.ajax({
             url: G_API + "/courses/" + courseName + '/' + chapterName + '/' + sectionName,
+            method: 'get',
+            headers: {
+                'Authorization': 'Bearer ' + Identity.getAccessToken()
+            }
+        })
+    }
+
+    function getNextSection(courseName, chapterName, sectionName) {
+        return $.ajax({
+            url: G_API + "/courses/" + courseName + '/' + chapterName + '/' + sectionName + '/next',
             method: 'get',
             headers: {
                 'Authorization': 'Bearer ' + Identity.getAccessToken()

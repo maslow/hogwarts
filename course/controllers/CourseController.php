@@ -113,6 +113,12 @@ class CourseController extends Controller
         return $model;
     }
 
+    /**
+     * @param $courseId
+     * @param $chapterId
+     * @return array
+     * @throws NotFoundHttpException
+     */
     public function actionChapter($courseId, $chapterId)
     {
         if (!$model = Chapter::findOne($courseId, $chapterId))
@@ -120,9 +126,33 @@ class CourseController extends Controller
         return [
             'chapter' => $model,
             'sections' => Section::findAll($courseId, $chapterId),
-            'next' => $model->next(),
-            'prev' => $model->prev()
         ];
+    }
+
+    /**
+     * @param $courseId
+     * @param $chapterId
+     * @return Chapter|null
+     * @throws NotFoundHttpException
+     */
+    public function actionNextChapter($courseId, $chapterId)
+    {
+        if (!$model = Chapter::findOne($courseId, $chapterId))
+            throw new NotFoundHttpException("Object not found: $chapterId");
+        return $model->next();
+    }
+
+    /**
+     * @param $courseId
+     * @param $chapterId
+     * @return Chapter|null
+     * @throws NotFoundHttpException
+     */
+    public function actionPrevChapter($courseId, $chapterId)
+    {
+        if (!$model = Chapter::findOne($courseId, $chapterId))
+            throw new NotFoundHttpException("Object not found: $chapterId");
+        return $model->prev();
     }
 
     /**
@@ -138,12 +168,40 @@ class CourseController extends Controller
             throw new NotFoundHttpException("Object not found: $sectionId");
         return [
             'section' => $model,
-            'text' => $model->text(),
-            'next' => $model->next(),
-            'prev' => $model->prev()
+            'text' => $model->text()
         ];
     }
 
+    /**
+     * @param $courseId
+     * @param $chapterId
+     * @param $sectionId
+     * @return Section|null
+     * @throws NotFoundHttpException
+     */
+    public function actionNextSection($courseId, $chapterId, $sectionId){
+        if (!$model = Section::findOne($courseId, $chapterId, $sectionId))
+            throw new NotFoundHttpException("Object not found: $sectionId");
+        return $model->next();
+    }
+
+    /**
+     * @param $courseId
+     * @param $chapterId
+     * @param $sectionId
+     * @return Section|null
+     * @throws NotFoundHttpException
+     */
+    public function actionPrevSection($courseId, $chapterId, $sectionId){
+        if (!$model = Section::findOne($courseId, $chapterId, $sectionId))
+            throw new NotFoundHttpException("Object not found: $sectionId");
+        return $model->prev();
+    }
+
+    /**
+     * @param \yii\base\Action $action
+     * @return bool
+     */
     public function beforeAction($action)
     {
         $uid = \Yii::$app->request->headers->get('x-uid');

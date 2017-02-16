@@ -76,4 +76,17 @@ class Util
         }
         return $server;
     }
+
+    /**
+     * @return integer
+     * @throws InvalidConfigException
+     */
+    public static function getSectionCacheDuration()
+    {
+        if (!($value = Yii::$app->params['section_cache_duration'])) {
+            throw new InvalidConfigException('CONFIG ERROR: `section_cache_duration` missing');
+        }
+        return $value;
+    }
+
 }

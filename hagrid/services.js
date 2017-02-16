@@ -36,6 +36,26 @@ let services = [{
         auth: false
     },
     {
+        route: "/courses/:courseId/:chapterId/:sectionId/next",
+        target: servers.COURSE,
+        auth: false
+    },
+    {
+        route: "/courses/:courseId/:chapterId/:sectionId/prev",
+        target: servers.COURSE,
+        auth: false
+    },
+    {
+        route: "/courses/:courseId/:chapterId/:sectionId/next",
+        target: servers.COURSE,
+        auth: false
+    },
+    {
+        route: "/courses/:courseId/:chapterId/:sectionId/prev",
+        target: servers.COURSE,
+        auth: false
+    },
+    {
         route: "/courses/:courseId/:chapterId",
         target: servers.COURSE,
         auth: false

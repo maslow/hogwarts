@@ -149,10 +149,53 @@ paths:
                 $ref: '#/definitions/section'
               text:
                 type: string
-              prev:
-                $ref: '#/definitions/section'
-              next:
-                $ref: '#/definitions/section'
+
+  /courses/{courseId}/{chapterId}/{sectionId}/next:
+    get:
+      summary: 获取小节的下一节详细信息
+      tags:
+        - section
+      parameters:
+        - name: courseId
+          in: path
+          type: string
+          required: true
+        - name: chapterId
+          in: path
+          type: string
+          required: true
+        - name: sectionId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/section'
+  /courses/{courseId}/{chapterId}/{sectionId}/prev:
+      get:
+        summary: 获取小节的上一节详细信息
+        tags:
+          - section
+        parameters:
+          - name: courseId
+            in: path
+            type: string
+            required: true
+          - name: chapterId
+            in: path
+            type: string
+            required: true
+          - name: sectionId
+            in: path
+            type: string
+            required: true
+        responses:
+          200:
+            description: OK
+            schema:
+              $ref: '#/definitions/section'
 
   /courses/{courseId}/{chapterId}:
     get:

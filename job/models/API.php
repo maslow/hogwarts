@@ -21,8 +21,11 @@ class API extends Component
      * @param int $cache_duration
      * @return mixed|null|object
      */
-    public static function getSectionCached($courseId, $chapterId, $sectionId, $cache_duration = 60)
+    public static function getSectionCached($courseId, $chapterId, $sectionId, $cache_duration = 0)
     {
+        if ($cache_duration === 0)
+            $cache_duration = Util::getSectionCacheDuration();
+
         $cache = \Yii::$app->cache;
         $cache_key = "jobs+course:$courseId+chapter:$chapterId+section:$sectionId";
         if (!($data = $cache->get($cache_key))) {

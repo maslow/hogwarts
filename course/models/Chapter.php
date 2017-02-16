@@ -20,7 +20,6 @@ use yii\helpers\Json;
  * @property string $title
  * @property integer $order
  * @property string $description
- * @property string $version
  */
 class Chapter extends Model
 {
@@ -28,7 +27,6 @@ class Chapter extends Model
     public $title;
     public $order;
     public $description;
-    public $version;
 
     public $courseId;
 
@@ -76,7 +74,6 @@ class Chapter extends Model
         $ch->title = isset($info['title']) ? $info['title'] : 'Untitled';
         $ch->order = isset($info['order']) ? $info['order'] : 0;
         $ch->description = isset($info['description']) ? $info['description'] : '';
-        $ch->version = self::getVersion($courseId, $chapterId);
         $ch->courseId = $courseId;
         return $ch;
     }
@@ -90,24 +87,6 @@ class Chapter extends Model
         $p = join(DIRECTORY_SEPARATOR, [$chapterPath, 'chapter.json']);
         $data = file_get_contents($p);
         return Json::decode($data, true);
-    }
-
-    /**
-     * @param $courseId
-     * @param $chapterId
-     * @param int $cache_duration
-     * @return null|string
-     */
-    public static function getVersion($courseId, $chapterId, $cache_duration = 60)
-    {
-        $cache = \Yii::$app->cache;
-        $key = "chapter.versions.$courseId.$chapterId";
-        if (!($version = $cache->get($key))) {
-            $path = self::getPath($courseId, $chapterId);
-            $version = Util::getGitVersion($path);
-            $cache->set($key, $version, $cache_duration);
-        }
-        return $version;
     }
 
     /**

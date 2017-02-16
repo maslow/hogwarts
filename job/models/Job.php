@@ -84,6 +84,8 @@ class Job extends ActiveRecord
         if (file_exists($jobpath))
             return true;
 
+        if(!$extends) $extends = [];
+
         $basepath = Util::getCoursesBasePath();
         $courseCodesPath = "$basepath/{$this->course_id}/{$this->chapter_id}/{$this->section_id}/codes";
         FileHelper::copyDirectory($courseCodesPath, $jobpath);

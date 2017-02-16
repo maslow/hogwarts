@@ -27,12 +27,17 @@ app.post('/eval/:jobid', function (req, res) {
 
     let codespath = path.join(jobsBasePath, job_id)
 
+    let status = null
     getJob(req.uid, job_id)
-        .then(data => eval(codespath, data.lang, data.tester))
         .then(data => {
-            let status = data.ok ? 1 : -1
-            return setJobStatus(req.uid, job_id, status)
-                .then(() => res.status(200).send(data))
+            status = data.job.status
+            return eval(codespath, data.lang, data.tester)
+        })
+        .then(data => {
+            let s = data.ok ? 1 : -1
+            if (status === s)
+                return res.status(200).send(data)
+            return setJobStatus(req.uid, job_id, status).then(() => res.status(200).send(data))
         })
         .catch(err => evt.emit('error', err, req, res))
 })

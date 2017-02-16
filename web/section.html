@@ -275,11 +275,8 @@
                         })
                     api.getSection(courseName, chapterName, sectionName)
                         .success(function (data) {
-                            // data.codes = trimFirstSlashInCodeName(data.codes)
-                            data.text = md.render(data.text);
                             t.section = data.section
-                            t.text = data.text
-                            t.nextSection = data.next
+                            t.text = md.render(data.text)
                         })
                     api.getJob(courseName, chapterName, sectionName)
                         .success(function (data) {
@@ -296,6 +293,10 @@
                             var code = _.first(t.codes)
                             if (!code) return;
                             t.setCurrentFile(code)
+                        })
+                    api.getNextSection(courseName, chapterName, sectionName)
+                        .success(function(data){
+                            t.nextSection = data
                         })
                 }
             })
