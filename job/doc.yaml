@@ -14,65 +14,6 @@ security:
   - bearer_token: []
   - x_uid: []
 paths:
-  /jobs/{jobId}/file:
-    get:
-      description: 获取一个文件内容
-      parameters:
-        - name: jobId
-          in: path
-          type: string
-          required: true
-        - name: file
-          description: 文件名，ex. path/to/readme.md
-          in: query
-          type: string
-          required: true
-      responses:
-        200:
-          description: OK
-          schema:
-            type: object
-            properties:
-              file:
-                type: string
-              content:
-                type: string
-              job_id:
-                type: integer
-              hash:
-                type: string
-    post:
-      description: 创建文件或更新已存在文件
-      parameters:
-        - name: jobId
-          in: path
-          type: string
-          required: true
-        - name: file
-          description: 文件名
-          in: body
-          schema:
-            type: object
-            properties:
-              name:
-                description: 文件名
-                type: string
-              content:
-                description: 文件内容
-                type: string
-      responses:
-        200:
-          description: OK
-          schema:
-            type: object
-            properties:
-              file:
-                type: string
-              job_id:
-                type: string
-              hash:
-                type: string
-
   /jobs:
     get:
       description: 获取用户一个课程的所有作业信息
@@ -117,11 +58,6 @@ paths:
             properties:
               job:
                 $ref: '#/definitions/job'
-              files:
-                type: array
-                items:
-                  description: 文件名
-                  type: string
               lang:
                   type: string
               tester:
@@ -149,7 +85,7 @@ paths:
                 type: string
 
   /jobs/{jobId}/status/{status}:
-    get:
+    post:
       description: 修改一个作业的状态
       parameters:
         - name: jobId
@@ -168,6 +104,105 @@ paths:
             properties:
               job:
                 $ref: '#/definitions/job'
+
+  /jobs/{jobId}/files:
+    get:
+      description: 获取作业文件列表
+      parameters:
+        - name: jobId
+          type: string
+          in: path
+          required: true
+        - name: path
+          description: 目录全路径名(base64)，获取该目录下的文件列表
+          type: string
+          in: query
+          required: false
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/File'
+          
+    post:
+      description: 创建新文件
+      parameters:
+        - name: jobId
+          type: string
+          in: path
+          required: true
+        - name: file
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              parent:
+                type: string
+              type:
+                type: string
+              content:
+                type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/File'
+
+  /jobs/{jobId}/files/{fileId}:
+    get:
+      description: 获取一个文件内容
+      parameters:
+        - name: jobId
+          in: path
+          type: string
+          required: true
+        - name: fileId
+          description: 文件全路径名, base64
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/File'
+  
+    put:
+      description: Update File
+      parameters:
+        - name: jobId
+          in: path
+          type: string
+          required: true
+        - name: fileId
+          description: 文件全路径名, base64
+          in: path
+          type: string
+          required: true
+        - name: file
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              parent:
+                type: string
+              type:
+                type: string
+              content:
+                type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/File'
 
 securityDefinitions:
   bearer_token:
@@ -203,4 +238,17 @@ definitions:
       status:
         type: string
       version:
+        type: string  
+  File:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      type:
+        type: string
+      content:
+        type: string
+      hash:
         type: string
