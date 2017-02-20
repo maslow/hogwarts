@@ -6,11 +6,12 @@
         getCourse: getCourse,
         getJob: getJob,
         getNextSection: getNextSection,
-        saveCodes: saveCodes,
         eval: eval,
         Login: Login,
         Register: Register,
-        getFile: getFile
+        getFile: getFile,
+        getFiles: getFiles,
+        saveFiles: saveFiles        
     }
 
     function Register(email, password) {
@@ -43,24 +44,6 @@
                 'Authorization': 'Bearer ' + Identity.getAccessToken()
             }
         })
-    }
-
-    function saveCodes(jobid, codes) {
-        var reqs = _.map(codes, function (code) {
-            return $.ajax({
-                url: G_API + '/jobs/' + jobid + '/file',
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + Identity.getAccessToken(),
-                    'Content-Type': 'application/json'
-                },
-                data: JSON.stringify({
-                    name: code.name,
-                    content: code.content
-                })
-            })
-        })
-        return $.when.apply($, reqs)
     }
 
     function getCourse(courseName) {
@@ -107,9 +90,34 @@
         })
     }
 
-    function getFile(jobid, filename) {
+    function getFiles(jobid, path) {
         return $.ajax({
-            url: G_API + "/jobs/" + jobid + '/file?file=' + filename,
+            url: G_API + "/jobs/" + jobid + '/files?path=' + path,
+            method: 'get',
+            headers: {
+                'Authorization': 'Bearer ' + Identity.getAccessToken()
+            }
+        })
+    }
+
+    function saveFiles(jobid, files) {
+        var reqs = _.map(files, function (file) {
+            return $.ajax({
+                url: G_API + '/jobs/' + jobid + '/files/' + file.id,
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Bearer ' + Identity.getAccessToken(),
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify(file)
+            })
+        })
+        return $.when.apply($, reqs)
+    }
+
+    function getFile(jobid, fileid) {
+        return $.ajax({
+            url: G_API + "/jobs/" + jobid + '/files/' + fileid,
             method: 'get',
             headers: {
                 'Authorization': 'Bearer ' + Identity.getAccessToken()

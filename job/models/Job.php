@@ -84,7 +84,7 @@ class Job extends ActiveRecord
         if (file_exists($jobpath))
             return true;
 
-        if(!$extends) $extends = [];
+        if (!$extends) $extends = [];
 
         $basepath = Util::getCoursesBasePath();
         $courseCodesPath = "$basepath/{$this->course_id}/{$this->chapter_id}/{$this->section_id}/codes";
@@ -118,6 +118,29 @@ class Job extends ActiveRecord
             $str = str_replace($path, '', $file);
             return str_replace('\\', '/', $str);
         }, $dirs);
+    }
+
+    /**
+     * @param null $dir
+     * @return array
+     */
+    public function getFiles($dir = null)
+    {
+        $path = $this->getPath() . "/src";
+        $abs_path = $path . $dir;
+        if (($dir != '' && !$this->validateFileName($dir)) || !is_dir($abs_path))
+            throw new InvalidParamException("INVALID param: $dir");
+        if (!file_exists($abs_path))
+            throw new InvalidParamException("$dir not EXISTS");
+
+        $files = Util::getSubFiles($abs_path);
+        return array_map(function ($file) use ($path, $dir) {
+            return [
+                'id' => base64_encode("$dir/$file"),
+                'name' => basename($file),
+                'type' => is_dir("$path$dir/$file") ? 'dir' : 'file',
+            ];
+        }, $files);
     }
 
     /**

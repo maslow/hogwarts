@@ -92,7 +92,7 @@ class JobController extends Controller
                 'section_id' => $sec,
             ])->one();
             if (!$job || $job->status !== Job::JOB_STATUS_PASSED) {
-                throw new ForbiddenHttpException("Job cannot be created until all deps been passed: $courseId, $chapterId, $sectionId");
+                throw new ForbiddenHttpException("Job cannot be created until all deps been passed: $section->courseId, $section->chapterId, $section->sectionId");
             }
         }
     }
@@ -148,7 +148,7 @@ class JobController extends Controller
 
         return [
             'job' => $model,
-            'files' => $model->getSrcFiles(),
+            'files' => $model->getFiles(),
             'lang' => $data->section->lang,
             'tester' => $data->section->tester,
         ];
@@ -182,35 +182,6 @@ class JobController extends Controller
             'tester' => $data->section->tester,
         ];
     }
-
-    /**
-     * @param $jobId
-     * @param $file
-     * @return array
-     * @throws NotFoundHttpException
-     */
-    public function actionFile($jobId, $file)
-    {
-        $uid = \Yii::$app->user->id;
-
-        /** @var Job $model */
-        $model = Job::find()->where([
-            'id' => $jobId,
-            'uid' => $uid,
-        ])->one();
-
-        if (!$model)
-            throw new NotFoundHttpException("Object not found: $jobId, $uid");
-
-        $content = $model->getFileContent($file);
-        return [
-            'file' => $file,
-            'content' => $content,
-            'hash' => md5($content),
-            'job_id' => $jobId
-        ];
-    }
-
 
     /**
      * @param $jobId
@@ -251,11 +222,69 @@ class JobController extends Controller
 
     /**
      * @param $jobId
+     * @param null $path
+     * @return array
+     * @throws NotFoundHttpException
+     */
+    public function actionFiles($jobId, $path = null)
+    {
+        $uid = \Yii::$app->user->id;
+
+        /** @var Job $model */
+        $model = Job::find()->where([
+            'id' => $jobId,
+            'uid' => $uid,
+        ])->one();
+
+        if (!$model)
+            throw new NotFoundHttpException("Object not found: $jobId, $uid");
+
+        $path = $path ? base64_decode($path): '';
+        return [
+            'job_id' => $jobId,
+            'path' => $path,
+            'files' => $model->getFiles($path),
+        ];
+    }
+
+    /**
+     * @param $jobId
+     * @param $fileId
+     * @return array
+     * @throws NotFoundHttpException
+     * @internal param $file
+     */
+    public function actionFile($jobId, $fileId)
+    {
+        $uid = \Yii::$app->user->id;
+
+        /** @var Job $model */
+        $model = Job::find()->where([
+            'id' => $jobId,
+            'uid' => $uid,
+        ])->one();
+
+        if (!$model)
+            throw new NotFoundHttpException("Object not found: $jobId, $uid");
+
+        $file = base64_decode($fileId);
+        $content = $model->getFileContent($file);
+        return [
+            'file' => $file,
+            'id' => $fileId,
+            'content' => $content,
+            'hash' => md5($content),
+            'job_id' => $jobId
+        ];
+    }
+
+    /**
+     * @param $jobId
      * @return array
      * @throws NotFoundHttpException
      * @throws ServerErrorHttpException
      */
-    public function actionUpdateFile($jobId)
+    public function actionUpdateFile($jobId, $fileId)
     {
         $uid = \Yii::$app->user->id;
         /** @var Job $model */
@@ -268,13 +297,13 @@ class JobController extends Controller
             throw new NotFoundHttpException("Object not found: $jobId, $uid");
 
         $params = \Yii::$app->request->getBodyParams();
-        $file = $params['name'];
+        $file = base64_decode($fileId);
         $content = $params['content'];
         $hash = $model->setFileContent($file, $content);
         if (!$hash)
             throw new ServerErrorHttpException('Failed to update the File');
         return [
-            'file' => $file,
+            'id' => $fileId,
             'hash' => $hash,
             'job_id' => $jobId
         ];

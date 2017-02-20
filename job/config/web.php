@@ -45,12 +45,13 @@ $config = [
                         '{id}' => '<id:[\\w]+>'
                     ],
                     'extraPatterns' => [
+                        'GET <jobId>/files/<fileId>' => 'file',
+                        'PUT <jobId>/files/<fileId>' => 'update-file',
+                        'OPTIONS <jobId>/file/<fileId>' => 'options',
                         'GET <courseId>/<chapterId>/<sectionId>' => 'view',
                         'GET <jobId>' => 'view-by-id',
-                        'GET <jobId>/file' => 'file',
-                        'POST <jobId>/file' => 'update-file',
+                        'GET <jobId>/files' => 'files',
                         'POST <jobId>/status/<status>' => 'update-status',
-                        'OPTIONS <jobId>/file' => 'options',
                         'OPTIONS <jobId>/status/<status>' => 'options',
                     ],
                 ],

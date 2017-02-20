@@ -15,6 +15,20 @@ use yii\base\InvalidConfigException;
 class Util
 {
     /**
+     * @param $directory
+     * @return array
+     */
+    public static function getSubFiles($directory){
+        $dirs = [];
+        $dir = dir($directory);
+        while ($file = $dir->read())
+            if (($file != ".") AND ($file != ".."))
+                array_push($dirs, $file);
+        $dir->close();
+        return $dirs;
+    }
+
+    /**
      * @param $directory string
      * @return array
      */

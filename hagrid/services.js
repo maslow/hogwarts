@@ -46,16 +46,6 @@ let services = [{
         auth: false
     },
     {
-        route: "/courses/:courseId/:chapterId/:sectionId/next",
-        target: servers.COURSE,
-        auth: false
-    },
-    {
-        route: "/courses/:courseId/:chapterId/:sectionId/prev",
-        target: servers.COURSE,
-        auth: false
-    },
-    {
         route: "/courses/:courseId/:chapterId",
         target: servers.COURSE,
         auth: false
@@ -81,7 +71,12 @@ let services = [{
         auth: true
     },
     {
-        route: "/jobs/:jobId/file",
+        route: "/jobs/:jobId/files",
+        target: servers.JOB,
+        auth: true
+    },
+    {
+        route: "/jobs/:jobId/files/:fileId",
         target: servers.JOB,
         auth: true
     }
