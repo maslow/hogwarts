@@ -6,80 +6,42 @@ const servers = {
 }
 
 let services = [{
-        route: "/tokens",
+        routes: ["/tokens", "/users"],
         target: servers.AUTH,
         auth: false
     },
     {
-        route: "/users",
-        target: servers.AUTH,
-        auth: false
-    },
-    {
-        route: "/users/:id",
+        routes: ["/users/:id"],
         target: servers.AUTH,
         auth: true
     },
     {
-        route: "/courses",
+        routes: [
+            "/courses",
+            "/courses/:id",
+            "/courses/:courseId/:chapterId",
+            "/courses/:courseId/:chapterId/:sectionId",
+            "/courses/:courseId/:chapterId/:sectionId/next",
+            "/courses/:courseId/:chapterId/:sectionId/prev",
+        ],
         target: servers.COURSE,
         auth: false
     },
     {
-        route: "/courses/:id",
-        target: servers.COURSE,
-        auth: false
-    },
-    {
-        route: "/courses/:courseId/:chapterId/:sectionId",
-        target: servers.COURSE,
-        auth: false
-    },
-    {
-        route: "/courses/:courseId/:chapterId/:sectionId/next",
-        target: servers.COURSE,
-        auth: false
-    },
-    {
-        route: "/courses/:courseId/:chapterId/:sectionId/prev",
-        target: servers.COURSE,
-        auth: false
-    },
-    {
-        route: "/courses/:courseId/:chapterId",
-        target: servers.COURSE,
-        auth: false
-    },
-    {
-        route: "/eval/:jobid",
+        routes: ["/eval/:jobid"],
         target: servers.EVAL,
         auth: true
     },
     {
-        route: "/jobs",
+        routes: [
+            "/jobs", "/jobs/:jobId",
+            "/jobs/:courseId/:chapterId/:sectionId",
+            "/jobs/:jobId/files",
+            "/jobs/:jobId/files/:fileId"
+        ],
         target: servers.JOB,
         auth: true
     },
-    {
-        route: "/jobs/:jobId",
-        target: servers.JOB,
-        auth: true
-    },
-    {
-        route: "/jobs/:courseId/:chapterId/:sectionId",
-        target: servers.JOB,
-        auth: true
-    },
-    {
-        route: "/jobs/:jobId/files",
-        target: servers.JOB,
-        auth: true
-    },
-    {
-        route: "/jobs/:jobId/files/:fileId",
-        target: servers.JOB,
-        auth: true
-    }
 ]
 
 module.exports = {

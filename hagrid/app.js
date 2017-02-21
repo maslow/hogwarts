@@ -17,7 +17,10 @@ const fs = require('fs-extra')
 const path = require('path')
 const express = require('express')
 
-const {servers, services} = require('./services.js')
+const {
+    servers,
+    services
+} = require('./services.js')
 
 // let config = fs.readJsonSync(path.join(__dirname, 'config.json'))
 // let keyPath = config.ssl_key
@@ -42,7 +45,7 @@ app.options('*', (req, res) => res.send())
 
 services.forEach(function (service) {
     let handler = proxy_to(service.target, service.auth)
-    app.all(service.route, handler)
+    service.routes.forEach((route) => app.all(route, handler))
 })
 
 const server = app
