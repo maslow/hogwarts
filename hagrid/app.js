@@ -32,7 +32,13 @@ const {
 // }
 
 let app = express()
-let proxy = httpProxy.createProxyServer({})
+let proxy = httpProxy
+    .createProxyServer({})
+    .on('error', (err, req, res) => {
+        console.error(err)
+        res.writeHead(502)
+        res.end('Something went wrong')
+    })
 
 app.all('*', function (req, res, next) {
     res.setHeader("Access-Control-Allow-Origin", "*")
@@ -57,12 +63,6 @@ const server = app
     })
     .on('request', (r) => console.log(new Date().toLocaleString() + ' ' + r.headers.host + r.url))
 
-proxy.on('error', (err, req, res) => {
-    console.error(err)
-    res.writeHead(500)
-    res.end('Something went wrong')
-})
-
 function proxy_to(target, auth) {
     let handler = function (req, res) {
         if (auth === false) {
@@ -73,7 +73,7 @@ function proxy_to(target, auth) {
 
         let token = parseToken(req)
         if (!token)
-            return res.status(401).send('Unauthroized Request : INVALID TOKEN')
+            return res.status(407).send('Unauthroized Request : INVALID TOKEN')
 
         validateToken(token)
             .then(payload => {
@@ -83,7 +83,7 @@ function proxy_to(target, auth) {
                     target: target
                 })
             }).catch(err => {
-                res.status(401).send('INVALID TOKEN')
+                res.status(407).send('Unauthroized Request: TOKEN VALIDATION FAILED')
             })
     }
     return handler

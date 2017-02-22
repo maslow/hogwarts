@@ -1,0 +1,114 @@
+  html,
+  body {
+      font-family: 'Microsoft Yahei', 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      height: 100%;
+      background-color: ghostwhite;
+      padding: 0;
+      margin: 0;
+  }
+  
+  .container {
+      width: 100%;
+      height: 100%;
+  }
+  
+  [v-cloak] {
+      display: none;
+  }
+  
+  button {
+      outline: none !important;
+  }
+  
+  #editor {
+      width: 100%;
+      min-height: 400px;
+      box-shadow: 0px 0px 1px gray;
+  }
+  
+  #section-text {
+      width: 100%;
+      background-color: lightyellow;
+      padding: 15px;
+      border: 1px lightgray solid;
+      box-shadow: 0px 0px 30px lightgray;
+      overflow: scroll;
+  }
+  
+  .report-err {
+      margin-top: 10px;
+      padding-left: 10px;
+      padding-right: 10px;
+      text-align: left;
+  }
+  
+  .report-err span {
+      font-size: 15px;
+      color: darkslategrey
+  }
+  
+  .report-err p {
+      display: block;
+      padding-left: 20px;
+      margin-top: 5px;
+      font-size: 13px;
+      color: brown
+  }
+  
+  .report-success {
+      margin-top: 10px;
+      padding-left: 10px;
+      padding-right: 10px;
+      text-align: left;
+  }
+  
+  .report-success span {
+      font-size: 15px;
+      color: darkslategrey
+  }
+  
+  .report-success p {
+      display: inline;
+      padding-left: 30px;
+      font-size: 13px;
+      color: #05a522
+  }
+  
+  .file-tree-wrapper {
+      background: rgb(35, 35, 35);
+      width: 100%;
+      box-shadow: 0px 0px 1px gray;
+      overflow: scroll
+  }
+  
+  .file-tree-wrapper .item {
+      cursor: pointer;
+      font-family: Consolas, monospace;
+      color: #444;
+  }
+  
+  .file-tree-wrapper .bold {
+      font-weight: bold;
+  }
+  
+  .file-tree-wrapper ul {
+      padding-left: 30px;
+      line-height: 1.5em;
+      list-style-type: none;
+  }
+  
+  .text-white {
+      color: white;
+  }
+  
+  .text-yellow {
+      color: darkgoldenrod;
+  }
+  
+  .text-active {
+      color: greenyellow !important;
+  }
+  
+  .file-tree-wrapper div {
+      text-decoration: none !important;
+  }

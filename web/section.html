@@ -7,123 +7,7 @@
     <title>Course Detail</title>
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" />
     <link rel="stylesheet" href="//cdn.bootcss.com/sweetalert/1.1.3/sweetalert.min.css" />
-    <style type="text/css" media="screen">
-        html,
-        body {
-            font-family: 'Microsoft Yahei', 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-            height: 100%;
-            background-color: ghostwhite;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .container {
-            width: 100%;
-            height: 100%;
-        }
-        
-        [v-cloak] {
-            display: none;
-        }
-        
-        button {
-            outline: none !important;
-        }
-        
-        #editor {
-            width: 100%;
-            min-height: 700px;
-            box-shadow: 0px 0px 1px gray;
-        }
-        
-        #section-text {
-            width: 100%;
-            min-height: 700px;
-            background-color: lightyellow;
-            padding: 15px;
-            border: 1px lightgray solid;
-            box-shadow: 0px 0px 30px lightgray;
-        }
-        
-        .report-err {
-            margin-top: 10px;
-            padding-left: 10px;
-            padding-right: 10px;
-            text-align: left;
-        }
-        
-        .report-err span {
-            font-size: 15px;
-            color: darkslategrey
-        }
-        
-        .report-err p {
-            display: block;
-            padding-left: 20px;
-            margin-top: 5px;
-            font-size: 13px;
-            color: brown
-        }
-        
-        .report-success {
-            margin-top: 10px;
-            padding-left: 10px;
-            padding-right: 10px;
-            text-align: left;
-        }
-        
-        .report-success span {
-            font-size: 15px;
-            color: darkslategrey
-        }
-        
-        .report-success p {
-            display: inline;
-            padding-left: 30px;
-            font-size: 13px;
-            color: #05a522
-        }
-
-        .file-tree-wrapper{
-            background: rgb(35, 35, 35);width: 100%;
-            min-height: 700px;
-            max-height: 700px;
-            height: 700px;
-            box-shadow: 0px 0px 1px gray;
-            overflow:scroll
-        }
-        
-        .file-tree-wrapper .item {
-            cursor: pointer;
-            font-family: Consolas, monospace;
-            color: #444;
-        }
-        
-        .file-tree-wrapper .bold {
-            font-weight: bold;
-        }
-        
-        .file-tree-wrapper ul {
-            padding-left: 30px;
-            line-height: 1.5em;
-            list-style-type: none;
-        }
-
-        .text-white{
-            color: white;
-        }
-
-        .text-yellow{
-            color: darkgoldenrod;
-        }
-
-        .text-active{
-            color: greenyellow !important;
-        }
-        .file-tree-wrapper div {
-            text-decoration: none !important;
-        }
-    </style>
+    <link rel="stylesheet" media="screen" href="section.css" />
 </head>
 
 <body>
@@ -140,27 +24,35 @@
             </div>
             <div class="col-xs-6" style="padding-left:0;">
                 <div class="row" style="margin-top:15px;">
-                    <div class="col-xs-12">
-                        <button class="btn btn-success pull-right" v-bind:class="{'disabled':testingStatus}" v-on:click="run()">提交
-                    </button>
+                    <div class="col-xs-8">
+                        <button class="btn btn-success pull-right" v-on:click="showText = !showText">
+                            {{showText ? '隐藏' : '显示'}}讲义</button>
+                    </div>
+                    <div class="col-xs-2">
+                        <button class="btn btn-success pull-right" v-bind:class="{'disabled':savingStatus || testingStatus}" v-on:click="saveFiles()">
+                            保存代码</button>
+                    </div>
+                    <div class="col-xs-2">
+                        <button class="btn btn-success pull-right" v-bind:class="{'disabled':testingStatus || savingStatus}" v-on:click="run()">
+                            提交作业</button>
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-5" style="padding-right: 0px">
-                <div id="section-text" v-html="text"></div>
+            <div class="col-xs-5" v-show="showText" style="padding-right: 0px">
+                <div id="section-text" v-bind:style="{ height: windowHeight +'px' }" v-html="text"></div>
             </div>
-            <div class="col-xs-2" style="padding-left: 0;padding-right: 0px">
+            <div class="col-xs-2" style="padding-right: 0px">
                 <!-- the demo root element -->
-                <div class="file-tree-wrapper">
+                <div class="file-tree-wrapper" v-bind:style="{ height: windowHeight +'px' }">
                     <ul style="margin-left:0; padding-left:0; ">
                         <item class="item" :model="f" v-for="f in files" :editing="editingCode" v-on:select="onSelectFile"></item>
                     </ul>
                 </div>
             </div>
-            <div class="col-xs-5" style="padding-left: 0;margin-right:0;">
-                <div id="editor"></div>
+            <div v-bind:class="{'col-xs-5': showText, 'col-xs-10':!showText}" style="padding-left: 0;margin-right:0;">
+                <div id="editor" v-bind:style="{'min-height': windowHeight +'px'}"></div>
             </div>
         </div>
     </div>
@@ -194,226 +86,13 @@
     <script src="common.js"></script>
     <script src="api.js"></script>
     <script src="tree.js"></script>
+    <script src="section.js"></script>
     <script>
         if (!Identity.get() || Identity.isExpired()) {
             alert('请登录后再操作')
             location.href = "login.html"
         } else {
             initPage()
-        }
-
-        function initPage() {
-            ace.require("ace/ext/language_tools")
-            var modelist = ace.require("ace/ext/modelist")
-            var md = window.markdownit()
-            new Vue({
-                el: '#wrapper',
-                data: {
-                    files: [],
-                    editingCode: {},
-                    editor: null,
-                    reports: '',
-                    testingStatus: false,
-                    course: {},
-                    chapter: {},
-                    section: {},
-                    job: {},
-                    text: "",
-                    nextSection: {},
-                    prevSection: {}
-                },
-                methods: {
-                    onSelectFile: function (file) {
-                        var t = this
-                        if (file.type === 'dir' && !file.children) {
-                            api.getFiles(t.job.id, file.id)
-                                .success(function (data) {
-                                    file.children = data.files.map(formatFileObject)
-                                })
-                        } else {
-                            this.setCurrentFile(file)
-                        }
-                    },
-                    setCurrentFile: function (code) {
-                        var t = this
-                        if (code.type === 'dir') return;
-                        if (code == this.editingCode) return;
-                        if (code.content === null) {
-                            api.getFile(this.job.id, code.id)
-                                .success(function (data) {
-                                    code.content = data.content
-                                    code.hash = data.hash
-                                    code.hash_new = data.hash
-                                    t.editingCode = code;
-                                    var mode = modelist.getModeForPath(code.name).mode
-                                    t.editor.session.setMode(mode);
-                                    t.editor.setValue(code.content)
-                                    t.editor.gotoLine(1)
-                                })
-                        } else {
-                            this.editingCode = code;
-                            var mode = modelist.getModeForPath(code.name).mode
-                            this.editor.session.setMode(mode);
-                            this.editor.setValue(code.content)
-                            this.editor.gotoLine(1)
-                        }
-                    },
-                    run: function () {
-                        var t = this
-                        if (t.testingStatus) return;
-                        t.testingStatus = true
-                        var sectionName = t.section.id
-
-                        var codes = getChangedFiles(t.files)
-                        api.saveFiles(t.job.id, codes)
-                            .then(function () {
-                                if (arguments.length) {
-                                    for (var i = 0; i < codes.length; i++)
-                                        codes[i].hash = codes[i].hash_new
-                                }
-                                api.eval(t.job.id)
-                                    .success(function (reports) {
-                                        t.testingStatus = false
-                                        t.reports = reports
-                                        t.report(reports)
-                                    }).error(function () {
-                                        t.testingStatus = false
-                                    })
-                            })
-                            .fail(function () {
-                                swal('网络出错了,请重试')
-                                t.testingStatus = false
-                            })
-                    },
-                    report: function (data) {
-                        var t = this
-                        var text = "<hr>"
-                        text += _.map(data.tests, function (t) {
-                            if (t.passed)
-                                return "<div class='report-success'><span>" + t.title +
-                                    "</span><p>OK</p></div>"
-                            else
-                                return "<div class='report-err'><span>" + t.title + "</span><p>" +
-                                    _.replace(t.err.message, '\n', '<br>') + "</p></div>"
-                        }).join('')
-                        text += "<hr>"
-                        if (data.ok) {
-                            swal({
-                                title: "pass!",
-                                text: text,
-                                type: "success",
-                                showCancelButton: true,
-                                confirmButtonColor: "#DD6B55",
-                                confirmButtonText: t.nextSection ? "进入下一节" : "没有了",
-                                closeOnConfirm: false,
-                                html: true
-                            }, function () {
-                                if (t.nextSection)
-                                    location.href = "section.html?s=" + t.nextSection.id + '&c=' +
-                                    t.nextSection.courseId + '&ch=' + t.nextSection.chapterId
-                            })
-                        } else {
-                            swal({
-                                title: "~fail~",
-                                type: "info",
-                                text: text,
-                                confirmButtonColor: "#DD6B55",
-                                confirmButtonText: "确定",
-                                html: true
-                            })
-                        }
-                    }
-                },
-                mounted: function () {
-                    var t = this
-                    t.editor = initEditor()
-                    t.editor.getSession().on('change', function (action, session) {
-                        if (t.editingCode) {
-                            t.editingCode.content = session.getValue()
-                            t.editingCode.hash_new = md5(t.editingCode.content)
-                        }
-                    })
-                    var sectionName = $.getUrlParam('s')
-                    var courseName = $.getUrlParam('c')
-                    var chapterName = $.getUrlParam('ch')
-
-                    api.getCourse(courseName)
-                        .success(function (data) {
-                            t.chapter = _.filter(data.chapters, function (chapter) {
-                                return chapter.id === chapterName
-                            }).shift()
-                            t.course = data.course
-                        })
-                    api.getSection(courseName, chapterName, sectionName)
-                        .success(function (data) {
-                            t.section = data.section
-                            t.text = md.render(data.text)
-                        })
-                    api.getJob(courseName, chapterName, sectionName)
-                        .success(function (data) {
-                            var files = data.files
-                            t.job = data.job
-                            t.files = _.map(files, formatFileObject)
-                            var file = _.first(t.files.filter(function (f) {
-                                return f.type === 'file'
-                            }))
-                            if (!file) return;
-                            t.setCurrentFile(file)
-                        })
-                    api.getNextSection(courseName, chapterName, sectionName)
-                        .success(function (data) {
-                            t.nextSection = data
-                        })
-                }
-            })
-        }
-
-        function initEditor() {
-            var editor = ace.edit("editor")
-            editor.setTheme("ace/theme/twilight")
-            editor.setFontSize('16px')
-            editor.setOptions({
-                enableBasicAutocompletion: true,
-                enableSnippets: true,
-                enableLiveAutocompletion: false,
-            })
-            editor.setAutoScrollEditorIntoView(true)
-            editor.setOption("maxLines", 33)
-            return editor
-        }
-
-        function getChangedFiles(files) {
-            var changedFiles = files.filter(function (f) {
-                return f.hash !== f.hash_new
-            })
-            var dirs = files.filter(function (f) {
-                return f.type === 'dir' && f.children !== null
-            })
-            var subfiles = []
-            dirs.forEach(function (dir) {
-                var arr = getChangedFiles(dir.children)
-                subfiles = subfiles.concat(arr)
-            })
-            return subfiles.concat(changedFiles)
-        }
-
-        function formatFileObject(f) {
-            if (f.type === 'dir')
-                return {
-                    id: f.id,
-                    name: f.name,
-                    type: f.type,
-                    children: null
-                }
-            else
-                return {
-                    id: f.id,
-                    name: f.name,
-                    type: f.type,
-                    content: null,
-                    hash: null,
-                    hash_new: null
-                }
         }
     </script>
 </body>
