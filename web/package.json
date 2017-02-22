@@ -14,7 +14,7 @@
   },
   "devDependencies": {},
   "scripts": {
-    "start": "http-server -o"
+    "start": "http-server"
   },
   "author": "maslow",
   "license": "ISC"

@@ -2,11 +2,12 @@ const cp = require('child_process')
 const path = require('path')
 const report = require('./report.js')
 const fs = require('fs-extra')
+const commands = require('./commands.js')
 
-module.exports = function (codespath, lang, tester) {
+module.exports = function (codespath, lang, tester, version) {
 
-    let name = 'container-' + codespath.replace(/[\/\\:]/g, '-')
-    let cmd = `docker run --name ${name} -v ${codespath}:/app:ro ${lang}:${tester} ${tester} -t 10000 /app/tests -R json`
+    let name = getName(codespath)
+    let cmd = getCommand(codespath, lang, tester, name, version)
     let hasRemoved = false
 
     return new Promise((resolve, reject) => {
@@ -31,4 +32,29 @@ module.exports = function (codespath, lang, tester) {
         })
 
     })
+}
+
+function getCommand(codespath, lang, tester, name, version) {
+    let rs = commands.filter(cmd => {
+        return cmd.lang === lang && cmd.tester === tester
+    })
+    if (!rs || !rs.length)
+        return null
+    if(rs.length > 1)
+        rs = rs.filter( r => r.version === version)
+
+    let obj = rs.shift()
+    let cmd = obj.cmd
+    let image = ""
+    if(obj.version)
+        image = `${lang}:${version}-${tester}`
+    else
+        image = `${lang}:${tester}`
+
+    let docker_cmd = `docker run --name ${name} -v ${codespath}:/app:ro ${image} ${cmd}`
+    return docker_cmd
+}
+
+function getName(codespath) {
+    return 'container-' + codespath.replace(/[\/\\:]/g, '-')
 }

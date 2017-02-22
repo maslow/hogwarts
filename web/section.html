@@ -22,25 +22,25 @@
                     <small style="font-size: 13px" v-cloak>{{chapter.title}}</small>
                 </h3>
             </div>
-            <div class="col-xs-6" style="padding-left:0;">
-                <div class="row" style="margin-top:15px;">
+            <div class="col-xs-6" style="padding-top: 15px;">
+                <div class="row">
                     <div class="col-xs-8">
-                        <button class="btn btn-success pull-right" v-on:click="showText = !showText">
-                            {{showText ? '隐藏' : '显示'}}讲义</button>
+                        <div class="btn btn-default pull-right" v-on:click="showText = !showText">
+                            {{showText ? '隐藏' : '显示'}}任务</div>
                     </div>
                     <div class="col-xs-2">
-                        <button class="btn btn-success pull-right" v-bind:class="{'disabled':savingStatus || testingStatus}" v-on:click="saveFiles()">
-                            保存代码</button>
+                        <div class="btn btn-default pull-right" v-bind:class="{'disabled':savingStatus || testingStatus}" v-on:click="saveFiles()">
+                            保存代码</div>
                     </div>
                     <div class="col-xs-2">
-                        <button class="btn btn-success pull-right" v-bind:class="{'disabled':testingStatus || savingStatus}" v-on:click="run()">
-                            提交作业</button>
+                        <div class="btn btn-default pull-right" v-bind:class="{'disabled':testingStatus || savingStatus}" v-on:click="run()">
+                            提交作业</div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-5" v-show="showText" style="padding-right: 0px">
+            <div class="col-xs-5" v-show="showText">
                 <div id="section-text" v-bind:style="{ height: windowHeight +'px' }" v-html="text"></div>
             </div>
             <div class="col-xs-2" style="padding-right: 0px">

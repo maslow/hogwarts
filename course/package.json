@@ -1,0 +1,11 @@
+{
+  "name": "course",
+  "version": "1.0.0",
+  "description": "```sh composer update ```",
+  "main": "index.js",
+  "scripts": {
+    "start": "php yii serve 127.0.0.1:8001"
+  },
+  "author": "maslow",
+  "license": "ISC"
+}
