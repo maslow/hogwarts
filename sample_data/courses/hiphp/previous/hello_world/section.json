@@ -2,6 +2,6 @@
   "description": "",
   "title": "Hello World",
   "lang": "php",
-  "tester": "codecept",
+  "tester": "mocha",
   "order" : 1
 }

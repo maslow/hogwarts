@@ -7,9 +7,9 @@ let cmds = [
     },
     {
         lang: 'php',
-        tester: 'codecept',        
-        image: 'php:7.1-codecept',
-        cmd: 'codecept run -c /app/codeception.yml --json | cat /app/tests/_output/report.json'
+        tester: 'mocha',        
+        image: 'php:7.1-mocha',
+        cmd: 'mocha -t 10000 /app/tests -R json'
     }
 ]
 
