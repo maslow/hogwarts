@@ -1,0 +1,8 @@
+{
+  "description": "",
+  "title": "Hello World",
+  "lang": "php",
+  "tester": "mocha",
+  "order": 2,
+  "extends": ["previous/hello_world"]
+}

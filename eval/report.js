@@ -6,8 +6,5 @@ module.exports = function (result, tester) {
     if (tester === 'mocha') {
         return parseMochaResult(result)
     }
-    if (tester === 'codecept')
-        return result
-
     throw new Error(`Unkknown tester : ${tester}`)
 }
