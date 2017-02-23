@@ -58,9 +58,9 @@ paths:
             properties:
               job:
                 $ref: '#/definitions/job'
-              lang:
-                  type: string
-              tester:
+              section:
+                  type: object
+              text:
                   type: string
 
   /jobs/{jobId}:
@@ -79,10 +79,8 @@ paths:
             properties:
               job:
                 $ref: '#/definitions/job'
-              lang:
-                type: string
-              tester:
-                type: string
+              section:
+                  type: object
 
   /jobs/{jobId}/status/{status}:
     post:

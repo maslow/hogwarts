@@ -16,8 +16,8 @@ function initPage() {
             section: {},
             job: {},
             text: "",
-            nextSection: {},
-            prevSection: {},
+            nextSection: null,
+            prevSection: null,
             showText: true,
             windowHeight: 700
         },
@@ -122,7 +122,7 @@ function initPage() {
                         html: true
                     }, function () {
                         if (t.nextSection)
-                            location.href = "section.html?s=" + t.nextSection.id + '&c=' +
+                            location.href = "job.html?s=" + t.nextSection.id + '&c=' +
                             t.nextSection.courseId + '&ch=' + t.nextSection.chapterId
                     })
                 } else {
@@ -183,7 +183,7 @@ function initPage() {
                 })
             api.getNextSection(courseName, chapterName, sectionName)
                 .success(function (data) {
-                    t.nextSection = data
+                    t.nextSection = data ? data : null
                 })
         }
     })
