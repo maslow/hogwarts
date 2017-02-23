@@ -90,7 +90,7 @@ class Job extends ActiveRecord
         $courseCodesPath = "$basepath/{$this->course_id}/{$this->chapter_id}/{$this->section_id}/codes";
         FileHelper::copyDirectory($courseCodesPath, $jobpath);
         foreach ($extends as $ext) {
-            $srcpath = "$basepath/{$this->course_id}/$ext/codes/src";
+            $srcpath = "$basepath/$ext/codes/src";
             FileHelper::copyDirectory($srcpath, "$jobpath/src");
         }
         return true;

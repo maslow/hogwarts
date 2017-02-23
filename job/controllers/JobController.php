@@ -68,7 +68,7 @@ class JobController extends Controller
 
     /**
      * @param $section
-     * @throws ForbiddenHttpException
+     * @return array|null
      */
     private function checkDeps($section)
     {
@@ -77,24 +77,27 @@ class JobController extends Controller
         $extends = $section->extends;
         if (!$deps) $deps = [];
         if (!$extends) $extends = [];
-        $deps = array_merge($deps, $extends);
+        $all = array_merge($deps, $extends);
 
-        foreach ($deps as $s) {
-
+        $rs = [];
+        foreach ($all as $s) {
             $arr = explode('/', $s);
-            $ch = $arr[0];
-            $sec = $arr[1];
+            $courseId = $arr[0];
+            $chapterId = $arr[1];
+            $sectionId = $arr[1];
             /** @var Job $job */
             $job = Job::find()->where([
                 'uid' => $uid,
-                'course_id' => $section->courseId,
-                'chapter_id' => $ch,
-                'section_id' => $sec,
+                'course_id' => $courseId,
+                'chapter_id' => $chapterId,
+                'section_id' => $sectionId,
             ])->one();
             if (!$job || $job->status !== Job::JOB_STATUS_PASSED) {
-                throw new ForbiddenHttpException("Job cannot be created until all deps been passed: $section->courseId, $section->chapterId, $section->sectionId");
+                array_push($rs, $s);
             }
         }
+        if (count($rs)) return $rs;
+        return null;
     }
 
     /**
@@ -126,7 +129,6 @@ class JobController extends Controller
 
         $model = $query->one();
         if (!$model) {
-
             $this->checkDeps($section);
 
             $model = new Job();
@@ -136,7 +138,7 @@ class JobController extends Controller
             $model->section_id = $sectionId;
             $model->status = Job::JOB_STATUS_CREATED;
             $model->created_at = time();
-            $model->version = $data->section->version;
+            $model->version = $section->version;
             if (!$model->save()) {
                 \Yii::error($model->getErrors());
                 throw new NotFoundHttpException("Object not found: $courseId, $chapterId, $sectionId");
@@ -148,9 +150,8 @@ class JobController extends Controller
 
         return [
             'job' => $model,
-            'files' => $model->getFiles(),
-            'lang' => $data->section->lang,
-            'tester' => $data->section->tester,
+            'section' => $data->section,
+            'text' => $data->text,
         ];
     }
 
@@ -178,8 +179,7 @@ class JobController extends Controller
 
         return [
             'job' => $model,
-            'lang' => $data->section->lang,
-            'tester' => $data->section->tester,
+            'section' => $data->section,
         ];
     }
 
@@ -239,7 +239,7 @@ class JobController extends Controller
         if (!$model)
             throw new NotFoundHttpException("Object not found: $jobId, $uid");
 
-        $path = $path ? base64_decode($path): '';
+        $path = $path ? base64_decode($path) : '';
         return [
             'job_id' => $jobId,
             'path' => $path,

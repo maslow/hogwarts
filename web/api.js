@@ -11,7 +11,7 @@
         Register: Register,
         getFile: getFile,
         getFiles: getFiles,
-        saveFiles: saveFiles        
+        saveFiles: saveFiles
     }
 
     function Register(email, password) {
@@ -91,8 +91,10 @@
     }
 
     function getFiles(jobid, path) {
+        var url = "/jobs/" + jobid + '/files'
+        url += path ? '?path=' + path : ''
         return $.ajax({
-            url: G_API + "/jobs/" + jobid + '/files?path=' + path,
+            url: G_API + url,
             method: 'get',
             headers: {
                 'Authorization': 'Bearer ' + Identity.getAccessToken()

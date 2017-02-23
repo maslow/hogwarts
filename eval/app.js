@@ -31,13 +31,13 @@ app.post('/eval/:jobid', function (req, res) {
     getJob(req.uid, job_id)
         .then(data => {
             status = data.job.status
-            return eval(codespath, data.lang, data.tester)
+            return eval(codespath, data.section.lang, data.section.tester)
         })
         .then(data => {
             let s = data.ok ? 1 : -1
             if (status === s)
                 return res.status(200).send(data)
-            return setJobStatus(req.uid, job_id, status).then(() => res.status(200).send(data))
+            return setJobStatus(req.uid, job_id, s).then(() => res.status(200).send(data))
         })
         .catch(err => evt.emit('error', err, req, res))
 })

@@ -95,8 +95,8 @@ class Section extends Model
         $section->order = isset($data['order']) ? $data['order'] : 0;
         $section->lang = isset($data['lang']) ? $data['lang'] : '';
         $section->tester = isset($data['tester']) ? $data['tester'] : '';
-        $section->extends = isset($data['extends']) ? $data['extends'] : [];
-        $section->deps = isset($data['deps']) ? $data['deps'] : [];
+        $section->extends = isset($data['extends']) ? self::parseDeps($data['extends'], $courseId, $chapterId) : [];
+        $section->deps = isset($data['deps']) ? self::parseDeps($data['deps'], $courseId, $chapterId) : [];
         $section->version = self::getVersion($courseId, $chapterId, $sectionId);
         $section->courseId = $courseId;
         $section->chapterId = $chapterId;
@@ -112,6 +112,31 @@ class Section extends Model
         $p = $sectionPath . DIRECTORY_SEPARATOR . 'section.json';
         $data = file_get_contents($p);
         return Json::decode($data, true);
+    }
+
+    /**
+     * @param $deps
+     * @param $courseId
+     * @param $chapterId
+     * @return array
+     * @throws InvalidConfigException
+     * @internal param $extends
+     */
+    protected static function parseDeps($deps, $courseId, $chapterId){
+        $rs = [];
+        foreach ($deps as $v){
+            $arr = explode('/', $v);
+            if(count($arr) === 1)
+                $ext = "$courseId/$chapterId/$v";
+            elseif(count($arr) === 2)
+                $ext = "$courseId/$v";
+            elseif(count($arr) === 3)
+                $ext = $v;
+            else
+                throw new InvalidConfigException("Extends of section INVALID");
+            array_push($rs, $ext);
+        }
+        return $rs;
     }
 
     /**

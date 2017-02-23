@@ -139,11 +139,11 @@ function initPage() {
             resize: function () {
                 var height = window.innerHeight
                 this.windowHeight = height - 60
-                this.editor.setOption("maxLines", this.windowHeight/18.6 -1)
+                this.editor.setOption("maxLines", this.windowHeight / 18.6 - 1)
             }
         },
         mounted: function () {
-            var t = this            
+            var t = this
             window.onresize = t.resize
             t.editor = initEditor()
             t.editor.getSession().on('change', function (action, session) {
@@ -164,21 +164,22 @@ function initPage() {
                     }).shift()
                     t.course = data.course
                 })
-            api.getSection(courseName, chapterName, sectionName)
-                .success(function (data) {
-                    t.section = data.section
-                    t.text = md.render(data.text)
-                })
             api.getJob(courseName, chapterName, sectionName)
                 .success(function (data) {
-                    var files = data.files
                     t.job = data.job
-                    t.files = _.map(files, formatFileObject)
-                    var file = _.first(t.files.filter(function (f) {
-                        return f.type === 'file'
-                    }))
-                    if (!file) return;
-                    t.setCurrentFile(file)
+                    t.section = data.section
+                    t.text = md.render(data.text)
+
+                    api.getFiles(t.job.id)
+                        .success(function (data) {
+                            var files = data.files
+                            t.files = _.map(files, formatFileObject)
+                            var file = _.first(t.files.filter(function (f) {
+                                return f.type === 'file'
+                            }))
+                            if (!file) return;
+                            t.setCurrentFile(file)
+                        })
                 })
             api.getNextSection(courseName, chapterName, sectionName)
                 .success(function (data) {
