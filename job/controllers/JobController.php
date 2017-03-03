@@ -16,6 +16,8 @@ use yii\filters\Cors;
 use yii\rest\Controller;
 use yii\rest\OptionsAction;
 use yii\web\ForbiddenHttpException;
+use yii\web\MethodNotAllowedHttpException;
+use yii\web\NotAcceptableHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\ServerErrorHttpException;
 
@@ -129,7 +131,9 @@ class JobController extends Controller
 
         $model = $query->one();
         if (!$model) {
-            $this->checkDeps($section);
+            if($deps = $this->checkDeps($section)){
+                throw new ForbiddenHttpException(json_encode($deps));
+            }
 
             $model = new Job();
             $model->uid = $uid;

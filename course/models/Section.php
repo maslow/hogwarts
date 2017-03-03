@@ -23,10 +23,9 @@ use yii\helpers\Json;
  * @property integer $order
  * @property string $description
  * @property string $version
- * @property string $lang
- * @property string $tester
  * @property array $extends
  * @property array $deps
+ * @property array $env
  */
 class Section extends Model
 {
@@ -35,10 +34,9 @@ class Section extends Model
     public $order;
     public $description;
     public $version;
-    public $lang;
-    public $tester;
     public $extends;
     public $deps;
+    public $env;
 
     public $courseId;
     public $chapterId;
@@ -67,7 +65,7 @@ class Section extends Model
         $sections = Util::getSubDirectories(Chapter::getPath($courseId, $chapterId));
         $results = [];
         foreach ($sections as $sectionId)
-            array_push($results, self::findOne($courseId, $chapterId, $sectionId));
+            array_push($results, self::findOneWithoutVersion($courseId, $chapterId, $sectionId));
         usort($results, function ($a, $b) {
             return $a['order'] < $b['order'] ? -1 : 1;
         });
@@ -80,8 +78,7 @@ class Section extends Model
      * @param $sectionId
      * @return Section|null
      */
-    public static function findOne($courseId, $chapterId, $sectionId)
-    {
+    public static function findOneWithoutVersion($courseId, $chapterId, $sectionId){
         try {
             $p = self::getPath($courseId, $chapterId, $sectionId);
             $data = self::getJson($p);
@@ -93,13 +90,25 @@ class Section extends Model
         $section->title = isset($data['title']) ? $data['title'] : 'Untitled';
         $section->description = isset($data['description']) ? $data['description'] : '';
         $section->order = isset($data['order']) ? $data['order'] : 0;
-        $section->lang = isset($data['lang']) ? $data['lang'] : '';
-        $section->tester = isset($data['tester']) ? $data['tester'] : '';
+        $section->env = isset($data['env']) ? $data['env'] : '';
         $section->extends = isset($data['extends']) ? self::parseDeps($data['extends'], $courseId, $chapterId) : [];
         $section->deps = isset($data['deps']) ? self::parseDeps($data['deps'], $courseId, $chapterId) : [];
-        $section->version = self::getVersion($courseId, $chapterId, $sectionId);
         $section->courseId = $courseId;
         $section->chapterId = $chapterId;
+        $section->version = null;
+        return $section;
+    }
+
+    /**
+     * @param $courseId
+     * @param $chapterId
+     * @param $sectionId
+     * @return Section|null
+     */
+    public static function findOne($courseId, $chapterId, $sectionId)
+    {
+        $section = self::findOneWithoutVersion($courseId, $chapterId, $sectionId);
+        $section->version = self::getVersion($courseId, $chapterId, $sectionId);
         return $section;
     }
 

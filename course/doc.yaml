@@ -306,10 +306,16 @@ definitions:
         type: string
       version:
         type: string
-      lang:
-        type: string
-      tester:
-        type: string
+      env:
+        type: object
+        properties:
+          lang:
+            type: string
+          tester:
+            type: string
+          db:
+            type: string
+            description: ex, 'mysql', 'progresql', 'mongodb'
       extends:
         type: array
         items:
