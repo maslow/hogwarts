@@ -31,7 +31,11 @@ app.post('/eval/:jobid', function (req, res) {
     getJob(req.uid, job_id)
         .then(data => {
             status = data.job.status
-            return eval(codespath, data.section.lang, data.section.tester)
+            env = data.section.env
+            lang = env.lang || null
+            tester = env.tester || null
+            db = env.db || null
+            return eval(codespath, lang, tester, db)
         })
         .then(data => {
             let s = data.ok ? 1 : -1

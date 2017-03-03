@@ -1,7 +1,9 @@
 {
     "title": "HTTP Client",
-    "lang": "node",
-    "tester": "mocha",
+    "env": {
+        "lang": "node",
+        "tester": "mocha"
+    },
     "description": "HTTP 客户端",
-    "order" : 1
+    "order": 1
 }

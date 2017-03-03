@@ -1,7 +1,9 @@
 {
     "title": "创建一个TCP时间服务器",
-    "lang": "node",
-    "tester": "mocha",
+    "env": {
+        "lang": "node",
+        "tester": "mocha"
+    },
     "description": "",
-    "order" : 2
+    "order": 2
 }

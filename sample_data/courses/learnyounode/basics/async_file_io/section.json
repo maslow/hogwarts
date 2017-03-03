@@ -1,7 +1,9 @@
 {
   "title": "第一个异步文件IO",
-  "lang": "node",
-  "tester": "mocha",
+  "env": {
+    "lang": "node",
+    "tester": "mocha"
+  },
   "description": "",
   "order" : 4
 }

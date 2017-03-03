@@ -1,7 +1,9 @@
 {
   "description": "",
   "title": "Hello World",
-  "lang": "php",
-  "tester": "mocha",
-  "order" : 1
+  "env": {
+    "lang": "php",
+    "tester": "mocha"
+  },
+  "order": 1
 }

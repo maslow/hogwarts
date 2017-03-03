@@ -1,7 +1,9 @@
 {
     "title": "创建一个HTTP JSON API服务器",
-    "tester": "mocha",
-    "lang": "node",
+    "env": {
+        "lang": "node",
+        "tester": "mocha"
+    },
     "description": "",
-    "order" : 4
+    "order": 4
 }
