@@ -1,0 +1,17 @@
+{
+  "name": "dbm",
+  "version": "1.0.0",
+  "description": "dbm",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "maslow",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.0",
+    "express": "^4.15.0",
+    "fs-extra": "^2.0.0",
+    "mysql": "^2.13.0"
+  }
+}

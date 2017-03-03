@@ -12,13 +12,15 @@
     -> hagrid   -> auth
                 -> course
                 -> job
-                -> eval
+                -> eval 
+                    -> dbm
 
 ### 服务端口分配：
     - auth:   8000
     - course: 8001
     - job:    8002
     - eval:   8003
+    - dbm:    8004
     - hagrid: 90
     - web:    80/443
 

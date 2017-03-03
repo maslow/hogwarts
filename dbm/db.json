@@ -1,0 +1,6 @@
+{
+  "host": "localhost",
+  "db": "tech_shared",
+  "user": "root",
+  "passwd": "kissme"
+}
