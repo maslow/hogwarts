@@ -1,0 +1,252 @@
+swagger: '2.0'
+info:
+  version: "1.0.0"
+  title: Hogwarts (Tech v2) API 文档(Job)
+  description: Hogwarts server-end api docs.
+host: localhost:8002
+schemes:
+  - http
+produces:
+  - application/json
+consumes:
+  - application/json
+security:
+  - bearer_token: []
+  - x_uid: []
+paths:
+  /jobs:
+    get:
+      description: 获取用户一个课程的所有作业信息
+      parameters:
+        - name: courseId
+          in: query
+          type: string
+          required: false
+        - name: chapterId
+          in: query
+          type: string
+          required: false
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/job'
+
+  /jobs/{courseId}/{chapterId}/{sectionId}:
+    get:
+      description: 获取用户一个小节的作业, 若作业不存在则创建后返回
+      parameters:
+        - name: courseId
+          in: path
+          type: string
+          required: true
+        - name: chapterId
+          in: path
+          required: true
+          type: string
+        - name: sectionId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              job:
+                $ref: '#/definitions/job'
+              section:
+                  type: object
+              text:
+                  type: string
+
+  /jobs/{jobId}:
+    get:
+      description: 根据作业ID获取作业信息
+      parameters:
+        - name: jobId
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              job:
+                $ref: '#/definitions/job'
+              section:
+                  type: object
+
+  /jobs/{jobId}/status/{status}:
+    post:
+      description: 修改一个作业的状态
+      parameters:
+        - name: jobId
+          in: path
+          type: integer
+          required: true
+        - name: status
+          in: path
+          required: true
+          type: integer
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              job:
+                $ref: '#/definitions/job'
+
+  /jobs/{jobId}/files:
+    get:
+      description: 获取作业文件列表
+      parameters:
+        - name: jobId
+          type: string
+          in: path
+          required: true
+        - name: path
+          description: 目录全路径名(base64)，获取该目录下的文件列表
+          type: string
+          in: query
+          required: false
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/File'
+          
+    post:
+      description: 创建新文件
+      parameters:
+        - name: jobId
+          type: string
+          in: path
+          required: true
+        - name: file
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              parent:
+                type: string
+              type:
+                type: string
+              content:
+                type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/File'
+
+  /jobs/{jobId}/files/{fileId}:
+    get:
+      description: 获取一个文件内容
+      parameters:
+        - name: jobId
+          in: path
+          type: string
+          required: true
+        - name: fileId
+          description: 文件全路径名, base64
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/File'
+  
+    put:
+      description: Update File
+      parameters:
+        - name: jobId
+          in: path
+          type: string
+          required: true
+        - name: fileId
+          description: 文件全路径名, base64
+          in: path
+          type: string
+          required: true
+        - name: file
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              parent:
+                type: string
+              type:
+                type: string
+              content:
+                type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/File'
+
+securityDefinitions:
+  bearer_token:
+    description: | 
+      设置访问令牌格式："Bearer token"（不包括双引号）。
+      例如，`Bearer 1234` 。
+      该值会做为请求头Authorization的值发送。
+    type: apiKey
+    name: Authorization
+    in: header
+  x_uid:
+    description: | 
+      在开发测试时，直接访问服务（即不通过代理`gate`访问）则不需要提供token，需要鉴权的API需要提供x-uid做为当前用户Id.
+      该值会做为请求头x-uid的值发送。
+    type: apiKey
+    name: x-uid
+    in: header
+    
+definitions:
+  job:
+    type: object
+    properties:
+      id:
+        type: integer
+      uid:
+        type: integer
+      course_id:
+        type: string
+      chapter_id:
+        type: string
+      section_id:
+        type: string
+      status:
+        type: string
+      version:
+        type: string  
+  File:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      type:
+        type: string
+      content:
+        type: string
+      hash:
+        type: string
