@@ -18,24 +18,24 @@ app.use(function (req, res, next) {
 
 app.post('/db/mysql/:jobid', function (req, res) {
     let jobid = req.param('jobid')
-
+    let uid = req.uid
     let status = null
     let name = getDatabaseName(uid, jobid)
     let user = generateUserName(uid, jobid)
     let passwd = generatePasswd(uid, jobid)
-    getDatabase(req.uid, jobid, name)
-        .then(() => {
-            let data = {
-                jobid: jobid,
-                host: '127.0.0.1',
-                port: 3306,
-                db: name,
-                user: user,
-                passwd: passwd
-            }
-            return res.status(200).send(data)
-        })
-        .catch(err => evt.emit('error', err, req, res))
+    getDatabase(name, user, passwd).then(() => {
+        let data = {
+            jobid: jobid,
+            host: '127.0.0.1',
+            port: 3306,
+            db: name,
+            user: user,
+            passwd: passwd
+        }
+        return res
+            .status(200)
+            .send(data)
+    }).catch(err => evt.emit('error', err, req, res))
 })
 
 app.listen(process.argv[2] || 8004, '127.0.0.1', (err) => {
@@ -53,23 +53,21 @@ evt.on('error', (err, req, res) => {
 
 /**
  * Get a database
- * @param {string} uid 
- * @param {string} jobid 
- * @param {string} name 
+ * @param {string} uid
+ * @param {string} jobid
+ * @param {string} name
  */
-function getDatabase(uid, jobid, name) {
+function getDatabase(name, user, passwd) {
     let conn = mysql()
-    return databaseExists(conn, name).then(exists => {
-        if (exists) 
-            return deleteDatabase(conn, name).then(() => createDatabase(conn, name))
+    return deleteDatabase(conn, name).then(() => {
         return createDatabase(conn, name)
-    })
+    }).then(() => grantDatabase(conn, name, user, passwd))
 }
 
 /**
  * Get a database name
- * @param {string} uid 
- * @param {string} jobid 
+ * @param {string} uid
+ * @param {string} jobid
  */
 function getDatabaseName(uid, jobid) {
     return `mysql_db_${uid}_${jobid}`
@@ -77,51 +75,41 @@ function getDatabaseName(uid, jobid) {
 
 /**
  * Generate User Name
- * @param {string} uid 
- * @param {string} jobid 
+ * @param {string} uid
+ * @param {string} jobid
  */
-function generateUserName(uid, jobid){
+function generateUserName(uid, jobid) {
     return `mysql_user_${uid}_${jobid}`
 }
 
 /**
  * Generate a temporary password
- * @param {string} uid 
- * @param {string} jobid 
+ * @param {string} uid
+ * @param {string} jobid
  */
-function generatePasswd(uid, jobid){
-    return `mysql_passwd_${uid}_${jobid}`
+function generatePasswd(uid, jobid) {
+    return `mysql_passwd_${uid}_${jobid}_`+ Math.floor(Math.random()*1000)
 }
 
 /**
  * TODO
- * @param {*} conn 
- * @param {string} name 
+ * @param  conn
+ * @param {string} name
  */
 function createDatabase(conn, name) {
-    return new Promise((resolve, reject) => {
-        resolve()
-    })
+    return conn.query(`create database ${name}`)
 }
 
 /**
  * TODO
- * @param {*} conn 
- * @param {string} name 
- */
-function databaseExists(conn, name) {
-    return new Promise((resolve, reject) => {
-        resolve(true)
-    })
-}
-
-/**
- * TODO
- * @param {*} conn 
- * @param {string} name 
+ * @param {*} conn
+ * @param {string} name
  */
 function deleteDatabase(conn, name) {
-    return new Promise((resolve, reject) => {
-        resolve()
-    })
+    return conn.query(`drop database if exists ${name}`)
+}
+
+function grantDatabase(conn, name, user, passwd) {
+    let sql = `GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP,ALTER ON ${name}.* TO ${user}@'%' IDENTIFIED BY '${passwd}'`
+    return conn.query(sql)
 }

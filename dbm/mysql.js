@@ -9,7 +9,7 @@ let config = fs.readJsonSync(path.join(__dirname, 'db.json'))
 let host = config.host
 let user = config.user
 let passwd = config.passwd
-// let db = config.db
+let db = config.db
 
 module.exports = function () {
     return {
