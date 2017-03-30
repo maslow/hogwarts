@@ -88,7 +88,7 @@ function generateUserName(uid, jobid) {
  * @param {string} jobid
  */
 function generatePasswd(uid, jobid) {
-    return `mysql_passwd_${uid}_${jobid}_`+ Math.floor(Math.random()*1000)
+    return `mysql_passwd_${uid}_${jobid}_` + Math.floor(Math.random() * 1000)
 }
 
 /**
@@ -97,7 +97,7 @@ function generatePasswd(uid, jobid) {
  * @param {string} name
  */
 function createDatabase(conn, name) {
-    return conn.query(`create database ${name}`)
+    return conn.query(`create database ${name} CHARACTER SET utf8 COLLATE utf8_unicode_ci`)
 }
 
 /**
