@@ -28,7 +28,7 @@ let createDbSql = `create database ${config.db} CHARACTER SET utf8 COLLATE utf8_
 let createSql0 = `
 CREATE TABLE course (
     id int NOT NULL AUTO_INCREMENT, 
-    name varchar(64) NOT NULL,
+    name varchar(64) NOT NULL UNIQUE,
     description varchar(255), 
     status int DEFAULT 0 NOT NULL,
     created_by int NOT NULL,
