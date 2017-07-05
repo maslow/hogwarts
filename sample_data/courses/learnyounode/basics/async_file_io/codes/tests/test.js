@@ -4,7 +4,7 @@ const assert = require('assert')
 const cp = require('child_process')
 
 describe("第一章", function () {
-	let tmpfile = path.join(__dirname, '../tmp.file')
+	let tmpfile = path.join('/tmp/tmp.file')
 	let lineNumber = 0
 
 	before(done => fs.writeFile(tmpfile, generateTmpFile(), done))
