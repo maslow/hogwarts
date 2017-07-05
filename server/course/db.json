@@ -1,0 +1,8 @@
+{
+  "host": "localhost",
+  "port": 3306,
+  "database": "tech_course",
+  "user": "root",
+  "passwd": "kissme",
+  "connectionLimit": 100
+}
