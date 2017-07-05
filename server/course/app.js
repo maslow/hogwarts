@@ -1,15 +1,7 @@
 const express = require("express")
-const mysql = require("./mysql.js")
 const bodyParser = require('body-parser')
 const expressValidator = require('express-validator')
-
-const status = {
-    COURSE_DELETED: -1,
-    COURSE_CREATED: 0,
-    COURSE_PUBLISHED: 1,
-    COURSE_MODIFIED: 2
-}
-
+const course = require("./course.js")
 let app = express()
 
 app.use(bodyParser.json())
@@ -24,8 +16,9 @@ app.use(function (req, res, next) {
 
 app.use(expressValidator())
 
+/* ----------------- Course APIs ------------------*/
 app.get('/courses', async function (req, res) {
-    let [results] = await mysql.Query("select * from course where status >= ? or (status = ? and created_by = ?)", [status.COURSE_PUBLISHED, status.COURSE_CREATED, req.uid])
+    let results = await course.GetCourses(req.uid)
     res.status(200).send(results)
 })
 
@@ -36,14 +29,13 @@ app.get('/courses/:id', async function (req, res) {
     if (errors.isEmpty() === false)
         return res.status(422).send(errors.mapped())
 
-    let sql = "select * from course where id = ? and  (status >= ? or (status = ? and created_by = ?))"
-    let [ret] = await mysql.Query(sql, [req.params.id, status.COURSE_PUBLISHED, status.COURSE_CREATED, req.uid])
-    if (ret.length === 0)
+    let ret = await course.GetCourseById(req.params.id, req.uid)
+    if (!ret)
         return res.status(404).send({
             id: "Object not found"
         })
 
-    return res.status(200).send(ret[0])
+    return res.status(200).send(ret)
 })
 
 app.post('/courses', async function (req, res) {
@@ -53,31 +45,127 @@ app.post('/courses', async function (req, res) {
             min: 1,
             max: 64
         })
-
+    req.checkBody('description')
+        .notEmpty()
+        .isLength({
+            min: 1,
+            max: 256
+        })
     let errors = await req.getValidationResult()
     errors.useFirstErrorOnly()
     if (errors.isEmpty() === false)
         return res.status(422).send(errors.mapped())
 
-    let [ret] = await mysql.Query("select * from course where name = ?", [req.body.name])
-    if (ret.length) {
-        console.log(ret)
+    if (await course.GetCourseByName(req.body.name))
         return res.status(422).send({
             name: "Name exist"
         })
-    }
-    let timestamp = Math.round(new Date().getTime() / 1000)
-    let createCourseSql = "insert into course set ?"
-    let params = {
-        name: req.body.name,
-        description: req.body.description,
-        created_by: req.uid,
-        created_at: timestamp,
-        updated_at: timestamp
-    }
-    let [results] = await mysql.Query(createCourseSql, params)
-    let [results0] = await mysql.Query("select * from course where `id` = ?", [results.insertId])
-    res.status(201).send(results0)
+
+    let ret = await course.CreateCourse(req.body.name, req.body.description, req.uid)
+    res.status(201).send(ret)
 })
+
+/* --------------- Chapters APIs ------------------- */
+app.get('/courses/:cid/chapters', async function (req, res) {
+    req.checkParams('cid').notEmpty().isInt()
+    let errors = await req.getValidationResult()
+    errors.useFirstErrorOnly()
+    if (!errors.isEmpty())
+        return res.status(422).send(errors.mapped())
+
+    if (!await course.GetCourseById(req.params.cid, req.uid))
+        return res.status(422).send({
+            cid: "Course Id is invalid"
+        })
+    let chapters = await course.GetChapters(req.params.cid)
+    return res.status(200).send(chapters)
+})
+
+app.post('/courses/:cid', async function (req, res) {
+    req.checkParams('cid').notEmpty().isInt()
+    req.checkBody('name').notEmpty().isLength({
+        min: 1,
+        max: 64
+    })
+    req.checkBody('description').notEmpty().isLength({
+        min: 1,
+        max: 256
+    })
+    req.checkBody('seq').notEmpty().isInt()
+    let errors = await req.getValidationResult()
+    errors.useFirstErrorOnly()
+    if (!errors.isEmpty())
+        return res.status(422).send(errors.mapped())
+
+    if (!await course.GetCourseById(req.params.cid, req.uid))
+        return res.status(422).send({
+            cid: "Course Id is invalid"
+        })
+
+    let chapter = await course.CreateChapter(req.params.cid, req.body.name, req.body.description, req.body.seq)
+    return res.status(201).send(chapter)
+})
+
+/* --------------- Sections APIs ------------------- */
+
+app.get('/courses/:cid/sections', async function (req, res) {
+    req.checkParams('cid').notEmpty().isInt()
+    let errors = await req.getValidationResult()
+    if (!errors.isEmpty())
+        return res.status(422).send(errors.mapped())
+
+    if (!await course.GetCourseById(req.params.cid, req.uid))
+        return res.status(422).send({
+            cid: "Course Id is invalid"
+        })
+
+    let sections = await course.GetSections(req.params.cid, req.uid)
+    return res.status(200).send(sections)
+})
+
+app.post('/courses/:cid/sections', async function (req, res) {
+    req.checkParams('cid').notEmpty().isInt()
+    req.checkBody('chapter_id').notEmpty().isInt()
+    req.checkBody('name').notEmpty().isLength({
+        min: 1,
+        max: 64
+    })
+    req.checkBody('description').notEmpty().isLength({
+        min: 1,
+        max: 255
+    })
+    req.checkBody('seq').notEmpty().isInt()
+    req.checkBody('image').notEmpty()
+    
+    let errors = await req.getValidationResult()
+    if (!errors.isEmpty())
+        return res.status(422).send(errors.mapped())
+
+    if (!await course.GetCourseById(req.params.cid, req.uid))
+        return res.status(422).send({
+            cid: "Course Id is invalid"
+        })
+
+    if (!await course.GetChapterById(req.params.cid, req.body.chapter_id))
+        return res.status(422).send({
+            chapter_id: "Chapter Id is invalid"
+        })
+
+    let env = {
+        image: req.body.image
+    }
+
+    let section = await course.CreateSection(
+        req.params.cid,
+        req.body.chapter_id,
+        req.body.name,
+        req.body.description,
+        req.body.seq,
+        env,
+        req.uid)
+
+    return res.status(200).send(section)
+})
+app.post('')
 
 app.listen(process.argv[2] || 8001, '127.0.0.1', () => console.log(`listening on 8001`))

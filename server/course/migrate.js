@@ -4,10 +4,12 @@
 
 let mysql = require("mysql")
 let path = require("path")
-let config = require("./db.js")
+let fs = require("fs-extra")
+let config = fs.readJsonSync(path.join(__dirname, 'db.json'))
 
 let connection = mysql.createConnection({
-    host: config.host,
+    host: config.host || "localhost",
+    port: config.port || 3306,
     user: config.user,
     password: config.passwd
 })
@@ -23,7 +25,7 @@ let Query = function (sql) {
     })
 }
 
-let createDbSql = `create database ${config.db} CHARACTER SET utf8 COLLATE utf8_unicode_ci;`
+let createDbSql = `create database ${config.database} CHARACTER SET utf8 COLLATE utf8_unicode_ci;`
 
 let createSql0 = `
 CREATE TABLE course (
@@ -67,7 +69,7 @@ CREATE TABLE section (
 );
 `
 
-let dropSql = `DROP DATABASE ${config.db}`
+let dropSql = `DROP DATABASE ${config.database}`
 
 main()
 
@@ -77,7 +79,7 @@ async function main() {
     try {
         if (cmd === 'init') {
             await Query(createDbSql)
-            await Query(`use ${config.db};`)
+            await Query(`use ${config.database};`)
             await Query(createSql0)
             await Query(createSql1)
             await Query(createSql2)
