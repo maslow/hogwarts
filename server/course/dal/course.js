@@ -1,4 +1,4 @@
-const mysql = require("./mysql.js")
+const mysql = require("../mysql.js")
 
 const status = {
     COURSE_DELETED: -1,
@@ -7,9 +7,13 @@ const status = {
     COURSE_MODIFIED: 2
 }
 
-async function GetCourses(uid) {
-    let [results] = await mysql.Query("select * from course where status >= ? or (status = ? and created_by = ?)", [status.COURSE_PUBLISHED, status.COURSE_CREATED, uid])
-    return results
+async function GetCoursesByUserId(uid, currentUserId) {
+    let params = [uid, status.COURSE_PUBLISHED]
+    if (uid === currentUserId)
+        params = [uid, status.COURSE_CREATED]
+
+    let [rets] = await mysql.Query("select * from course where created_by = ? and status >= ?", params)
+    return rets
 }
 
 async function GetCourseById(id, uid) {
@@ -75,6 +79,14 @@ async function GetSections(course_id, uid) {
     return rets
 }
 
+async function GetSection(section_id, uid) {
+    let sql = "select * from section where id = ? and (status >= ? or (status = ? and created_by = ?))"
+    let [rets] = await mysql.Query(sql, [section_id, status.COURSE_PUBLISHED, status.COURSE_CREATED, uid])
+    if (rets.length === 0)
+        return false
+    return rets[0]
+}
+
 async function CreateSection(course_id, chapter_id, name, description, seq, env, created_by) {
     let sql = "insert into section set ?"
     let params = {
@@ -95,7 +107,7 @@ async function CreateSection(course_id, chapter_id, name, description, seq, env,
 }
 
 module.exports = {
-    GetCourses,
+    GetCoursesByUserId,
     GetCourseById,
     GetCourseByName,
     CreateCourse,
@@ -103,7 +115,8 @@ module.exports = {
     GetChapters,
     GetChapterById,
     GetSections,
-    CreateSection
+    CreateSection,
+    GetSection
 }
 
 function time() {
