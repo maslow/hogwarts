@@ -110,6 +110,7 @@ router.get('/getSectionDetail', async function (req, res) {
 router.post('/createSection', async function (req, res) {
     req.checkBody('course_id').notEmpty().isInt()
     req.checkBody('chapter_id').notEmpty().isInt()
+    req.checkBody('template_id').notEmpty().isInt()
     req.checkBody('name').notEmpty().isLength(1, 64)
     req.checkBody('description').notEmpty().isLength(1, 255)
     req.checkBody('seq').notEmpty().isInt()
@@ -140,6 +141,7 @@ router.post('/createSection', async function (req, res) {
         req.body.chapter_id,
         req.body.name,
         req.body.description,
+        req.body.template_id, 
         req.body.seq,
         env,
         req.uid)

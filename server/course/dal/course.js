@@ -87,13 +87,14 @@ async function GetSection(section_id, uid) {
     return rets[0]
 }
 
-async function CreateSection(course_id, chapter_id, name, description, seq, env, created_by) {
+async function CreateSection(course_id, chapter_id, name, description, template_id, seq, env, created_by) {
     let sql = "insert into section set ?"
     let params = {
         course_id,
         chapter_id,
         name,
         description,
+        template_id,
         seq,
         status: status.COURSE_CREATED,
         env: JSON.stringify(env),
