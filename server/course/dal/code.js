@@ -10,8 +10,8 @@ const _ = require("lodash")
  * @param {int} templateId 
  * @param {string} file 
  */
-async function GetCodeDirFiles(sectionId, templateId, file, isPublished = true) {
-    let p = path.join(coursesRoot(isPublished), sectionId, 'codes', file)
+async function GetCodeDirFiles(sectionId, templateId, file, dev = false) {
+    let p = path.join(CoursesRoot(dev), sectionId, 'codes', file)
 
     let tplFiles = await tpl.GetTemplateDirFiles(templateId, file)
     if (!await fs.pathExists(p))
@@ -38,8 +38,8 @@ async function GetCodeDirFiles(sectionId, templateId, file, isPublished = true) 
  * @param {int} templateId 
  * @param {string} file 
  */
-async function GetCodeFileContent(sectionId, templateId, file, isPublished = true) {
-    let p = path.join(coursesRoot(isPublished), sectionId, 'codes', file)
+async function GetCodeFileContent(sectionId, templateId, file, dev = false) {
+    let p = path.join(CoursesRoot(dev), sectionId, 'codes', file)
 
     let tplFileData = await tpl.GetTemplateFileContent(templateId, file)
     if (!await fs.pathExists(p))
@@ -48,12 +48,24 @@ async function GetCodeFileContent(sectionId, templateId, file, isPublished = tru
     return await fs.readFile(p)
 }
 
-function coursesRoot(isPublished = true) {
-    let p = isPublished ? 'pub' : 'dev'
+function CoursesRoot(dev = false) {
+    let p = dev ? 'dev' : 'pub'
     return path.join(__dirname, '..', 'data', 'courses', p)
+}
+
+function SecurityChecking(sectionId, file, dev = false) {
+    let p0 = path.join(CoursesRoot(dev), sectionId, 'codes')
+    let p = path.join(p0, file)
+
+    let p1 = path.relative(p0, p)
+    if (p1.indexOf("..") >= 0)
+        return false
+    return true
 }
 
 module.exports = {
     GetCodeDirFiles,
-    GetCodeFileContent
+    GetCodeFileContent,
+    CoursesRoot,
+    SecurityChecking
 }

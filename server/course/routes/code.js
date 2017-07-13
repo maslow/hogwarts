@@ -6,41 +6,57 @@ const util0 = require("../util")
 
 let router = express.Router()
 
+/**
+ * url: /getSectionCodeFiles
+ * query:
+ *  - sid required
+ *  - dev optional default false
+ */
 router.get("/getSectionCodeFiles", async function (req, res) {
-    req.checkQuery('sid').notEmpty().isInt()
-    let errors = await req.getValidationResult()
-    errors.useFirstErrorOnly()
-    if (errors.isEmpty() === false)
-        return res.status(422).send(errors.mapped())
+    let p = req.query.path || "/"
+    let dev = req.query.dev || false
+    let sectionId = req.query.sid || 0
 
-    let section = await course.GetSection(req.query.sid, req.uid)
+    if (!code.SecurityChecking(sectionId, p, dev))
+        return res.status(422).send('File Path invalid')
+
+    let section = await course.GetSection(sectionId)
     if (!section)
         return res.status(404).send('Section not found')
 
-    let p = req.query.path || "/"
-    let dev = req.query.dev || false
+    if (dev && req.uid != section.created_by)
+        return res.status(401).send('Permission denied')
 
-    let rets = await code.GetCodeDirFiles(section.id.toString(), section.template_id.toString(), p, !dev)
+    let rets = await code.GetCodeDirFiles(section.id.toString(), section.template_id.toString(), p, dev)
     if (rets === null)
         return res.status(404).send('Section Code not found')
+
     return res.status(200).send(rets)
 })
 
+/**
+ * url: /getSectionCodeFileContent
+ * query:
+ *  - sid required
+ *  - path optional default false
+ *  - dev optional default false
+ */
 router.get("/getSectionCodeFileContent", async function (req, res) {
-    req.checkQuery('sid').notEmpty().isInt()
-    let errors = await req.getValidationResult()
-    errors.useFirstErrorOnly()
-    if (errors.isEmpty() === false)
-        return res.status(422).send(errors.mapped())
+    let p = req.query.path || '/'
+    let dev = req.query.dev || false
+    let sectionId = req.query.sid || 0
 
-    let section = await course.GetSection(req.query.sid, req.uid)
+    if (!code.SecurityChecking(sectionId, p, dev))
+        return res.status(422).send('File Path invalid')
+
+    let section = await course.GetSection(sectionId)
     if (!section)
         return res.status(404).send('Section not found')
 
-    let p = req.query.path || '/'
-    let dev = req.query.dev || false
+    if (dev && req.uid != section.created_by)
+        return res.status(401).send('Permission denied')
 
-    let rets = await code.GetCodeFileContent(section.id.toString(), section.template_id.toString(), p, !dev)
+    let rets = await code.GetCodeFileContent(section.id.toString(), section.template_id.toString(), p, dev)
     if (rets === null)
         return res.status(404).send('Section code file not found')
 
@@ -52,5 +68,31 @@ router.get("/getSectionCodeFileContent", async function (req, res) {
     })
 })
 
+router.post("/createSectionCodeFolder", async function (req, res) {
+    let section = await course.GetSection(req.query.sid)
+    if (!section)
+        return res.status(404).send('Section not found')
+
+    //TODO 
+    return res.status(200).send('API TBD')
+})
+
+router.post("/renameSectionCodeFileName", async function (req, res) {
+    let section = await course.GetSection(req.query.sid)
+    if (!section)
+        return res.status(404).send('Section not found')
+
+    //TODO 
+    return res.status(200).send('API TBD')
+})
+
+router.post("/updateSectionCodeFile", async function (req, res) {
+    let section = await course.GetSection(req.query.sid)
+    if (!section)
+        return res.status(404).send('Section not found')
+
+    //TODO 
+    return res.status(200).send('API TBD')
+})
 
 module.exports = router
