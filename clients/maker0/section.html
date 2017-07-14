@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Section Detail</title>
+    <!--
+        <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    -->
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="wrapper" class="container">
+        <div class="page-header">
+            <h1 v-cloak>{{section.name}}
+                <small> {{section.description}}</small>
+            </h1>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">详情</div>
+            <div class="panel-body">
+                {{section | json}}
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">用户代码</div>
+            <div class="panel-body">
+                Panel content
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">测试用例</div>
+            <div class="panel-body">
+                Panel content
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">指导文档</div>
+            <div class="panel-body">
+                Panel content
+            </div>
+        </div>
+    </div>
+    <!--
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="node_modules/vue/dist/vue.min.js"></script>
+-->
+    <script src="//cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/vue/2.1.6/vue.min.js"></script>
+    <script src="//cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="common.js"></script>
+    <script src="api.js"></script>
+    <script>
+        new Vue({
+            el: '#wrapper',
+            data: {
+                section: {}
+            },
+            methods: {},
+            mounted: function () {
+                var t = this;
+                var s = $.getUrlParam('s');
+                api.getSection(s)
+                    .success(function (data) {
+                        t.section = data
+                    }).error(function (rs) {
+                        console.log(rs);
+                    })
+            }
+        })
+    </script>
+</body>
+
+</html>

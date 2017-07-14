@@ -57,6 +57,7 @@ CREATE TABLE section (
     id int NOT NULL AUTO_INCREMENT, 
     course_id int NOT NULL,
     chapter_id int NOT NULL,
+    template_id int NOT NULL,
     name varchar(64) NOT NULL,
     description varchar(255),
     seq int default 0,
@@ -67,6 +68,18 @@ CREATE TABLE section (
     updated_at int NOT NULL,
     PRIMARY KEY (id)
 );
+`
+
+let createSql3 = `
+CREATE TABLE template (
+    id int NOT NULL AUTO_INCREMENT,
+    name varchar(64) NOT NULL,
+    type int NOT NULL,
+    description varchar(255),
+    created_by int NOT NULL,
+    created_at int NOT NULL,
+    PRIMARY KEY (id)
+)
 `
 
 let dropSql = `DROP DATABASE ${config.database}`
@@ -83,6 +96,7 @@ async function main() {
             await Query(createSql0)
             await Query(createSql1)
             await Query(createSql2)
+            await Query(createSql3)
         } else if (cmd === 'clear') {
             let ret = await Query(dropSql)
         } else

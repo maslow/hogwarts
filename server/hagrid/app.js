@@ -65,13 +65,13 @@ const server = app
 
 function proxy_to(target, auth) {
     let handler = function (req, res) {
-        if (auth === false) {
+        let token = parseToken(req)
+        if (!token && auth === false) {
             return proxy.web(req, res, {
                 target: target
             })
         }
 
-        let token = parseToken(req)
         if (!token)
             return res.status(407).send('Unauthroized Request : INVALID TOKEN')
 
