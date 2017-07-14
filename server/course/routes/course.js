@@ -8,16 +8,13 @@ let router = express.Router()
  * 获取一个用户创建的课程
  */
 router.get('/getUserCourses', async function (req, res) {
-    req.checkQuery('uid').notEmpty().isInt()
-    let errors = await req.getValidationResult()
-    errors.useFirstErrorOnly()
-    if (errors.isEmpty() === false)
+    let uid = req.query.uid || false
+    if (!uid)
         return res.status(422).send(errors.mapped())
 
-    let uid = req.query.uid
     let rets = await course.GetCoursesByUserId(uid)
     rets = rets.filter(c => {
-        let s = req.uid == uid ? course.COURSE_CREATED : course.COURSE_PUBLISHED
+        let s = (req.uid == uid) ? course.COURSE_CREATED : course.COURSE_PUBLISHED
         return c.status >= s
     })
 
@@ -46,8 +43,8 @@ router.get('/getCourseDetail', async function (req, res) {
     let chapters = await course.GetChapters(courseId)
     let sections = await course.GetSections(courseId)
     sections = sections.filter(s => {
-        let status = req.uid == course0.created_by ? course.COURSE_CREATED : course.COURSE_PUBLISHED
-        return s.status > status
+        let status = (req.uid == s.created_by) ? course.COURSE_CREATED : course.COURSE_PUBLISHED
+        return s.status >= status
     })
 
     return res.status(200).send({

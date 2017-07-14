@@ -5,7 +5,7 @@ const course = require("./course")
 const _ = require("lodash")
 
 /**
- * TODO 检查文件是否属于该课程；检查文件是否可读（非文件夹）；
+ * TODO 检查文件是否可读（非文件夹）；
  * @param {int} sectionId 
  * @param {int} templateId 
  * @param {string} file 
@@ -33,7 +33,7 @@ async function GetCodeDirFiles(sectionId, templateId, file, dev = false) {
 }
 
 /**
- * TODO 检查文件是否属于该课程；检查文件是否可读（非文件夹）；
+ * TODO 检查文件是否可读（文件夹）；
  * @param {int} sectionId 
  * @param {int} templateId 
  * @param {string} file 
@@ -41,9 +41,8 @@ async function GetCodeDirFiles(sectionId, templateId, file, dev = false) {
 async function GetCodeFileContent(sectionId, templateId, file, dev = false) {
     let p = path.join(CoursesRoot(dev), sectionId, 'codes', file)
 
-    let tplFileData = await tpl.GetTemplateFileContent(templateId, file)
     if (!await fs.pathExists(p))
-        return tplFileData
+        return await tpl.GetTemplateFileContent(templateId, file)
 
     return await fs.readFile(p)
 }

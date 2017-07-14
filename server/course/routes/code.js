@@ -10,6 +10,7 @@ let router = express.Router()
  * url: /getSectionCodeFiles
  * query:
  *  - sid required
+ *  - path optional default /
  *  - dev optional default false
  */
 router.get("/getSectionCodeFiles", async function (req, res) {
@@ -38,7 +39,7 @@ router.get("/getSectionCodeFiles", async function (req, res) {
  * url: /getSectionCodeFileContent
  * query:
  *  - sid required
- *  - path optional default false
+ *  - path optional default /
  *  - dev optional default false
  */
 router.get("/getSectionCodeFileContent", async function (req, res) {
@@ -86,7 +87,7 @@ router.post("/renameSectionCodeFileName", async function (req, res) {
     return res.status(200).send('API TBD')
 })
 
-router.post("/updateSectionCodeFile", async function (req, res) {
+router.post("/updateSectionCodeFileContent", async function (req, res) {
     let section = await course.GetSection(req.query.sid)
     if (!section)
         return res.status(404).send('Section not found')
