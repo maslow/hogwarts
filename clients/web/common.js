@@ -1,4 +1,4 @@
-var G_API = "http://127.0.0.1:90";
+var G_API = "http://127.0.0.1:8888";
 
 (function ($) {
     $.getUrlParam = function (name) {

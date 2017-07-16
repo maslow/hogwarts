@@ -55,7 +55,7 @@ services.forEach(function (service) {
 })
 
 const server = app
-    .listen(process.argv[2] || 90, '127.0.0.1', (err) => {
+    .listen(process.argv[2] || 8888, '127.0.0.1', (err) => {
         if (err) throw err
         let host = server.address().address;
         let port = server.address().port;

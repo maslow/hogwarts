@@ -1,29 +1,22 @@
 <template>
     <div class="layout">
-        <Menu mode="horizontal" theme="dark" active-name="1">
+        <Menu mode="horizontal" theme="dark" active-name="/" @on-select="onSelect">
             <div class="layout-logo"></div>
             <div class="layout-nav">
-                <Menu-item name="1">
+                <Menu-item name="/">
                     <Icon type="ios-navigate"></Icon>
                     我的作品
                 </Menu-item>
-                <Menu-item name="2">
+                <Menu-item name="/about">
                     <Icon type="ios-keypad"></Icon>
-                    导航二
+                    关于
                 </Menu-item>
-                <Menu-item name="3">
+                <Menu-item name="/guide">
                     <Icon type="ios-analytics"></Icon>
-                    导航三
+                    指南
                 </Menu-item>
             </div>
         </Menu>
-        <div class="layout-breadcrumb">
-            <Breadcrumb>
-                <Breadcrumb-item href="#">首页</Breadcrumb-item>
-                <Breadcrumb-item href="#">应用中心</Breadcrumb-item>
-                <Breadcrumb-item>某应用</Breadcrumb-item>
-            </Breadcrumb>
-        </div>
         <div class="layout-content">
             <router-view></router-view>
         </div>
@@ -36,13 +29,14 @@
 <script>
 export default {
   name: 'app',
-  data: function () {
+  data () {
     return {
     }
   },
-  methods:{
-  },
-  components: {
+  methods: {
+      onSelect (name){
+        this.$router.push(name)
+      }
   }
 }
 </script>
@@ -65,9 +59,6 @@ export default {
     .layout-nav{
         width: 420px;
         margin: 0 auto;
-    }
-    .layout-breadcrumb{
-        padding: 10px 15px 0;
     }
     .layout-content{
         min-height: 200px;

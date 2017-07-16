@@ -35,7 +35,7 @@ let createSql = "CREATE TABLE users (" +
     "UNIQUE (email)" +
     ")"
 
-let dropSql = `DROP TABLE ${config.db}`
+let dropSql = `DROP DATABASE ${config.db};`
 
 main()
 
