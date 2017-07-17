@@ -7,7 +7,8 @@ export default {
     getCourse,
     getUserCourses,
     getSection,
-    createCourse
+    createCourse,
+    publishCourse
 }
 
 function createCourse(data){
@@ -18,6 +19,16 @@ function createCourse(data){
         headers: {
             'Authorization': 'Bearer ' + Identity.getAccessToken()
         }
+    })
+}
+
+/**
+ * TODO
+ * @param {Integer} courseId 
+ */
+function publishCourse(courseId){
+    return new Promise((resolve, reject) => {
+        setTimeout(resolve, 1000)
     })
 }
 
