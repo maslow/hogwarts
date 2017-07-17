@@ -12,7 +12,7 @@
     -> hagrid   -> auth
                 -> course
                 -> job
-                -> eval 
+                -> eval
                     -> dbm
 
 ### 服务端口分配：
@@ -25,3 +25,8 @@
     - web:    80/443
 
 ### 部署说明
+
+```
+    npm install forever -g
+    sh ./startup.sh
+```
