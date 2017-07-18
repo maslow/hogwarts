@@ -1,0 +1,6 @@
+INSERT INTO tech_course.section (course_id, chapter_id, template_id, name, description, seq, status, env, created_by, created_at, updated_at) VALUES (2, 1, 1, '第1节 你好，Node', '起手式，打开新世界', 0, 0, '{}', 1, 0, 0);
+INSERT INTO tech_course.section (course_id, chapter_id, template_id, name, description, seq, status, env, created_by, created_at, updated_at) VALUES (2, 1, 1, '第2节 命令行参数', '耐心点，再耐心一点', 0, 0, '{}', 1, 0, 0);
+INSERT INTO tech_course.section (course_id, chapter_id, template_id, name, description, seq, status, env, created_by, created_at, updated_at) VALUES (2, 2, 1, '第1节 读文件', '小试牛刀，初生牛犊不怕虎', 0, 0, '{}', 1, 0, 0);
+INSERT INTO tech_course.section (course_id, chapter_id, template_id, name, description, seq, status, env, created_by, created_at, updated_at) VALUES (2, 3, 1, '第1节 发送HTTP请求', '让那天空听得见，让那白天看得见', 0, 0, '{}', 1, 0, 0);
+INSERT INTO tech_course.section (course_id, chapter_id, template_id, name, description, seq, status, env, created_by, created_at, updated_at) VALUES (2, 2, 1, '第2节 读取当前目录', '输出当前目录下所有文件列表', 0, 0, '{}', 1, 0, 0);
+INSERT INTO tech_course.section (course_id, chapter_id, template_id, name, description, seq, status, env, created_by, created_at, updated_at) VALUES (2, 2, 1, '第3节 边读边写', '读指定文件内容并写入到另一个文件中', 0, 0, '{}', 1, 0, 0);
