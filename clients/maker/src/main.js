@@ -5,6 +5,9 @@ import App from './App'
 import router from './router'
 import iView from 'iview'
 import 'iview/dist/styles/iview.css'
+import VueParticles from 'vue-particles'
+
+Vue.use(VueParticles)
 
 Vue.config.productionTip = false
 
