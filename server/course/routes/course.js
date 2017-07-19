@@ -155,7 +155,6 @@ router.post('/createChapter', async function (req, res) {
     req.checkBody('course_id').notEmpty().isInt()
     req.checkBody('name').notEmpty().isLength(1, 64)
     req.checkBody('description').notEmpty().isLength(1, 255)
-    req.checkBody('seq').notEmpty().isInt()
 
     let errors = await req.getValidationResult()
     errors.useFirstErrorOnly()
@@ -163,12 +162,13 @@ router.post('/createChapter', async function (req, res) {
         return res.status(422).send(errors.mapped())
 
     let courseId = req.body.course_id
+    let seq = req.body.seq || 0
     if (!await course.GetCourseById(courseId))
         return res.status(422).send({
             cid: "Course Id is invalid"
         })
 
-    let chapter = await course.CreateChapter(courseId, req.body.name, req.body.description, req.body.seq)
+    let chapter = await course.CreateChapter(courseId, req.body.name, req.body.description, seq)
     return res.status(201).send(chapter)
 })
 

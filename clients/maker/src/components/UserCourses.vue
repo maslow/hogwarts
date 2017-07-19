@@ -2,7 +2,7 @@
   <div class="courses">
     <h1>课程列表</h1>
     <br/>
-    <Button type="ghost" size="small" color="gray" @click="modal = true">
+    <Button type="ghost" size="small" color="gray" @click="createCourseModal = true">
       <Icon type="plus-round" color="gray"></Icon>
       新建课程
     </Button>
@@ -17,29 +17,44 @@
             <Icon type="information-circled" color="#ff9900" v-if="c.status === 0"></Icon>
           </Tooltip>
           <router-link :to="'/course/' + c.id">{{c.name}}</router-link>
+          <Tooltip placement="top" content="修改名称">
+            <Button type="text" shape="circle" size="small" icon="edit" @click="rename(c)"></Button>
+          </Tooltip>
         </div>
         <div>
-          <p>{{c.description}}</p>
+          <p>
+            {{c.description}}
+            <Tooltip placement="top" content="编辑简介">
+              <Button type="text" shape="circle" size="small" icon="edit" @click="updateDescription(c)"></Button>
+            </Tooltip>
+          </p>
         </div>
       </Card>
       </Col>
     </Row>
   
     <!-- Modals -->
-    <CreateCourseModal v-model="modal" @ok="getCourses"></CreateCourseModal>
+    <CreateCourseModal v-model="createCourseModal" @ok="getCourses"></CreateCourseModal>
+    <RenameCourseModal v-model="renameCourseModal" :course="course" @ok="getCourses"></RenameCourseModal>
+    <UpdateCourseDescriptionModal v-model="updateCourseDescriptionModal" :course="course" @ok="getCourses"></UpdateCourseDescriptionModal>  
   </div>
 </template>
 
 <script>
 import course from '@/api/course'
 import CreateCourseModal from './CreateCourseModal'
+import RenameCourseModal from './RenameCourseModal'
+import UpdateCourseDescriptionModal from './UpdateCourseDescriptionModal'
 
 export default {
   name: 'user-courses',
   data() {
     return {
       courses: [],
-      modal: false
+      course: {},
+      renameCourseModal: false,
+      updateCourseDescriptionModal: false,
+      createCourseModal: false
     }
   },
   created() {
@@ -49,10 +64,20 @@ export default {
     async getCourses() {
       let data = await course.getUserCourses()
       this.courses = data
+    },
+    rename(c) {
+      this.course = c
+      this.renameCourseModal = true
+    },
+    updateDescription(c) {
+      this.course = c
+      this.updateCourseDescriptionModal = true
     }
   },
   components: {
-    CreateCourseModal
+    CreateCourseModal,
+    RenameCourseModal,
+    UpdateCourseDescriptionModal
   }
 }
 </script>

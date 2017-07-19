@@ -1,5 +1,5 @@
 <template>
-    <Modal v-model="_show" title="更新课程简介" @on-ok="ok" @on-cancel="cancel">
+    <Modal v-model="_show" title="更新课程简介" @on-cancel="cancel">
         <Form :label-width="80">
             <Form-item label="原简介">
                 <Input readonly type="textarea" :value="course.description" :autosize="{minRows: 4,maxRows: 6}"></Input>
@@ -70,6 +70,7 @@ export default {
         cancel() {
             this.$emit('close', false)
             this.loading = false
+            this.value = ''
         },
         copyTo() {
             if (!this.value)

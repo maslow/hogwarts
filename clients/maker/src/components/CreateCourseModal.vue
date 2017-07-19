@@ -6,11 +6,11 @@
           <Input v-model="data.name"></Input>
         </Form-item>
         <Form-item label="课程介绍" prop="description">
-          <Input v-model="data.description" type="textarea" :autosize="{minRows: 2,maxRows: 5}" placeholder="请输入..."></Input>
+          <Input v-model="data.description" type="textarea" :autosize="{minRows: 3,maxRows: 6}" placeholder="请输入..."></Input>
         </Form-item>
       </Form>
       <div slot="footer">
-        <Button type="success" :loading="loading" @click="createCourse">提交</Button>
+        <Button type="success" :loading="loading" @click="ok">提交</Button>
       </div>
     </Modal>
   </div>
@@ -22,16 +22,17 @@ import course from '@/api/course'
 let rules = {
   name: [
     { required: true, message: '课程名不可为空', trigger: 'blur' },
-    { type: 'string', max: 64, message: '介绍不大于64字', trigger: 'blur' }
+    { type: 'string', max: 64, message: '课程名不大于64字', trigger: 'blur' }
   ],
   description: [
     { required: true, message: '请输入课程简介', trigger: 'blur' },
-    { type: 'string', min: 10, message: '介绍不少于10字', trigger: 'blur' },
-    { type: 'string', max: 255, message: '介绍不大于255字', trigger: 'blur' }
+    { type: 'string', min: 10, message: '课程简介不少于10字', trigger: 'blur' },
+    { type: 'string', max: 255, message: '课程简介不大于255字', trigger: 'blur' }
   ]
 }
 
 export default {
+  name:'create-course-modal',
   model: {
     prop: 'show',
     event: 'change'
@@ -53,13 +54,15 @@ export default {
     }
   },
   methods: {
-    createCourse() {
+    ok() {
       this.$refs['new-course-form'].validate(async valid => {
         if (!valid) return;
         this.loading = true
         try {
           let rets = await course.createCourse(this.data)
-          this.$Message.success('提交成功!');
+          this.$Notice.success({
+            title: '创建课程成功'
+          })
           this.$emit('change', false)  // Close the modal
           this.data.name = ''
           this.data.description = ''

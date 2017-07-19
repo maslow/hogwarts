@@ -1,16 +1,30 @@
 <template>
     <div id="course">
-        <h1>{{course.name}}</h1>
-        <br/>
-        <Button type="warning" size="small" @click="publishCourse()" v-if="course.status === 0">发布课程</Button>
-        <Button type="ghost" size="small" @click="renameCourseModal = true">修改课程名</Button>
-        <Button type="ghost" size="small" @click="updateCourseDescriptionModal = true">编辑课程简介</Button>
-        <Button type="error" size="small" disabled>删除课程</Button>
+        <h1>
+            {{course.name}}
+            <Tooltip placement="top" content="修改名称">
+                <Button type="text" shape="circle" size="small" icon="edit" @click="renameCourseModal = true"></Button>
+            </Tooltip>
+        </h1>
         <div id="course-description">
             <i>{{course.description}}</i>
+            <Tooltip placement="top" content="修改名称">
+                <Button type="text" shape="circle" size="small" icon="edit" @click="updateCourseDescriptionModal = true"></Button>
+            </Tooltip>
         </div>
         <div class="layout-chapter" v-for="(ch, index) in chapters" :key="ch.id">
-            <h2>{{ch.name}}</h2>
+            <h2>
+                {{ch.name}}
+                <Tooltip placement="top" content="修改名称">
+                    <Button type="text" shape="circle" size="small" icon="edit"></Button>
+                </Tooltip>
+                <Tooltip placement="top" content="编辑简介">
+                    <Button type="text" shape="circle" size="small" icon="ios-lightbulb"></Button>
+                </Tooltip>
+                <Tooltip placement="top" content="调整顺序">
+                    <Button type="text" shape="circle" size="small" icon="ios-settings-strong"></Button>
+                </Tooltip>
+            </h2>
             <div class="layout-section">
                 <Collapse accordion>
                     <Panel v-for="s in sections.filter(it => it.chapter_id == ch.id)" :key="s.id">
@@ -24,17 +38,19 @@
                         </div>
                     </Panel>
                 </Collapse>
+                <br/>
+                <Button type="ghost" size="small" icon="ios-plus">添加新小节</Button>
             </div>
         </div>
         <br/>
         <Affix :offset-bottom="20">
-            <Button type="info" size="small">添加新章节</Button>
-            <Button type="success" size="small">添加新小节</Button>
+            <Button type="info" size="small" @click="createChapterModal = true" icon="plus">添加新章节</Button>
         </Affix>
     
         <!-- Modals -->
         <RenameCourseModal v-model="renameCourseModal" :course="course" @ok="getCourse"></RenameCourseModal>
         <UpdateCourseDescriptionModal v-model="updateCourseDescriptionModal" :course="course" @ok="getCourse"></UpdateCourseDescriptionModal>
+        <CreateChapterModal v-model="createChapterModal" :course="course" @ok="getCourse"></CreateChapterModal>
     </div>
 </template>
 
@@ -43,6 +59,7 @@
 import course from '@/api/course'
 import RenameCourseModal from './RenameCourseModal'
 import UpdateCourseDescriptionModal from './UpdateCourseDescriptionModal'
+import CreateChapterModal from './CreateChapterModal'
 
 export default {
     data() {
@@ -53,6 +70,7 @@ export default {
             sections: [],
             renameCourseModal: false,
             updateCourseDescriptionModal: false,
+            createChapterModal: false
         }
     },
     async created() {
@@ -80,7 +98,8 @@ export default {
     },
     components: {
         RenameCourseModal,
-        UpdateCourseDescriptionModal
+        UpdateCourseDescriptionModal,
+        CreateChapterModal
     }
 }
 </script>

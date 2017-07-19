@@ -10,12 +10,13 @@ export default {
   createCourse,
   publishCourse,
   renameCourse,
-  updateCourseDescription
+  updateCourseDescription,
+  createChapter
 }
 
 /**
- * @param {*} courseId 
- * @param {*} newValue 
+ * @param {*} courseId
+ * @param {*} newValue
  */
 function updateCourseDescription(courseId, newValue) {
   return $.ajax({
@@ -32,8 +33,8 @@ function updateCourseDescription(courseId, newValue) {
 }
 
 /**
- * @param {*} courseId 
- * @param {*} name 
+ * @param {*} courseId
+ * @param {*} name
  */
 function renameCourse(courseId, name) {
   return $.ajax({
@@ -61,7 +62,7 @@ function createCourse(data) {
 }
 
 /**
- * @param {Integer} courseId 
+ * @param {Integer} courseId
  */
 function publishCourse(courseId) {
   return $.ajax({
@@ -100,6 +101,21 @@ function getSection(sectionId) {
   return $.ajax({
     url: G_API + "/getSectionDetail?id=" + sectionId,
     method: 'get',
+    headers: {
+      'Authorization': 'Bearer ' + Identity.getAccessToken()
+    }
+  })
+}
+
+function createChapter(courseId, chapterName, chapterDescription) {
+  return $.ajax({
+    url: G_API + '/createChapter',
+    data: {
+      course_id: courseId,
+      name: chapterName,
+      description: chapterDescription
+    },
+    method: 'post',
     headers: {
       'Authorization': 'Bearer ' + Identity.getAccessToken()
     }

@@ -1,5 +1,5 @@
 <template>
-    <Modal v-model="show" title="重命名课程" @on-ok="ok" @on-cancel="cancel">
+    <Modal v-model="show" title="重命名课程" @on-cancel="cancel">
         原名称：
         <Input readonly :value="course.name" :placeholder="course.name" style="width: 300px"></Input>
         <br/>
@@ -39,7 +39,6 @@ export default {
                 return;
             }
             if (this.value === this.course.name) {
-                console.log(this.value)
                 this.$Notice.info({
                     title: '名称无更变',
                     desc: '你没有更改课程名,或新旧课程名相同'
@@ -68,6 +67,7 @@ export default {
         cancel() {
             this.$emit('close', false)
             this.loading = false
+            this.value = ''
         },
         copyTo() {
             if (!this.value)
