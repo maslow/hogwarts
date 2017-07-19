@@ -3,7 +3,6 @@ import Router from 'vue-router'
 import Guide from '@/components/Guide'
 import UserCourses from '@/components/UserCourses'
 import Course from '@/components/Course'
-import Home from '@/components/Home'
 
 //const UserCourses = () => import('@/components/UserCourses')
 
@@ -13,7 +12,7 @@ export default new Router({
   routes: [
     {
       path: '/',
-      component: Home
+      component: UserCourses
     },
     {
       path: '/courses',

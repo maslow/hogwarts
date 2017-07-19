@@ -33,6 +33,9 @@ let services = [{
 }, {
     routes: [
         "/createCourse",
+        "/renameCourse",
+        "/updateCourseDescription",
+        "/publishCourse",
         "/createChapter",
         "/createSection",
         "/createSectionCodeFolder",

@@ -39,6 +39,21 @@ async function CreateCourse(name, description, userId) {
     return rets0
 }
 
+async function UpdateCourse(courseId, data) {
+    let sql = "update course set "
+    let params = []
+    Object.keys(data).forEach(it => {
+        sql += `${it} = ?,`
+        params.push(data[it])
+    })
+    sql += `updated_at = ? where id = ?`
+    params.push(time())
+    params.push(courseId)
+    console.log(sql)
+    let [rets] = await mysql.Query(sql, params)
+    return GetCourseById(courseId)
+}
+
 async function CreateChapter(course_id, name, description, seq = 0) {
     let sql = "insert into chapter set ?"
     let params = {
@@ -103,6 +118,7 @@ module.exports = {
     GetCourseById,
     GetCourseByName,
     CreateCourse,
+    UpdateCourse,
     CreateChapter,
     GetChapters,
     GetChapterById,

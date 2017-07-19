@@ -2,16 +2,16 @@
     <div id="course">
         <h1>{{course.name}}</h1>
         <br/>
-        <ButtonGroup>
-            <Button type="warning" size="small" @click="publishCourse(course)" v-if="course.status === 0">发布课程</Button>
-            <Button type="info" size="small">修改课程名</Button>
-            <Button type="ghost" size="small">编辑课程简介</Button>
-            <Button type="error" size="small">删除课程</Button>
-        </ButtonGroup>
-        <br/>
-        <div class="chapter-layout" v-for="(ch, index) in chapters" :key="ch.id">
+        <Button type="warning" size="small" @click="publishCourse()" v-if="course.status === 0">发布课程</Button>
+        <Button type="ghost" size="small" @click="renameCourseModal = true">修改课程名</Button>
+        <Button type="ghost" size="small" @click="updateCourseDescriptionModal = true">编辑课程简介</Button>
+        <Button type="error" size="small" disabled>删除课程</Button>
+        <div id="course-description">
+            <i>{{course.description}}</i>
+        </div>
+        <div class="layout-chapter" v-for="(ch, index) in chapters" :key="ch.id">
             <h2>{{ch.name}}</h2>
-            <div class="section-layout">
+            <div class="layout-section">
                 <Collapse accordion>
                     <Panel v-for="s in sections.filter(it => it.chapter_id == ch.id)" :key="s.id">
                         {{s.name}}
@@ -26,11 +26,23 @@
                 </Collapse>
             </div>
         </div>
+        <br/>
+        <Affix :offset-bottom="20">
+            <Button type="info" size="small">添加新章节</Button>
+            <Button type="success" size="small">添加新小节</Button>
+        </Affix>
+    
+        <!-- Modals -->
+        <RenameCourseModal v-model="renameCourseModal" :course="course" @ok="getCourse"></RenameCourseModal>
+        <UpdateCourseDescriptionModal v-model="updateCourseDescriptionModal" :course="course" @ok="getCourse"></UpdateCourseDescriptionModal>
     </div>
 </template>
 
+
 <script>
 import course from '@/api/course'
+import RenameCourseModal from './RenameCourseModal'
+import UpdateCourseDescriptionModal from './UpdateCourseDescriptionModal'
 
 export default {
     data() {
@@ -38,28 +50,37 @@ export default {
             courseId: this.$route.params.id,
             course: {},
             chapters: [],
-            sections: []
+            sections: [],
+            renameCourseModal: false,
+            updateCourseDescriptionModal: false,
         }
     },
     async created() {
-        let data = await course.getCourse(this.courseId)
-        this.course = data.course
-        this.chapters = data.chapters
-        this.sections = data.sections
+        this.getCourse()
     },
     methods: {
-        publishCourse(c) {
+        async getCourse() {
+            let data = await course.getCourse(this.courseId)
+            this.course = data.course
+            this.chapters = data.chapters
+            this.sections = data.sections
+        },
+        publishCourse() {
             this.$Modal.confirm({
                 title: '发布确认',
-                content: `<p>确定发布该课程<span style="color:red"> { ${c.name} } </span>？</p>`,
+                content: `<p>确定发布该课程<span style="color:red"> { ${this.course.name} } </span>？</p>`,
                 loading: true,
                 onOk: async () => {
-                    await course.publishCourse(c.id)
-                    this.$Modal.remove();
-                    this.$Message.success('发布成功！');
+                    let ret = await course.publishCourse(this.course.id)
+                    this.course = ret
+                    this.$Modal.remove()
                 }
-            });
+            })
         }
+    },
+    components: {
+        RenameCourseModal,
+        UpdateCourseDescriptionModal
     }
 }
 </script>
@@ -70,12 +91,20 @@ h2 {
     font-weight: normal;
 }
 
-.chapter-layout {
-    width: 600px;
-    margin: 30px 10px;
+#course-description {
+    margin-left: 17px;
+    color: #666;
+    margin-top: 20px;
+    padding: 3px;
+    border-left: 4px solid lightgray;
 }
 
-.section-layout {
+.layout-chapter {
+    width: 600px;
+    margin: 25px 15px;
+}
+
+.layout-section {
     margin: 5px 5px;
 }
 </style>

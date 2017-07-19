@@ -76,6 +76,79 @@ router.post('/createCourse', async function (req, res) {
 })
 
 /**
+ * 重命名课程
+ */
+router.post('/renameCourse', async function (req, res) {
+    req.checkBody('id').notEmpty().isLength(1, 64)
+    req.checkBody('name').notEmpty().isLength(1, 255)
+
+    let errors = await req.getValidationResult()
+    errors.useFirstErrorOnly()
+    if (errors.isEmpty() === false)
+        return res.status(422).send(errors.mapped())
+
+    let courseId = req.body.id
+    let name = req.body.name
+    let course0 = await course.GetCourseById(courseId)
+    if (!course0)
+        return res.status(404).send("Object not found")
+
+    let ret = await course.UpdateCourse(courseId, {
+        name
+    })
+    res.status(201).send(ret)
+})
+
+/**
+ * 发布课程
+ */
+router.post('/publishCourse', async function (req, res) {
+    req.checkBody('id').notEmpty().isLength(1, 64)
+
+    let errors = await req.getValidationResult()
+    errors.useFirstErrorOnly()
+    if (errors.isEmpty() === false)
+        return res.status(422).send(errors.mapped())
+
+    let courseId = req.body.id
+    let course0 = await course.GetCourseById(courseId)
+    if (!course0)
+        return res.status(404).send("Object not found")
+
+    if (course0.status !== 0)
+        return res.status(422).send("Course was already published or deleted")
+
+    let ret = await course.UpdateCourse(courseId, {
+        status: course.COURSE_PUBLISHED
+    })
+    res.status(201).send(ret)
+})
+
+/**
+ * 更新课程简介
+ */
+router.post('/updateCourseDescription', async function (req, res) {
+    req.checkBody('id').notEmpty().isLength(1, 64)
+    req.checkBody('description').notEmpty().isLength(1, 255)
+
+    let errors = await req.getValidationResult()
+    errors.useFirstErrorOnly()
+    if (errors.isEmpty() === false)
+        return res.status(422).send(errors.mapped())
+
+    let courseId = req.body.id
+    let description = req.body.description
+    let course0 = await course.GetCourseById(courseId)
+    if (!course0)
+        return res.status(404).send("Object not found")
+
+    let ret = await course.UpdateCourse(courseId, {
+        description
+    })
+    res.status(201).send(ret)
+})
+
+/**
  * 创建章节
  */
 router.post('/createChapter', async function (req, res) {

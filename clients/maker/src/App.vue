@@ -3,10 +3,6 @@
         <Menu mode="horizontal" theme="dark" active-name="/" @on-select="onSelect">
             <div class="layout-logo"></div>
             <div class="layout-nav">
-                <Menu-item name="/">
-                    <Icon type="ios-navigate"></Icon>
-                    HOME
-                </Menu-item>
                 <Menu-item name="/courses">
                     <Icon type="flag"></Icon>
                     我的作品
