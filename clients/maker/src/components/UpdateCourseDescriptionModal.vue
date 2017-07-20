@@ -85,6 +85,6 @@ export default {
 }
 </script>
 
-<style>
+<style scopded>
 
 </style>

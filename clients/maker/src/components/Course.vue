@@ -5,6 +5,15 @@
             <Tooltip placement="top" content="修改名称">
                 <Button type="text" shape="circle" size="small" icon="edit" @click="renameCourseModal = true"></Button>
             </Tooltip>
+            <Tooltip placement="top" content="发布该课程" v-if="course.status === 0">
+                <Button type="text" shape="circle" size="small" icon="information-circled" @click="publishCourse"></Button>
+            </Tooltip>
+            <Tooltip placement="top" content="已发布" v-if="course.status === 1">
+                <Button type="text" shape="circle" size="small">
+                    <Icon type="checkmark-circled" color="green"></Icon>
+                </Button>
+            </Tooltip>
+    
         </h1>
         <div id="course-description">
             <i>{{course.description}}</i>
@@ -15,15 +24,21 @@
         <div class="layout-chapter" v-for="(ch, index) in chapters" :key="ch.id">
             <h2>
                 {{ch.name}}
-                <Tooltip placement="top" content="修改名称">
-                    <Button type="text" shape="circle" size="small" icon="edit"></Button>
-                </Tooltip>
-                <Tooltip placement="top" content="编辑简介">
-                    <Button type="text" shape="circle" size="small" icon="ios-lightbulb"></Button>
-                </Tooltip>
-                <Tooltip placement="top" content="调整顺序">
-                    <Button type="text" shape="circle" size="small" icon="ios-settings-strong"></Button>
-                </Tooltip>
+                <RenameChapter :chapter="ch" @ok="getCourse">
+                    <Tooltip placement="top" content="修改名称">
+                        <Button type="text" shape="circle" size="small" icon="edit"></Button>
+                    </Tooltip>
+                </RenameChapter>
+                <UpdateChapterDescription :chapter="ch" @ok="getCourse">
+                    <Tooltip placement="top" content="编辑简介">
+                        <Button type="text" shape="circle" size="small" icon="ios-lightbulb"></Button>
+                    </Tooltip>
+                </UpdateChapterDescription>
+                <AdjustChapterSeq :chapter="ch" @ok="getCourse">
+                    <Tooltip placement="top" content="调整次序">
+                        <Button type="text" shape="circle" size="small" icon="ios-settings-strong"></Button>
+                    </Tooltip>
+                </AdjustChapterSeq>
             </h2>
             <div class="layout-section">
                 <Collapse accordion>
@@ -38,14 +53,14 @@
                         </div>
                     </Panel>
                 </Collapse>
-                <br/>
-                <Button type="ghost" size="small" icon="ios-plus">添加新小节</Button>
+                <Button class="button-section-create" type="ghost" icon="plus">添加新小节</Button>
             </div>
         </div>
-        <br/>
-        <Affix :offset-bottom="20">
-            <Button type="info" size="small" @click="createChapterModal = true" icon="plus">添加新章节</Button>
-        </Affix>
+        <div class="layout-chapter">
+            <Affix :offset-bottom="20">
+                <Button type="info" size="small" @click="createChapterModal = true" icon="plus">添加新章节</Button>
+            </Affix>
+        </div>
     
         <!-- Modals -->
         <RenameCourseModal v-model="renameCourseModal" :course="course" @ok="getCourse"></RenameCourseModal>
@@ -60,6 +75,9 @@ import course from '@/api/course'
 import RenameCourseModal from './RenameCourseModal'
 import UpdateCourseDescriptionModal from './UpdateCourseDescriptionModal'
 import CreateChapterModal from './CreateChapterModal'
+import RenameChapter from './RenameChapter'
+import UpdateChapterDescription from './UpdateChapterDescription'
+import AdjustChapterSeq from './AdjustChapterSeq'
 
 export default {
     data() {
@@ -99,7 +117,10 @@ export default {
     components: {
         RenameCourseModal,
         UpdateCourseDescriptionModal,
-        CreateChapterModal
+        CreateChapterModal,
+        RenameChapter,
+        UpdateChapterDescription,
+        AdjustChapterSeq
     }
 }
 </script>
@@ -124,6 +145,10 @@ h2 {
 }
 
 .layout-section {
-    margin: 5px 5px;
+    margin: 5px 25px;
+}
+
+.button-section-create {
+    margin-top: 5px;
 }
 </style>

@@ -74,11 +74,26 @@ async function GetChapters(course_id) {
     return rets
 }
 
-async function GetChapterById(course_id, chapter_id) {
-    let [rets] = await mysql.Query("select * from chapter where course_id = ? and id = ?", [course_id, chapter_id])
+async function GetChapterById(chapterId) {
+    let [rets] = await mysql.Query("select * from chapter where id = ?", [chapterId])
     if (rets.length === 0)
         return false
     return rets[0]
+}
+
+async function UpdateChapter(chapterId, data) {
+    let sql = "update chapter set "
+    let params = []
+    Object.keys(data).forEach(it => {
+        sql += `${it} = ?,`
+        params.push(data[it])
+    })
+    sql += `updated_at = ? where id = ?`
+    params.push(time())
+    params.push(chapterId)
+    console.log(sql)
+    let [rets] = await mysql.Query(sql, params)
+    return GetChapterById(chapterId)
 }
 
 async function GetSections(course_id) {
@@ -122,13 +137,13 @@ module.exports = {
     CreateChapter,
     GetChapters,
     GetChapterById,
+    UpdateChapter,
     GetSections,
     CreateSection,
     GetSection,
     COURSE_DELETED,
     COURSE_CREATED,
     COURSE_PUBLISHED
-
 }
 
 function time() {

@@ -11,7 +11,10 @@ export default {
   publishCourse,
   renameCourse,
   updateCourseDescription,
-  createChapter
+  createChapter,
+  renameChapter,
+  updateChapterDescription,
+  adjustChapterSeq
 }
 
 /**
@@ -119,5 +122,47 @@ function createChapter(courseId, chapterName, chapterDescription) {
     headers: {
       'Authorization': 'Bearer ' + Identity.getAccessToken()
     }
+  })
+}
+
+/**
+ * @param {*} courseId
+ * @param {*} name
+ */
+function renameChapter(chapterId, name) {
+  return $.ajax({
+    url: G_API + '/renameChapter',
+    data: {
+      id: chapterId,
+      name
+    },
+    method: 'post',
+    headers: {
+      'Authorization': 'Bearer ' + Identity.getAccessToken()
+    }
+  })
+}
+
+/**
+ * @param {*} courseId
+ * @param {*} name
+ */
+function updateChapterDescription(chapterId, description) {
+  return $.ajax({
+    url: G_API + '/updateChapterDescription',
+    data: {
+      id: chapterId,
+      description
+    },
+    method: 'post',
+    headers: {
+      'Authorization': 'Bearer ' + Identity.getAccessToken()
+    }
+  })
+}
+
+function adjustChapterSeq(chapterId, seq) {
+  return new Promise((resolve, reject) => {
+    setTimeout(resolve, 2000)
   })
 }

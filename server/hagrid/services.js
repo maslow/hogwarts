@@ -37,6 +37,8 @@ let services = [{
         "/updateCourseDescription",
         "/publishCourse",
         "/createChapter",
+        "/renameChapter",
+        "/updateChapterDescription",
         "/createSection",
         "/createSectionCodeFolder",
         "/renameSectionCodeFileName",

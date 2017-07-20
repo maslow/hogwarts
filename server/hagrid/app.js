@@ -61,7 +61,7 @@ const server = app
         let port = server.address().port;
         console.log(`listening on port ${host}:${port}`)
     })
-    .on('request', (r) => console.log(new Date().toLocaleString() + ' ' + r.headers.host + r.url))
+    .on('request', (r) => console.log(new Date().toLocaleString() + ' ' + `${r.headers.host}${r.url}  ${r.method}`))
 
 function proxy_to(target, auth) {
     let handler = function (req, res) {

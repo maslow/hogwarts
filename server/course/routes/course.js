@@ -93,6 +93,9 @@ router.post('/renameCourse', async function (req, res) {
     if (!course0)
         return res.status(404).send("Object not found")
 
+    if (course0.created_by != req.uid)
+        return res.status(401).send('Permission denied')
+
     let ret = await course.UpdateCourse(courseId, {
         name
     })
@@ -114,6 +117,9 @@ router.post('/publishCourse', async function (req, res) {
     let course0 = await course.GetCourseById(courseId)
     if (!course0)
         return res.status(404).send("Object not found")
+
+    if (course0.created_by != req.uid)
+        return res.status(401).send('Permission denied')
 
     if (course0.status !== 0)
         return res.status(422).send("Course was already published or deleted")
@@ -142,6 +148,9 @@ router.post('/updateCourseDescription', async function (req, res) {
     if (!course0)
         return res.status(404).send("Object not found")
 
+    if (course0.created_by != req.uid)
+        return res.status(401).send('Permission denied')
+
     let ret = await course.UpdateCourse(courseId, {
         description
     })
@@ -163,13 +172,77 @@ router.post('/createChapter', async function (req, res) {
 
     let courseId = req.body.course_id
     let seq = req.body.seq || 0
-    if (!await course.GetCourseById(courseId))
-        return res.status(422).send({
-            cid: "Course Id is invalid"
-        })
+    let course0 = await course.GetCourseById(courseId)
+    if (!course0)
+        return res.status(422).send("Course Id is invalid")
+
+    if (course0.created_by != req.uid)
+        return res.status(401).send('Permission denied')
 
     let chapter = await course.CreateChapter(courseId, req.body.name, req.body.description, seq)
     return res.status(201).send(chapter)
+})
+
+/**
+ * 重命名章节
+ */
+router.post('/renameChapter', async function (req, res) {
+    req.checkBody('id').notEmpty().isLength(1, 64)
+    req.checkBody('name').notEmpty().isLength(1, 255)
+
+    let errors = await req.getValidationResult()
+    errors.useFirstErrorOnly()
+    if (errors.isEmpty() === false)
+        return res.status(422).send(errors.mapped())
+
+    let chapterId = req.body.id
+    let name = req.body.name
+    let chapter = await course.GetChapterById(chapterId)
+    if (!chapter)
+        return res.status(404).send("Chapter not found")
+
+    let course0 = await course.GetCourseById(chapter.course_id)
+    if (!course0)
+        return res.status(404).send("Course not found")
+
+    if (course0.created_by != req.uid)
+        return res.status(401).send('Permission denied')
+
+    let ret = await course.UpdateChapter(chapterId, {
+        name
+    })
+    res.status(201).send(ret)
+})
+
+/**
+ * 修改章节简介
+ */
+router.post('/updateChapterDescription', async function (req, res) {
+    req.checkBody('id').notEmpty().isLength(1, 64)
+    req.checkBody('description').notEmpty().isLength(1, 255)
+
+    let errors = await req.getValidationResult()
+    errors.useFirstErrorOnly()
+    if (errors.isEmpty() === false)
+        return res.status(422).send(errors.mapped())
+
+    let chapterId = req.body.id
+    let description = req.body.description
+    let chapter = await course.GetChapterById(chapterId)
+    if (!chapter)
+        return res.status(404).send("Chapter not found")
+
+    let course0 = await course.GetCourseById(chapter.course_id)
+    if (!course0)
+        return res.status(404).send("Course not found")
+
+    if (course0.created_by != req.uid)
+        return res.status(401).send('Permission denied')
+
+    let ret = await course.UpdateChapter(chapterId, {
+        description
+    })
+    res.status(201).send(ret)
 })
 
 router.get('/getSectionDetail', async function (req, res) {
