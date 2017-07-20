@@ -8,12 +8,12 @@
             <Tooltip placement="top" content="发布该课程" v-if="course.status === 0">
                 <Button type="text" shape="circle" size="small" icon="information-circled" @click="publishCourse"></Button>
             </Tooltip>
-            <Tooltip placement="top" content="已发布" v-if="course.status === 1">
+            <Tooltip placement="top" content="已发布" v-show="course.status == 1">
                 <Button type="text" shape="circle" size="small">
                     <Icon type="checkmark-circled" color="green"></Icon>
                 </Button>
             </Tooltip>
-    
+            
         </h1>
         <div id="course-description">
             <i>{{course.description}}</i>
@@ -39,10 +39,15 @@
                         <Button type="text" shape="circle" size="small" icon="ios-settings-strong"></Button>
                     </Tooltip>
                 </AdjustChapterSeq>
+                <DeleteChapter :chapter="ch" @ok="getCourse">
+                    <Tooltip placement="top" content="删除章节">
+                        <Button type="text" shape="circle" size="small" icon="trash-b"></Button>
+                    </Tooltip>
+                </DeleteChapter>
             </h2>
             <div class="layout-section">
                 <Collapse accordion>
-                    <Panel v-for="s in sections.filter(it => it.chapter_id == ch.id)" :key="s.id">
+                    <Panel v-for="s in ch.sections" :key="s.id">
                         {{s.name}}
                         <Tooltip placement="right" :content="s.status === 1 ? '已发布' : '未发布'">
                             <Icon type="checkmark-circled" color="green" v-if="s.status === 1"></Icon>
@@ -71,6 +76,7 @@
 
 
 <script>
+import _ from 'lodash'
 import course from '@/api/course'
 import RenameCourseModal from './RenameCourseModal'
 import UpdateCourseDescriptionModal from './UpdateCourseDescriptionModal'
@@ -78,6 +84,7 @@ import CreateChapterModal from './CreateChapterModal'
 import RenameChapter from './RenameChapter'
 import UpdateChapterDescription from './UpdateChapterDescription'
 import AdjustChapterSeq from './AdjustChapterSeq'
+import DeleteChapter from './DeleteChapter'
 
 export default {
     data() {
@@ -85,7 +92,6 @@ export default {
             courseId: this.$route.params.id,
             course: {},
             chapters: [],
-            sections: [],
             renameCourseModal: false,
             updateCourseDescriptionModal: false,
             createChapterModal: false
@@ -98,8 +104,11 @@ export default {
         async getCourse() {
             let data = await course.getCourse(this.courseId)
             this.course = data.course
-            this.chapters = data.chapters
-            this.sections = data.sections
+            data.chapters = _.sortBy(data.chapters, ['seq', 'created_at'])
+            this.chapters = data.chapters.map(ch => {
+                ch['sections'] = data.sections.filter(s => s.chapter_id === ch.id)
+                return ch
+            })
         },
         publishCourse() {
             this.$Modal.confirm({
@@ -108,7 +117,7 @@ export default {
                 loading: true,
                 onOk: async () => {
                     let ret = await course.publishCourse(this.course.id)
-                    this.course = ret
+                    await this.getCourse()
                     this.$Modal.remove()
                 }
             })
@@ -120,7 +129,8 @@ export default {
         CreateChapterModal,
         RenameChapter,
         UpdateChapterDescription,
-        AdjustChapterSeq
+        AdjustChapterSeq,
+        DeleteChapter
     }
 }
 </script>

@@ -46,7 +46,7 @@ CREATE TABLE chapter (
     course_id int NOT NULL,
     name varchar(64) NOT NULL,
     description varchar(255),
-    seq int default 0, 
+    seq int default 50, 
     created_at int NOT NULL,
     updated_at int NOT NULL,
     PRIMARY KEY (id)
@@ -60,7 +60,7 @@ CREATE TABLE section (
     template_id int NOT NULL,
     name varchar(64) NOT NULL,
     description varchar(255),
-    seq int default 0,
+    seq int default 50,
     status int default 0,
     env JSON,
     created_by int NOT NULL,

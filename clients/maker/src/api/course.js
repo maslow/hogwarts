@@ -14,7 +14,8 @@ export default {
   createChapter,
   renameChapter,
   updateChapterDescription,
-  adjustChapterSeq
+  adjustChapterSeq,
+  deleteChapter
 }
 
 /**
@@ -162,7 +163,28 @@ function updateChapterDescription(chapterId, description) {
 }
 
 function adjustChapterSeq(chapterId, seq) {
-  return new Promise((resolve, reject) => {
-    setTimeout(resolve, 2000)
+  return $.ajax({
+    url: G_API + '/adjustChapterSeq',
+    data: {
+      id: chapterId,
+      seq
+    },
+    method: 'post',
+    headers: {
+      'Authorization': 'Bearer ' + Identity.getAccessToken()
+    }
+  })
+}
+
+function deleteChapter(chapterId) {
+  return $.ajax({
+    url: G_API + '/deleteChapter',
+    data: {
+      id: chapterId
+    },
+    method: 'post',
+    headers: {
+      'Authorization': 'Bearer ' + Identity.getAccessToken()
+    }
   })
 }

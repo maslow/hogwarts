@@ -2,7 +2,7 @@
     <Poptip v-model="show" placement="right-start" width="450" @on-popper-hide="close">
         <slot></slot>
         <div slot="content">
-            <Input v-model="value" type="textarea" style="width:400px;" :placeholder="chapter.description" :autosize="{minRows: 4,maxRows: 6}" @on-focus="copyTo" @on-enter="ok">
+            <Input v-model="value" type="textarea" style="width:400px;" :placeholder="chapter.description" :autosize="{minRows: 4,maxRows: 6}" @on-focus="copyTo">
             </Input>
             <div class="layout-button-save">
                 <Button type="ghost" icon="checkmark-round" :loading="loading" @click="ok">保存</Button>

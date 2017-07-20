@@ -1,9 +1,10 @@
 <template>
-    <Poptip v-model="show" placement="right" width="380" @on-popper-hide="close">
+    <Poptip v-model="show" placement="right" title="删除确认?" width="200" @on-popper-hide="close">
         <slot></slot>
         <div slot="content" class="layout">
-            <Slider v-model="value" @on-change="ok" show-input></Slider>
-            <div style="color:green" v-if="loading">Saving ...</div>    
+            <Button type="ghost" @click="close">取消</Button>
+            <Button type="error" @click="ok">确定删除</Button>
+            <div style="color:green" v-if="loading">Deleting ...</div>
         </div>
     </Poptip>
 </template>
@@ -12,7 +13,7 @@
 import course from '@/api/course'
 
 export default {
-    name: 'adjust-chapter-seq',
+    name: 'delete-chapter',
     props: {
         chapter: {
             type: Object,
@@ -22,26 +23,25 @@ export default {
     data() {
         return {
             show: false,
-            value: this.chapter.seq,
             loading: false
         }
     },
     methods: {
         async ok() {
-            if (this.value === this.chapter.seq) {
-                this.$Notice.info({
-                    title: '数据无变更',
-                    desc: '章节次序未改变，或新旧次序相同'
+            if (this.chapter.sections && this.chapter.sections.length) {
+                this.$Notice.error({
+                    title: '禁止删除非空章节',
+                    desc: '章节内有小节时不允许删除，请先删除该章节内的小节'
                 })
                 return this.show = false
             }
             this.loading = true
             try {
-                let data = await course.adjustChapterSeq(this.chapter.id, this.value)
+                let data = await course.deleteChapter(this.chapter.id)
                 this.$emit('ok', data)
                 this.show = false
                 this.$Notice.success({
-                    title: '调整章节次序成功!'
+                    title: '删除章节成功!'
                 })
             } catch (err) {
                 console.log(err)
@@ -54,6 +54,7 @@ export default {
             this.loading = false
         },
         close() {
+            this.show = false
         }
     }
 }
@@ -61,6 +62,6 @@ export default {
 
 <style scoped>
 .layout {
-    padding: 30px 9px 0 9px;
+    padding: 5px;
 }
 </style>

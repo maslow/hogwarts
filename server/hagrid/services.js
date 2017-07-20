@@ -39,6 +39,8 @@ let services = [{
         "/createChapter",
         "/renameChapter",
         "/updateChapterDescription",
+        "/adjustChapterSeq",
+        "/deleteChapter",
         "/createSection",
         "/createSectionCodeFolder",
         "/renameSectionCodeFileName",

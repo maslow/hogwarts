@@ -4,7 +4,6 @@ const COURSE_DELETED = -1
 const COURSE_CREATED = 0
 const COURSE_PUBLISHED = 1
 
-
 async function GetCoursesByUserId(userId) {
     let [rets] = await mysql.Query("select * from course where created_by = ?", [userId])
     return rets
@@ -12,14 +11,14 @@ async function GetCoursesByUserId(userId) {
 
 async function GetCourseById(id) {
     let [rets] = await mysql.Query("select * from course where id = ?", [id])
-    if (rets.length === 0)
+    if (rets.length === 0) 
         return false
     return rets[0]
 }
 
 async function GetCourseByName(name) {
     let [rets] = await mysql.Query("select * from course where name = ?", [name])
-    if (rets.length === 0)
+    if (rets.length === 0) 
         return false
     return rets[0]
 }
@@ -42,10 +41,12 @@ async function CreateCourse(name, description, userId) {
 async function UpdateCourse(courseId, data) {
     let sql = "update course set "
     let params = []
-    Object.keys(data).forEach(it => {
-        sql += `${it} = ?,`
-        params.push(data[it])
-    })
+    Object
+        .keys(data)
+        .forEach(it => {
+            sql += `${it} = ?,`
+            params.push(data[it])
+        })
     sql += `updated_at = ? where id = ?`
     params.push(time())
     params.push(courseId)
@@ -76,7 +77,7 @@ async function GetChapters(course_id) {
 
 async function GetChapterById(chapterId) {
     let [rets] = await mysql.Query("select * from chapter where id = ?", [chapterId])
-    if (rets.length === 0)
+    if (rets.length === 0) 
         return false
     return rets[0]
 }
@@ -84,16 +85,22 @@ async function GetChapterById(chapterId) {
 async function UpdateChapter(chapterId, data) {
     let sql = "update chapter set "
     let params = []
-    Object.keys(data).forEach(it => {
-        sql += `${it} = ?,`
-        params.push(data[it])
-    })
+    Object
+        .keys(data)
+        .forEach(it => {
+            sql += `${it} = ?,`
+            params.push(data[it])
+        })
     sql += `updated_at = ? where id = ?`
     params.push(time())
     params.push(chapterId)
-    console.log(sql)
     let [rets] = await mysql.Query(sql, params)
     return GetChapterById(chapterId)
+}
+
+async function DeleteChapter(chapterId) {
+    let [rets] = await mysql.Query("delete  from chapter where id = ?", [chapterId])
+    return rets
 }
 
 async function GetSections(course_id) {
@@ -103,7 +110,7 @@ async function GetSections(course_id) {
 
 async function GetSection(section_id) {
     let [rets] = await mysql.Query("select * from section where id = ?", [section_id])
-    if (rets.length === 0)
+    if (rets.length === 0) 
         return false
     return rets[0]
 }
@@ -138,6 +145,7 @@ module.exports = {
     GetChapters,
     GetChapterById,
     UpdateChapter,
+    DeleteChapter,
     GetSections,
     CreateSection,
     GetSection,
