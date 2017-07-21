@@ -51,9 +51,16 @@
                     <Tooltip placement="right" content="已发布" v-show="s.status === 1">
                         <Icon type="checkmark-circled" color="green" v-if="s.status === 1"></Icon>
                     </Tooltip>
-                    <div slot="content">
-                        <p>{{s.description}}</p>
-                    </div>
+                    <RenameSection :section="s" @ok="getCourse">
+                        <Tooltip placement="top" content="修改名称">
+                            <Button type="text" shape="circle" size="small" icon="edit"></Button>
+                        </Tooltip>
+                    </RenameSection>
+                    <UpdateSectionDescription :section="s" @ok="getCourse">
+                        <Tooltip placement="top" content="编辑简介">
+                            <Button type="text" shape="circle" size="small" icon="ios-lightbulb"></Button>
+                        </Tooltip>
+                    </UpdateSectionDescription>
                 </Card>
             </div>
         </div>
@@ -61,7 +68,6 @@
             <Affix :offset-bottom="20">
                 <Button type="info" size="small" icon="plus" @click="createChapterModal = true">添加新章节</Button>
                 <Button type="ghost" size="small" icon="plus" @click="createSectionModal = true">添加新小节</Button>
-    
             </Affix>
         </div>
     
@@ -85,6 +91,8 @@ import UpdateChapterDescription from './UpdateChapterDescription'
 import AdjustChapterSeq from './AdjustChapterSeq'
 import DeleteChapter from './DeleteChapter'
 import CreateSectionModal from './CreateSectionModal'
+import RenameSection from './RenameSection'
+import UpdateSectionDescription from './UpdateSectionDescription'
 
 export default {
     data() {
@@ -132,7 +140,9 @@ export default {
         UpdateChapterDescription,
         AdjustChapterSeq,
         DeleteChapter,
-        CreateSectionModal
+        CreateSectionModal,
+        RenameSection,
+        UpdateSectionDescription
     }
 }
 </script>

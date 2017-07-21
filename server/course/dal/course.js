@@ -135,6 +135,22 @@ async function CreateSection(course_id, chapter_id, name, description, template_
     return rets0
 }
 
+async function UpdateSection(sectionId, data) {
+    let sql = "update section set "
+    let params = []
+    Object
+        .keys(data)
+        .forEach(it => {
+            sql += `${it} = ?,`
+            params.push(data[it])
+        })
+    sql += `updated_at = ? where id = ?`
+    params.push(time())
+    params.push(sectionId)
+    let [rets] = await mysql.Query(sql, params)
+    return GetSection(sectionId)
+}
+
 module.exports = {
     GetCoursesByUserId,
     GetCourseById,
@@ -149,6 +165,7 @@ module.exports = {
     GetSections,
     CreateSection,
     GetSection,
+    UpdateSection,
     COURSE_DELETED,
     COURSE_CREATED,
     COURSE_PUBLISHED

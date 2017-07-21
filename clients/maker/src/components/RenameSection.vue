@@ -2,8 +2,8 @@
     <Poptip v-model="show" placement="right" width="380" @on-popper-hide="close">
         <slot></slot>
         <div slot="content">
-            <Input v-model="value" :placeholder="chapter.name" style="width: 300px" @on-focus="copyTo" @on-enter="ok"></Input>
-            <Button type="ghost" shape="circle" icon="checkmark-round" :disabled="!value || value === chapter.name" :loading="loading" @click="ok"></Button>
+            <Input v-model="value" :placeholder="section.name" style="width: 300px" @on-focus="copyTo" @on-enter="ok"></Input>
+            <Button type="ghost" shape="circle" icon="checkmark-round" :disabled="!value || value === section.name" :loading="loading" @click="ok"></Button>
         </div>
     </Poptip>
 </template>
@@ -13,7 +13,7 @@ import course from '@/api/course'
 
 export default {
     props: {
-        chapter: {
+        section: {
             type: Object,
             required: true
         }
@@ -28,28 +28,28 @@ export default {
     methods: {
         copyTo() {
             if (!this.value)
-                this.value = this.chapter.name
+                this.value = this.section.name
         },
         async ok() {
             if (!this.value) {
                 return this.$Notice.error({
                     title: '操作失败',
-                    desc: '章节名称不可为空'
+                    desc: '名称不可为空'
                 })
             }
-            if (this.value === this.chapter.name) {
+            if (this.value === this.section.name) {
                 this.$Notice.info({
                     title: '数据无变更',
-                    desc: '章节名称未改变，或新旧名称相同'
+                    desc: '名称未改变，或新旧名称相同'
                 })
                 return this.show = false
             }
             this.loading = true
 
             try {
-                let data = await course.renameChapter(this.chapter.id, this.value)
+                let data = await course.renameSection(this.section.id, this.value)
                 this.$Notice.success({
-                    title: '重命名章节成功'
+                    title: '重命名成功'
                 })
                 this.$emit('ok', data)
                 this.show = false

@@ -70,5 +70,35 @@ router.post('/createSection', async function (req, res) {
     return res.status(200).send(section)
 })
 
+/**
+ * 更新章节
+ */
+router.post('/updateSection', async function (req, res){
+    let section_id = req.body.section_id
+    let name = req.body.name || null
+    let description = req.body.description || null
+    let seq = req.body.seq || null
+    let template_id = req.body.template_id || null
+    let image = req.body.image || null
+
+    let section = await course.GetSection(section_id)
+    if (!section)
+        return res.status(422).send("Section not found")
+
+    if (section.created_by != req.uid)
+        return res.status(401).send('Permission denied')
+
+    let data = {}
+    name === null || (data.name = name)
+    description === null || (data.description = description)
+    seq === null || (data.seq = seq)
+    template_id === null || (data.template_id = template_id)
+    if(image !== null){
+        data.env = section.env
+        data.env.image = image
+    }
+    let rets = await course.UpdateSection(section_id, data)
+    return res.status(200).send(rets)
+})
 
 module.exports = router

@@ -6,60 +6,63 @@ const servers = {
     DBM: 'http://127.0.0.1:8004'
 }
 
-let services = [{
-    routes: ['/db/mysql/:jobid'],
-    target: servers.DBM,
-    auth: true
-}, {
-    routes: [
-        "/tokens", "/users"
-    ],
-    target: servers.AUTH,
-    auth: false
-}, {
-    routes: ["/users/:id"],
-    target: servers.AUTH,
-    auth: true
-}, {
-    routes: [
-        "/getTemplates",
-        "/getUserCourses",
-        "/getCourseDetail",
-        "/getSectionDetail",
-        "/getSectionCodeFiles",
-        "/getSectionCodeFileContent"
-    ],
-    target: servers.COURSE,
-    auth: false
-}, {
-    routes: [
-        "/createCourse",
-        "/renameCourse",
-        "/updateCourseDescription",
-        "/publishCourse",
-        "/createChapter",
-        "/renameChapter",
-        "/updateChapterDescription",
-        "/adjustChapterSeq",
-        "/deleteChapter",
-        "/createSection",
-        "/createSectionCodeFolder",
-        "/renameSectionCodeFileName",
-        "/updateSectionCodeFileContent"
-    ],
-    target: servers.COURSE,
-    auth: true
-}, {
-    routes: ["/eval/:jobid"],
-    target: servers.EVAL,
-    auth: true
-}, {
-    routes: [
-        "/jobs", "/jobs/:jobId", "/jobs/:courseId/:chapterId/:sectionId", "/jobs/:jobId/files", "/jobs/:jobId/files/:fileId"
-    ],
-    target: servers.JOB,
-    auth: true
-}]
+let services = [
+    {
+        routes: ['/db/mysql/:jobid'],
+        target: servers.DBM,
+        auth: true
+    }, {
+        routes: [
+            "/tokens", "/users"
+        ],
+        target: servers.AUTH,
+        auth: false
+    }, {
+        routes: ["/users/:id"],
+        target: servers.AUTH,
+        auth: true
+    }, {
+        routes: [
+            "/getTemplates",
+            "/getUserCourses",
+            "/getCourseDetail",
+            "/getSectionDetail",
+            "/getSectionCodeFiles",
+            "/getSectionCodeFileContent"
+        ],
+        target: servers.COURSE,
+        auth: false
+    }, {
+        routes: [
+            "/createCourse",
+            "/updateCourse",
+            "/publishCourse",
+
+            "/createChapter",
+            "/updateChapter",
+            "/deleteChapter",
+
+            "/createSection",
+            "/updateSection",
+
+            "/createSectionCodeFolder",
+            "/renameSectionCodeFileName",
+            "/updateSectionCodeFileContent"
+        ],
+        target: servers.COURSE,
+        auth: true
+    }, {
+        routes: ["/eval/:jobid"],
+        target: servers.EVAL,
+        auth: true
+    }, {
+        routes: [
+            "/jobs", "/jobs/:jobId", "/jobs/:courseId/:chapterId/:sectionId", "/jobs/:jobId/files", "/jobs/:jobId/files/:fileId"
+        ],
+        target: servers.JOB,
+        auth: true
+    }
+]
 module.exports = {
     servers,
     services

@@ -1,5 +1,5 @@
 <template>
-    <Modal v-model="show" title="新建小节" @on-ok="ok" @on-cancel="cancel" :mask-closable="false">
+    <Modal v-model="show" title="新建小节" @on-ok="ok" @on-cancel="cancel">
         <Form ref="new-section-form" :model="data" :rules="rules" label-position="right" :label-width="100">
             <Form-item label="所属课程">
                 <Input readonly :value="course.name"></Input>
