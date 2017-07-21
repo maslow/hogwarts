@@ -24,10 +24,7 @@ export default {
 function getImages() {
   let langs = [
     'php:7.1',
-    'php:5.6',
     'node:8.0',
-    'node:6',
-    'java:8',
     'python:2.7',
     'python:3.0'
   ]

@@ -20,6 +20,8 @@ app.use(expressValidator())
  * Routes
  */
 app.use(require("./routes/course"))
+app.use(require("./routes/chapter"))
+app.use(require("./routes/section"))
 app.use(require('./routes/code'))
 app.use(require('./routes/template'))
 
