@@ -53,14 +53,25 @@
                     </Tooltip>
                     <RenameSection :section="s" @ok="getCourse">
                         <Tooltip placement="top" content="修改名称">
-                            <Button type="text" shape="circle" size="small" icon="edit"></Button>
+                            <Button type="text" shape="circle" size="small">
+                                <Icon type="edit" color="lightblue"></Icon>
+                            </Button>
                         </Tooltip>
                     </RenameSection>
                     <UpdateSectionDescription :section="s" @ok="getCourse">
                         <Tooltip placement="top" content="编辑简介">
-                            <Button type="text" shape="circle" size="small" icon="ios-lightbulb"></Button>
+                            <Button type="text" shape="circle" size="small">
+                                <Icon type="ios-lightbulb" color="lightblue"></Icon>
+                            </Button>
                         </Tooltip>
                     </UpdateSectionDescription>
+                    <AdjustSectionSeq :section="s" @ok="getCourse">
+                        <Tooltip placement="top" content="调整次序">
+                            <Button type="text" shape="circle" size="small">
+                                <Icon type="ios-settings-strong" color="lightblue"></Icon>
+                            </Button>
+                        </Tooltip>
+                    </AdjustSectionSeq>
                 </Card>
             </div>
         </div>
@@ -93,6 +104,7 @@ import DeleteChapter from './DeleteChapter'
 import CreateSectionModal from './CreateSectionModal'
 import RenameSection from './RenameSection'
 import UpdateSectionDescription from './UpdateSectionDescription'
+import AdjustSectionSeq from './AdjustSectionSeq'
 
 export default {
     data() {
@@ -115,7 +127,8 @@ export default {
             this.course = data.course
             data.chapters = _.sortBy(data.chapters, ['seq', 'created_at'])
             this.chapters = data.chapters.map(ch => {
-                ch['sections'] = data.sections.filter(s => s.chapter_id === ch.id)
+                let ss = data.sections.filter(s => s.chapter_id === ch.id)
+                ch['sections'] = _.sortBy(ss, ['seq', 'created_at'])
                 return ch
             })
         },
@@ -142,7 +155,8 @@ export default {
         DeleteChapter,
         CreateSectionModal,
         RenameSection,
-        UpdateSectionDescription
+        UpdateSectionDescription,
+        AdjustSectionSeq
     }
 }
 </script>

@@ -50,7 +50,6 @@ async function UpdateCourse(courseId, data) {
     sql += `updated_at = ? where id = ?`
     params.push(time())
     params.push(courseId)
-    console.log(sql)
     let [rets] = await mysql.Query(sql, params)
     return GetCourseById(courseId)
 }

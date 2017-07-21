@@ -1,5 +1,5 @@
 <template>
-    <Poptip v-model="show" placement="right-start" width="450" @on-popper-hide="close">
+    <Poptip v-model="show" placement="right" width="450" @on-popper-hide="close">
         <slot></slot>
         <div slot="content">
             <Input v-model="value" type="textarea" style="width:400px;" :placeholder="section.description" :autosize="{minRows: 4,maxRows: 6}" @on-focus="copyTo">
