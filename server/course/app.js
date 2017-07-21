@@ -21,5 +21,6 @@ app.use(expressValidator())
  */
 app.use(require("./routes/course"))
 app.use(require('./routes/code'))
+app.use(require('./routes/template'))
 
 app.listen(process.argv[2] || 8001, '127.0.0.1', () => console.log(`listening on 8001`))

@@ -1,5 +1,11 @@
 const fs = require("fs-extra")
 const path = require("path")
+const mysql = require("../mysql.js")
+
+async function GetTemplates() {
+    let [rets] = await mysql.Query("select * from template")
+    return rets
+}
 
 const templateRoot = path.join(__dirname, '..', 'data', 'templates')
 
@@ -32,5 +38,6 @@ async function GetTemplateFileContent(templateId, file) {
 
 module.exports = {
     GetTemplateDirFiles,
-    GetTemplateFileContent
+    GetTemplateFileContent,
+    GetTemplates
 }

@@ -39,20 +39,12 @@ function getImages() {
 }
 
 function getTemplates() {
-  let data = [{
-    id: 1,
-    name: 'Express'
-  }, {
-    id: 2,
-    name: 'Yii Framework 2.0'
-  }, {
-    id: 3,
-    name: 'ThinkPHP 9.0'
-  }]
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(data)
-    }, 500)
+  return $.ajax({
+    url: G_API + '/getTemplates',
+    method: 'get',
+    headers: {
+      'Authorization': 'Bearer ' + Identity.getAccessToken()
+    }
   })
 }
 

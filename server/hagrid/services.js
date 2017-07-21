@@ -22,6 +22,7 @@ let services = [{
     auth: true
 }, {
     routes: [
+        "/getTemplates",
         "/getUserCourses",
         "/getCourseDetail",
         "/getSectionDetail",
