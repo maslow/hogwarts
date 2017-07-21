@@ -327,7 +327,6 @@ router.get('/getSectionDetail', async function (req, res) {
 router.post('/createSection', async function (req, res) {
     req.checkBody('course_id').notEmpty().isInt({min: 1})
     req.checkBody('chapter_id').notEmpty().isInt({min: 1})
-    req.checkBody('template_id').notEmpty().isInt({min: 1})
     req.checkBody('name').notEmpty().isLength(1, 64)
     req.checkBody('description').notEmpty().isLength(1, 255)
     req.checkBody('image').notEmpty()
@@ -339,10 +338,14 @@ router.post('/createSection', async function (req, res) {
 
     let courseId = req.body.course_id
     let seq = req.body.seq || 50
-    if (!await course.GetCourseById(courseId))
-        return res.status(422).send({
-            cid: "Course Id is invalid"
-        })
+    let template_id = req.body.template_id || 0
+
+    let course0 = await course.GetCourseById(courseId)
+    if (!course0)
+        return res.status(422).send("Course not found")
+
+    if (course0.created_by != req.uid)
+        return res.status(401).send('Permission denied')
 
     if (!await course.GetChapterById(courseId, req.body.chapter_id))
         return res.status(422).send({
@@ -358,7 +361,7 @@ router.post('/createSection', async function (req, res) {
         req.body.chapter_id,
         req.body.name,
         req.body.description,
-        req.body.template_id,
+        template_id,
         seq,
         env,
         req.uid)

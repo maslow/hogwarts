@@ -15,7 +15,45 @@ export default {
   renameChapter,
   updateChapterDescription,
   adjustChapterSeq,
-  deleteChapter
+  deleteChapter,
+  getImages,
+  getTemplates,
+  createSection
+}
+
+function getImages() {
+  let langs = [
+    'php:7.1',
+    'php:5.6',
+    'node:8.0',
+    'node:6',
+    'java:8',
+    'python:2.7',
+    'python:3.0'
+  ]
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(langs)
+    }, 500)
+  })
+}
+
+function getTemplates() {
+  let data = [{
+    id: 1,
+    name: 'Express'
+  }, {
+    id: 2,
+    name: 'Yii Framework 2.0'
+  }, {
+    id: 3,
+    name: 'ThinkPHP 9.0'
+  }]
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(data)
+    }, 500)
+  })
 }
 
 /**
@@ -181,6 +219,24 @@ function deleteChapter(chapterId) {
     url: G_API + '/deleteChapter',
     data: {
       id: chapterId
+    },
+    method: 'post',
+    headers: {
+      'Authorization': 'Bearer ' + Identity.getAccessToken()
+    }
+  })
+}
+
+function createSection(courseId, chapterId, templateId, name, description, image) {
+  return $.ajax({
+    url: G_API + '/createSection',
+    data: {
+      course_id: courseId,
+      chapter_id: chapterId,
+      template_id: templateId || 0,
+      name,
+      description,
+      image
     },
     method: 'post',
     headers: {

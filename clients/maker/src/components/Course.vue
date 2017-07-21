@@ -13,7 +13,7 @@
                     <Icon type="checkmark-circled" color="green"></Icon>
                 </Button>
             </Tooltip>
-            
+    
         </h1>
         <div id="course-description">
             <i>{{course.description}}</i>
@@ -46,24 +46,22 @@
                 </DeleteChapter>
             </h2>
             <div class="layout-section">
-                <Collapse accordion>
-                    <Panel v-for="s in ch.sections" :key="s.id">
-                        {{s.name}}
-                        <Tooltip placement="right" :content="s.status === 1 ? '已发布' : '未发布'">
-                            <Icon type="checkmark-circled" color="green" v-if="s.status === 1"></Icon>
-                            <Icon type="information-circled" color="#ff9900" v-if="s.status === 0"></Icon>
-                        </Tooltip>
-                        <div slot="content">
-                            <p>{{s.description}}</p>
-                        </div>
-                    </Panel>
-                </Collapse>
-                <Button class="button-section-create" type="ghost" icon="plus">添加新小节</Button>
+                <Card class="layout-section-item" v-for="s in ch.sections" :key="s.id">
+                    {{s.name}}
+                    <Tooltip placement="right" content="已发布" v-show="s.status === 1">
+                        <Icon type="checkmark-circled" color="green" v-if="s.status === 1"></Icon>
+                    </Tooltip>
+                    <div slot="content">
+                        <p>{{s.description}}</p>
+                    </div>
+                </Card>
             </div>
         </div>
         <div class="layout-chapter">
             <Affix :offset-bottom="20">
-                <Button type="info" size="small" @click="createChapterModal = true" icon="plus">添加新章节</Button>
+                <Button type="info" size="small" icon="plus" @click="createChapterModal = true">添加新章节</Button>
+                <Button type="ghost" size="small" icon="plus" @click="createSectionModal = true">添加新小节</Button>
+    
             </Affix>
         </div>
     
@@ -71,6 +69,7 @@
         <RenameCourseModal v-model="renameCourseModal" :course="course" @ok="getCourse"></RenameCourseModal>
         <UpdateCourseDescriptionModal v-model="updateCourseDescriptionModal" :course="course" @ok="getCourse"></UpdateCourseDescriptionModal>
         <CreateChapterModal v-model="createChapterModal" :course="course" @ok="getCourse"></CreateChapterModal>
+        <CreateSectionModal v-model="createSectionModal" :course="course" :chapters="chapters" @ok="getCourse"></CreateSectionModal>
     </div>
 </template>
 
@@ -85,6 +84,7 @@ import RenameChapter from './RenameChapter'
 import UpdateChapterDescription from './UpdateChapterDescription'
 import AdjustChapterSeq from './AdjustChapterSeq'
 import DeleteChapter from './DeleteChapter'
+import CreateSectionModal from './CreateSectionModal'
 
 export default {
     data() {
@@ -94,7 +94,8 @@ export default {
             chapters: [],
             renameCourseModal: false,
             updateCourseDescriptionModal: false,
-            createChapterModal: false
+            createChapterModal: false,
+            createSectionModal: false
         }
     },
     async created() {
@@ -130,7 +131,8 @@ export default {
         RenameChapter,
         UpdateChapterDescription,
         AdjustChapterSeq,
-        DeleteChapter
+        DeleteChapter,
+        CreateSectionModal
     }
 }
 </script>
@@ -142,7 +144,7 @@ h2 {
 }
 
 #course-description {
-    margin-left: 17px;
+    margin-left: 30px;
     color: #666;
     margin-top: 20px;
     padding: 3px;
@@ -151,14 +153,14 @@ h2 {
 
 .layout-chapter {
     width: 600px;
-    margin: 25px 15px;
+    margin: 25px 30px;
 }
 
 .layout-section {
-    margin: 5px 25px;
+    margin: 5px 45px;
 }
 
-.button-section-create {
+.layout-section-item {
     margin-top: 5px;
 }
 </style>
