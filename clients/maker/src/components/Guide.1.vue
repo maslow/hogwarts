@@ -1,26 +1,21 @@
 <template>
   <div class="guide">
     <h1>{{ msg }}</h1>
-    <vue-code v-model="code" :options="options"></vue-code>
+    <CodeMirror :code="code" :options="options" ref="codeEditor"></CodeMirror>
   </div>
 </template>
 
 <script>
-import VueCode from 'vue-code';
-
-
-// require additional CodeMirror files
-import 'codemirror/mode/javascript/javascript';
-import 'codemirror/lib/codemirror.css';
+import CodeMirror from './codemirror.vue'
 
 export default {
   components: {
-    VueCode
+    CodeMirror
   },
   name: 'guide',
   data() {
     return {
-      msg: 'Gui de!',
+      msg: 'Guide!',
       code: 'var i = 0;',
       options: {
         tabSize: 4,
@@ -33,7 +28,12 @@ export default {
         lineWrapping: true
       }
     }
-  }
+  },
+  computed: {
+    editor() {
+      return this.$refs.codeEditor.editor
+    }
+  },
 }
 </script>
 
