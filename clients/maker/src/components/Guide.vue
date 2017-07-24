@@ -1,21 +1,20 @@
 <template>
   <div class="guide">
     <h1>{{ msg }}</h1>
-    <vue-code v-model="code" :options="options"></vue-code>
+    <Button @click="changeMode">Change </Button>
+    <codemirror v-model="code" :options="options" width="600px" height="600px"></codemirror>
+    <pre>
+        {{code}}
+      </pre>
   </div>
 </template>
 
 <script>
-import VueCode from 'vue-code';
-
-
-// require additional CodeMirror files
-import 'codemirror/mode/javascript/javascript';
-import 'codemirror/lib/codemirror.css';
+import codemirror from './codemirror.vue';
 
 export default {
   components: {
-    VueCode
+    codemirror
   },
   name: 'guide',
   data() {
@@ -30,8 +29,25 @@ export default {
         line: true,
         foldGutter: true,
         gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-        lineWrapping: true
+        lineWrapping: true,
       }
+    }
+  },
+  methods: {
+    changeMode() {
+      this.code = "<?php echo 'hi';?>"
+      this.options.mode = 'text/x-php'
+    }
+  },
+  mounted() {
+    // Hack css for the bug in codemirror.vue
+    setTimeout(() => {
+      document.querySelector('.CodeMirror-gutters').style.left = '0'
+    }, 0)
+  },
+  computed: {
+    editor() {
+      return this.$refs.codeEditor.editor
     }
   }
 }
@@ -42,5 +58,10 @@ export default {
 h1,
 h2 {
   font-weight: normal;
+}
+
+.CodeMirror {
+  border: 1px solid #eee;
+  height: 800px;
 }
 </style>
