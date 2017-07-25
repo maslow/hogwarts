@@ -3,7 +3,7 @@
         <h1>
             {{course.name}}
             <Tooltip placement="top" content="修改名称">
-                <Button type="text" shape="circle" size="small" icon="edit" @click="renameCourseModal = true"></Button>
+                <Button type="text" shape="circle" size="small" icon="compose" @click="renameCourseModal = true"></Button>
             </Tooltip>
             <Tooltip placement="top" content="发布该课程" v-if="course.status === 0">
                 <Button type="text" shape="circle" size="small" icon="information-circled" @click="publishCourse"></Button>
@@ -13,12 +13,12 @@
                     <Icon type="checkmark-circled" color="green"></Icon>
                 </Button>
             </Tooltip>
-            
+    
         </h1>
         <div id="course-description">
             <i>{{course.description}}</i>
             <Tooltip placement="top" content="修改名称">
-                <Button type="text" shape="circle" size="small" icon="edit" @click="updateCourseDescriptionModal = true"></Button>
+                <Button type="text" shape="circle" size="small" icon="compose" @click="updateCourseDescriptionModal = true"></Button>
             </Tooltip>
         </div>
         <div class="layout-chapter" v-for="(ch, index) in chapters" :key="ch.id">
@@ -26,52 +26,81 @@
                 {{ch.name}}
                 <RenameChapter :chapter="ch" @ok="getCourse">
                     <Tooltip placement="top" content="修改名称">
-                        <Button type="text" shape="circle" size="small" icon="edit"></Button>
+                        <Button type="text" shape="circle" size="small">
+                            <Icon type="compose" color="#80848f"></Icon>
+                        </Button>
                     </Tooltip>
                 </RenameChapter>
                 <UpdateChapterDescription :chapter="ch" @ok="getCourse">
                     <Tooltip placement="top" content="编辑简介">
-                        <Button type="text" shape="circle" size="small" icon="ios-lightbulb"></Button>
+                        <Button type="text" shape="circle" size="small">
+                            <Icon type="quote" color="#80848f"></Icon>
+                        </Button>
                     </Tooltip>
                 </UpdateChapterDescription>
                 <AdjustChapterSeq :chapter="ch" @ok="getCourse">
                     <Tooltip placement="top" content="调整次序">
-                        <Button type="text" shape="circle" size="small" icon="ios-settings-strong"></Button>
+                        <Button type="text" shape="circle" size="small">
+                            <Icon type="ios-settings-strong" color="#80848f"></Icon>
+                        </Button>
                     </Tooltip>
                 </AdjustChapterSeq>
                 <DeleteChapter :chapter="ch" @ok="getCourse">
                     <Tooltip placement="top" content="删除章节">
-                        <Button type="text" shape="circle" size="small" icon="trash-b"></Button>
+                        <Button type="text" shape="circle" size="small">
+                            <Icon type="trash-b" color="#80848f"></Icon>
+                        </Button>
                     </Tooltip>
                 </DeleteChapter>
             </h2>
             <div class="layout-section">
                 <Card class="layout-section-item" v-for="s in ch.sections" :key="s.id">
-                    <router-link :to="'/section-codes/' + s.id">{{s.name}}</router-link>
+                    {{s.name}}
                     <Tooltip placement="right" content="已发布" v-show="s.status === 1">
                         <Icon type="checkmark-circled" color="green" v-if="s.status === 1"></Icon>
                     </Tooltip>
                     <RenameSection :section="s" @ok="getCourse">
                         <Tooltip placement="top" content="修改名称">
                             <Button type="text" shape="circle" size="small">
-                                <Icon type="edit" color="lightblue"></Icon>
+                                <Icon type="compose" color="#2d8cf0"></Icon>
                             </Button>
                         </Tooltip>
                     </RenameSection>
                     <UpdateSectionDescription :section="s" @ok="getCourse">
                         <Tooltip placement="top" content="编辑简介">
                             <Button type="text" shape="circle" size="small">
-                                <Icon type="ios-lightbulb" color="lightblue"></Icon>
+                                <Icon type="quote" color="#5cadff"></Icon>
                             </Button>
                         </Tooltip>
                     </UpdateSectionDescription>
                     <AdjustSectionSeq :section="s" @ok="getCourse">
                         <Tooltip placement="top" content="调整次序">
                             <Button type="text" shape="circle" size="small">
-                                <Icon type="ios-settings-strong" color="lightblue"></Icon>
+                                <Icon type="ios-settings-strong" color="#3091f2"></Icon>
                             </Button>
                         </Tooltip>
                     </AdjustSectionSeq>
+                    <Tooltip placement="top" content="初始代码">
+                        <router-link :to="'/section-codes/' + s.id">
+                            <Button type="text" shape="circle" size="small">
+                                <Icon type="code" color="#ff9900"></Icon>
+                            </Button>
+                        </router-link>
+                    </Tooltip>
+                    <Tooltip placement="top" content="测试用例">
+                        <router-link :to="'/section-tests/' + s.id">
+                            <Button type="text" shape="circle" size="small">
+                                <Icon type="bug" color="#19be6b"></Icon>
+                            </Button>
+                        </router-link>
+                    </Tooltip>
+                    <Tooltip placement="top" content="任务文档">
+                        <router-link :to="'/section-docs/' + s.id">
+                            <Button type="text" shape="circle" size="small">
+                                <Icon type="flag" color="#ed3f14"></Icon>
+                            </Button>
+                        </router-link>
+                    </Tooltip>
                 </Card>
             </div>
         </div>
