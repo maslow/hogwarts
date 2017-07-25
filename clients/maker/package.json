@@ -11,6 +11,7 @@
     "lint": "eslint --ext .js,.vue src"
   },
   "dependencies": {
+    "blueimp-md5": "^2.7.0",
     "codemirror": "^5.28.0",
     "iview": "^2.0.0-rc.18",
     "jquery": "^3.2.1",

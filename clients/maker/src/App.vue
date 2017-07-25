@@ -14,7 +14,7 @@
             </div>
         </Menu>
         <div class="layout-content">
-            <transition name="slide-left" mode="out-in">
+            <transition  mode="out-in">
                 <router-view></router-view>
             </transition>
         </div>

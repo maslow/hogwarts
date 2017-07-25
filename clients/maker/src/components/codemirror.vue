@@ -8,6 +8,44 @@ const CodeMirror = require('codemirror')
 require('codemirror/lib/codemirror.css')
 require('codemirror/mode/meta')
 
+function loadMode(mode) {
+  //console.log(mode)
+  var isCustomMode = !!CodeMirror.modes[mode]
+
+  var m = CodeMirror.findModeByMIME(mode)
+
+  if (!m)
+    m = CodeMirror.findModeByName(mode)
+
+  if (!m)
+    m = CodeMirror.findModeByExtension(mode)
+
+  if (!m)
+    m = CodeMirror.findModeByFileName(mode)
+
+  //console.log('mode', m)
+
+  // require language
+  if (m && m !== 'null')
+    require('codemirror/mode/' + m.mode + '/' + m.mode + '.js')
+
+  return m
+}
+
+function loadTheme(theme) {
+  // theme config
+  if (theme && theme == 'solarized light')
+    theme = 'solarized'
+
+  if (theme && theme == 'solarized dark')
+    theme = 'solarized'
+
+  // require theme
+  if (theme)
+    require('codemirror/theme/' + theme + '.css')
+
+}
+
 export default {
   name: 'codemirror',
   data: function () {
@@ -16,136 +54,43 @@ export default {
     }
   },
   props: {
-    width:String,
-    height:String,
+    width: String,
+    height: String,
     code: String,
     value: String,
     unseenLines: Array,
     marker: Function,
-    loadtheme: {
-      type: Boolean,
-      default: function () {
-        return true
-      }
-    },
-    debugger: {
-      type: Boolean,
-      default: function () {
-        return true
-      }
-    },
     options: {
       type: Object,
       required: true
     },
   },
   created: function () {
+    let mode = loadMode(this.options.mode)
+    if (mode)
+      this.options.mode = mode.mime
 
-    if (this.options.lineNumbers === undefined) {
-      this.options.lineNumbers = true
-    }
-    if (this.options.lineWrapping === undefined) {
-      this.options.lineWrapping = false
-    }
-    if (this.options.mode === undefined) {
-      this.options.mode = 'text/javascript'
-    }
+    if (!this.width)
+      this.width = 'auto'
 
-    var theme = this.options.theme
-    var language = this.options.mode
-    var _debugger = this.debugger
-    var _loadtheme = this.loadtheme
-    var isCustomMode = !!CodeMirror.modes[language]
+    if (!this.height)
+      this.height = 'auto'
 
-    // theme config
-    if (theme && theme == 'solarized light') {
-      theme = 'solarized'
-    }
-
-    if (theme && theme == 'solarized dark') {
-      theme = 'solarized'
-    }
-
-    // console.log(language, CodeMirror.modes.simplemode)
-
-    // language string config
-    if (typeof language == 'string') {
-      var lang = CodeMirror.findModeByMIME(language)
-      language = !lang ? lang : lang.mode
-
-      // language object config
-    } else if (typeof language == 'object') {
-
-      if (language.name) {
-        var lang = CodeMirror.findModeByName(language.name)
-        if (lang) {
-          language = lang.mode
-          // this.options.mode = language
-        } else {
-          language = null
-        }
-      } else if (language.ext) {
-        var lang = CodeMirror.findModeByExtension(language.ext)
-        if (lang) {
-          language = lang.mode
-          // this.options.mode = language
-        } else {
-          language = null
-        }
-      } else if (language.mime) {
-        var lang = CodeMirror.findModeByMIME(language.mime)
-        if (lang) {
-          language = lang.mode
-          // this.options.mode = language
-        } else {
-          language = null
-        }
-      } else if (language.filename) {
-        var lang = CodeMirror.findModeByFileName(language.filename)
-        if (lang) {
-          language = lang.mode
-          // this.options.mode = language
-        } else {
-          language = null
-        }
-      }
-    }
-
-    //console.log('language', language, isCustomMode)
-
-    if ((!language || language == 'null') && _debugger && !isCustomMode) {
-      console.warn('CodeMirror language mode: ' + language + ' configuration error (CodeMirror语言模式配置错误，或者不支持此语言) See http://codemirror.net/mode/ for more details.')
-      // return false
-    }
-
-    // console.log(typeof language, language, theme)
-
-    // require language
-    if (language && language !== 'null') {
-      require('codemirror/mode/' + language + '/' + language + '.js')
-    }
-
-    // require theme
-    if (theme && _loadtheme) {
-      require('codemirror/theme/' + theme + '.css')
-    }
+    loadTheme(this.options.theme)
   },
   mounted: function () {
     var _this = this
     this.editor = CodeMirror.fromTextArea(this.$el, this.options)
     this.editor.setValue(this.code || this.value || this.content)
-    this.editor.on('change', function (cm) {
-      _this.content = cm.getValue()
-      if (!!_this.$emit) {
-        _this.$emit('change', _this.content)
-        _this.$emit('input', _this.content)
-      }
+    this.editor.on('change', cm => {
+      this.content = cm.getValue()
+      this.$emit('change', this.content)
+      this.$emit('input', this.content)
     })
 
-    if (this.width && this.height)
-      this.editor.setSize(this.width, this.height)
+    this.resize()
 
-    var events = [
+    let events = [
       'changes',
       'beforeChange',
       'cursorActivity',
@@ -164,13 +109,11 @@ export default {
       'scrollCursorIntoView',
       'update'
     ]
-    for (var i = events.length - 1; i >= 0; i--) {
-      (function (event) {
-        _this.editor.on(event, function (a, b, c) {
-          _this.$emit(event, a, b, c)
-        })
-      })(events[i])
-    }
+    events.forEach(e => {
+      this.editor.on(e, (a, b, c) => {
+        this.$emit(e, a, b, c)
+      })
+    })
     this.$emit('ready', this.editor)
     this.unseenLineMarkers()
 
@@ -190,12 +133,25 @@ export default {
       handler(options, oldOptions) {
         var key
         for (key in options) {
+          if (key === 'mode') {
+            let mode = loadMode(options[key])
+            this.options.mode = mode.mime
+          }
+          if (key === 'theme')
+            loadTheme(options[key])
+
           this.editor.setOption(key, options[key])
         }
       }
     },
+    width(n, o) {
+      this.resize()
+    },
+    height(n, o) {
+      this.resize()
+    },
     code: function (newVal, oldVal) {
-      const editor_value = this.editor.getValue()
+      let editor_value = this.editor.getValue()
       if (newVal !== editor_value) {
         var scrollInfo = this.editor.getScrollInfo()
         this.editor.setValue(newVal)
@@ -205,7 +161,7 @@ export default {
       this.unseenLineMarkers()
     },
     value: function (newVal, oldVal) {
-      const editor_value = this.editor.getValue()
+      let editor_value = this.editor.getValue()
       if (newVal !== editor_value) {
         var scrollInfo = this.editor.getScrollInfo()
         this.editor.setValue(newVal)
@@ -216,9 +172,8 @@ export default {
     }
   },
   methods: {
-    refresh: function () {
-
-      this.editor.refresh()
+    resize() {
+      this.editor.setSize(this.width, this.height)
     },
     unseenLineMarkers: function () {
       var _this = this

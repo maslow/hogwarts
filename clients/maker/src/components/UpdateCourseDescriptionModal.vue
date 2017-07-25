@@ -68,7 +68,6 @@ export default {
             this.loading = false
         },
         cancel() {
-            this.$emit('close', false)
             this.loading = false
             this.value = ''
         },
@@ -78,8 +77,13 @@ export default {
         }
     },
     computed: {
-        _show() {
-            return this.show
+        _show: {
+            get: function () {
+                return this.show
+            },
+            set: function (v) {
+                this.$emit('close', v)
+            }
         }
     }
 }

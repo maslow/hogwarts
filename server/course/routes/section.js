@@ -8,7 +8,7 @@ let router = express.Router()
 
 router.get('/getSectionDetail', async function (req, res) {
     let id = req.query.id
-    if (validator.isInt(id, {min: 1})) 
+    if (!$.isInt(id, {min: 1})) 
         return res.status(422).send('Invalid section id')
 
     let section = await course.GetSection(id)

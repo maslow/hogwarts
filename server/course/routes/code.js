@@ -43,7 +43,7 @@ router.get("/getSectionCodeFiles", async function (req, res) {
  *  - dev optional default false
  */
 router.get("/getSectionCodeFileContent", async function (req, res) {
-    let p = req.query.path || '/'
+    let p = req.query.path
     let dev = req.query.dev || false
     let sectionId = req.query.sid || 0
 

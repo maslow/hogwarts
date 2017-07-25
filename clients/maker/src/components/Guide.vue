@@ -1,16 +1,16 @@
 <template>
   <div class="guide">
-    <h1>{{ msg }}</h1>
     <Button @click="changeMode">Change </Button>
-    <codemirror v-model="code" :options="options" width="600px" height="600px"></codemirror>
+    <br/>
+    <codemirror v-model="code" :options="options" width="600px" height="600px" ref="codeEditor"></codemirror>
     <pre>
-        {{code}}
-      </pre>
+                  {{code}}
+                </pre>
   </div>
 </template>
 
 <script>
-import codemirror from './codemirror.vue';
+import codemirror from './codemirror.vue'
 
 export default {
   components: {
@@ -19,24 +19,31 @@ export default {
   name: 'guide',
   data() {
     return {
-      msg: 'Gui de!',
-      code: 'var i = 0;',
+      code: 'int main(){}',
       options: {
         tabSize: 4,
-        mode: 'text/javascript',
         theme: 'solarized dark',
         lineNumbers: true,
+        mode: 'c',
         line: true,
         foldGutter: true,
         gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-        lineWrapping: true,
       }
     }
   },
   methods: {
     changeMode() {
-      this.code = "<?php echo 'hi';?>"
-      this.options.mode = 'text/x-php'
+      // this.code = "<?php echo '';?>"
+      // this.mode = "php"
+      let s0 = "<"
+      this.code = `
+        <html lang="zh-CN">
+          <body>
+          <div>hi</div>
+          </body>
+        </html>
+      `
+      this.options.mode = "html"
     }
   },
   mounted() {

@@ -1,6 +1,6 @@
 <template>
   <div id="create-course-modal">
-    <Modal v-model="_show" title="新建课程" @on-cancel="cancel">
+    <Modal v-model="_show" title="新建课程">
       <Form ref="new-course-form" :model="data" :rules="rules" label-position="right" :label-width="80">
         <Form-item label="课程名称" prop="name">
           <Input v-model="data.name"></Input>
@@ -32,7 +32,7 @@ let rules = {
 }
 
 export default {
-  name:'create-course-modal',
+  name: 'create-course-modal',
   model: {
     prop: 'show',
     event: 'change'
@@ -49,8 +49,13 @@ export default {
     }
   },
   computed: {
-    _show() {
-      return this.show
+    _show: {
+      get() {
+        return this.show
+      },
+      set(v) {
+        this.$emit('change', v)
+      }
     }
   },
   methods: {
@@ -72,9 +77,6 @@ export default {
           this.$emit('err', err)
         }
       })
-    },
-    cancel() {
-      this.$emit('change', false)
     }
   }
 }

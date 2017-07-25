@@ -78,13 +78,17 @@ export default {
 
         },
         cancel() {
-            this.$emit('close', false)
             this.loading = false
         }
     },
     computed: {
-        show() {
-            return this._show
+        show: {
+            get: function () {
+                return this._show
+            },
+            set: function (v) {
+                this.$emit('close', v)
+            }
         }
     }
 }

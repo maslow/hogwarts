@@ -24,7 +24,10 @@ export default {
   createSection,
   renameSection,
   updateSectionDescription,
-  adjustSectionSeq
+  adjustSectionSeq,
+
+  getSectionCodeFiles,
+  getSectionCodeFileContent
 }
 
 function getImages() {
@@ -79,11 +82,17 @@ function createCourse(data) {
 }
 
 function updateCourseDescription(course_id, description) {
-  return _updateCourse({course_id, description})
+  return _updateCourse({
+    course_id,
+    description
+  })
 }
 
 function renameCourse(course_id, name) {
-  return _updateCourse({course_id, name})
+  return _updateCourse({
+    course_id,
+    name
+  })
 }
 
 function publishCourse(courseId) {
@@ -116,15 +125,24 @@ function createChapter(courseId, chapterName, chapterDescription) {
 }
 
 function renameChapter(chapter_id, name) {
-  return _updateChapter({chapter_id, name})
+  return _updateChapter({
+    chapter_id,
+    name
+  })
 }
 
 function updateChapterDescription(chapter_id, description) {
-  return _updateChapter({chapter_id, description})
+  return _updateChapter({
+    chapter_id,
+    description
+  })
 }
 
 function adjustChapterSeq(chapter_id, seq) {
-  return _updateChapter({chapter_id, seq})
+  return _updateChapter({
+    chapter_id,
+    seq
+  })
 }
 
 function deleteChapter(chapterId) {
@@ -170,15 +188,45 @@ function createSection(courseId, chapterId, templateId, name, description, image
 }
 
 function renameSection(section_id, name) {
-  return _updateSection({section_id, name})
+  return _updateSection({
+    section_id,
+    name
+  })
 }
 
 function updateSectionDescription(section_id, description) {
-  return _updateSection({section_id, description})
+  return _updateSection({
+    section_id,
+    description
+  })
 }
 
 function adjustSectionSeq(section_id, seq) {
-  return _updateSection({section_id, seq})
+  return _updateSection({
+    section_id,
+    seq
+  })
+}
+
+/**************** Codes ***************/
+function getSectionCodeFiles(section_id, path, dev = false) {
+  return $.ajax({
+    url: G_API + `/getSectionCodeFiles?sid=${section_id}&path=${path}&dev=${dev}`,
+    method: 'get',
+    headers: {
+      'Authorization': 'Bearer ' + Identity.getAccessToken()
+    }
+  })
+}
+
+function getSectionCodeFileContent(section_id, path, dev = false) {
+  return $.ajax({
+    url: G_API + `/getSectionCodeFileContent?sid=${section_id}&path=${path}&dev=${dev}`,
+    method: 'get',
+    headers: {
+      'Authorization': 'Bearer ' + Identity.getAccessToken()
+    }
+  })
 }
 
 /************ Privates  *************/

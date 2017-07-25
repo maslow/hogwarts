@@ -13,7 +13,7 @@
                     <Icon type="checkmark-circled" color="green"></Icon>
                 </Button>
             </Tooltip>
-    
+            
         </h1>
         <div id="course-description">
             <i>{{course.description}}</i>
@@ -47,7 +47,7 @@
             </h2>
             <div class="layout-section">
                 <Card class="layout-section-item" v-for="s in ch.sections" :key="s.id">
-                    {{s.name}}
+                    <router-link :to="'/section-codes/' + s.id">{{s.name}}</router-link>
                     <Tooltip placement="right" content="已发布" v-show="s.status === 1">
                         <Icon type="checkmark-circled" color="green" v-if="s.status === 1"></Icon>
                     </Tooltip>
