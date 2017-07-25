@@ -1,15 +1,15 @@
 <template>
-    <li>
-        <div class="btn btn-link" :class="{bold: model == editing}" @click="toggle">
-            <i class="glyphicon glyphicon-folder-open text-yellow" v-if="isFolder && open"></i>
-            <i class="glyphicon glyphicon-folder-close text-yellow" v-if="isFolder && !open"></i>
-            <i class="glyphicon glyphicon glyphicon-list-alt text-yellow" v-if="!isFolder"></i>
-            <span class="text-white" :class="{'text-active':model == editing}">{{model.name}}</span>
+    <li class="file-tree-item">
+        <Button type="text" size="small" @click="toggle" class="file-name">
+            <Icon type="android-folder-open" class="text-golden" v-if="isFolder && open"></Icon>
+            <Icon type="android-folder" class="text-golden" v-if="isFolder && !open"></Icon>
+            <Icon type="code" v-if="!isFolder" class="text-info"></Icon>
+            <span class="text-white">{{model.name}}</span>
             <span class="text-yellow" v-if="isFolder && !emptyFolder">{{open ? '-' : '+'}}</span>
             <span class="text-danger" v-show="!isFolder && model.hash !== model.hash_new">*</span>
-        </div>
-        <ul v-show="open" v-if="isFolder">
-            <file-tree class="item" v-for="model in model.children" :key="model.path" :model="model" :editing="editing" v-on:select="upSelectEvent">
+        </Button>
+        <ul v-show="open" v-if="isFolder" class="subtree">
+            <file-tree v-for="model in model.children" :key="model.path" :model="model" v-on:select="upSelectEvent">
             </file-tree>
         </ul>
     </li>
@@ -19,8 +19,7 @@
 export default {
     name: 'file-tree',
     props: {
-        model: Object,
-        editing: Object
+        model: Object
     },
     data: function () {
         return {
@@ -49,6 +48,32 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.file-tree-item {
+    font-size: 18px !important;
+}
 
+.file-name {
+    font-size: 16px;
+}
+
+.subtree {
+    margin-left: 20px;
+}
+
+.text-white {
+    color: lightgray;
+}
+.text-yellow{
+    color: yellow
+}
+.text-danger{
+    color: brown
+}
+.text-golden{
+    color: goldenrod
+}
+.text-info{
+    color: #2d8cf0
+}
 </style>

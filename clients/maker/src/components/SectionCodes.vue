@@ -1,15 +1,18 @@
 <template>
     <div>
         <Row>
-            <Col :span="12">
-            <h2>{{section.name}}</h2>
-            <br/>
-            <ul>
-                <file-tree class="item" v-for="file in files" :key="file.path" :model="file" v-on:select="onSelectFile">
-                </file-tree>
-            </ul>
+            <Col :span="4">
+            <h2>{{section.name}}</h2>    
             </Col>
-            <Col :span="12">
+            <Col :span="4">
+            <div style="background-color:rgb(11, 76, 97);height:600px;">
+                <ul>
+                    <file-tree class="item" v-for="file in files" :key="file.path" :model="file" v-on:select="onSelectFile">
+                    </file-tree>
+                </ul>
+            </div>
+            </Col>
+            <Col :span="16">
             <codemirror v-model="currentFile.content" :options="options" width="100%" height="600px" @change="onFileContentChange"></codemirror>
             </Col>
         </Row>
@@ -32,6 +35,8 @@ export default {
         this.section = await course.getSection(this.$route.params.sid)
         let files = await course.getSectionCodeFiles(this.$route.params.sid, '/', true)
         this.files = files.map(f => transferFileFormat(f, ''))
+        if (this.files.length)
+            this.onSelectFile(this.files[0])
     },
     methods: {
         async onSelectFile(file) {
@@ -49,7 +54,7 @@ export default {
             }
         },
         async onFileContentChange(data) {
-            this.currentFile.hash_new = md5(this.currentFile.content)
+            this.currentFile.hash_new = md5(data)
         }
     },
     data() {
@@ -95,5 +100,10 @@ function transferFileFormat(file, parent) {
 </script>
 
 <style>
-
+h1,h2{
+    font-weight: normal;
+}
+.CodeMirror {
+    font-size: 15px !important;
+}
 </style>
