@@ -1,14 +1,14 @@
 <template>
     <li class="file-tree-item">
-        <Button type="text" size="small" @click="toggle" class="file-name">
+        <Button type="text" size="small" @click="toggle" class="file-name" :class="{'file-active': editing === model}">
             <Icon type="android-folder-open" class="text-golden" v-if="isFolder && open"></Icon>
-            <Icon type="android-folder" class="text-golden" v-if="isFolder && !open"></Icon>
+            <Icon type="android-folder" class="text-golden" v-if="isFolder && !open"></Icon>    
             <Icon type="code" v-if="!isFolder" class="text-info"></Icon>
-            <span class="text-white" :class="{'text-green': !isFolder && model.hash !== model.hash_new}">{{model.name}}</span>
+            <span class="Filename" :class="{'modified': !isFolder && model.hash !== model.hash_new}">{{model.name}}</span>
             <span class="text-yellow" v-show="!isFolder && model.hash !== model.hash_new">*</span>
         </Button>
         <ul v-show="open" v-if="isFolder" class="subtree">
-            <file-tree v-for="model in model.children" :key="model.path" :model="model" v-on:select="upSelectEvent">
+            <file-tree v-for="model in model.children" :key="model.path" :editing="editing" :model="model" v-on:select="upSelectEvent">
             </file-tree>
         </ul>
     </li>
@@ -18,6 +18,7 @@
 export default {
     name: 'file-tree',
     props: {
+        editing: Object,
         model: Object
     },
     data: function () {
@@ -56,26 +57,39 @@ export default {
     font-size: 16px;
 }
 
+.file-active {
+    background-color: rgba(13, 121, 187, 0.22);
+}
+
 .subtree {
     margin-left: 20px;
 }
 
-.text-white {
+.Filename {
     color: lightgray;
 }
-.text-yellow{
+
+.Filename.modified{
+    color: goldenrod;
+}
+
+.text-yellow {
     color: yellow
 }
-.text-danger{
+
+.text-danger {
     color: brown
 }
-.text-golden{
+
+.text-golden {
     color: goldenrod
 }
-.text-info{
+
+.text-info {
     color: #2d8cf0
 }
-.text-green{
+
+.text-green {
     color: green
 }
 </style>
