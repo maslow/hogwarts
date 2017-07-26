@@ -2,7 +2,7 @@
     <div>
         <Row>
             <Col :span="4">
-            <h2>{{section.name}}</h2>    
+            <h2>{{section.name}}</h2>
             </Col>
             <Col :span="4">
             <div style="background-color:rgb(11, 76, 97);height:600px;">
@@ -13,7 +13,7 @@
             </div>
             </Col>
             <Col :span="16">
-            <codemirror v-model="currentFile.content" :options="options" width="100%" height="600px" @change="onFileContentChange"></codemirror>
+            <codemirror v-model="currentFile.content" :options="options" width="100%" height="600px" @input="onFileContentChange"></codemirror>
             </Col>
         </Row>
     </div>
@@ -35,8 +35,11 @@ export default {
         this.section = await course.getSection(this.$route.params.sid)
         let files = await course.getSectionCodeFiles(this.$route.params.sid, '/', true)
         this.files = files.map(f => transferFileFormat(f, ''))
-        if (this.files.length)
-            this.onSelectFile(this.files[0])
+        for (let i = 0; i < this.files.length; i++)
+            if (this.files[i].type === 'file') {
+                this.onSelectFile(this.files[i])
+                break
+            }
     },
     methods: {
         async onSelectFile(file) {
@@ -73,6 +76,7 @@ export default {
                 line: true,
                 foldGutter: true,
                 gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+                lineSeparator: "\n"
             }
         }
     }
@@ -100,9 +104,11 @@ function transferFileFormat(file, parent) {
 </script>
 
 <style>
-h1,h2{
+h1,
+h2 {
     font-weight: normal;
 }
+
 .CodeMirror {
     font-size: 15px !important;
 }

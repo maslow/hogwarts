@@ -29,6 +29,7 @@ async function GetCodeDirFiles(sectionId, templateId, file, dev = false) {
     }
 
     let files = codeFiles.concat(tplFiles || [])
+    files = _.uniqBy(files, 'name')
     return _.sortedUniqBy(files, item => item.name)
 }
 

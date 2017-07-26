@@ -4,9 +4,8 @@
             <Icon type="android-folder-open" class="text-golden" v-if="isFolder && open"></Icon>
             <Icon type="android-folder" class="text-golden" v-if="isFolder && !open"></Icon>
             <Icon type="code" v-if="!isFolder" class="text-info"></Icon>
-            <span class="text-white">{{model.name}}</span>
-            <span class="text-yellow" v-if="isFolder && !emptyFolder">{{open ? '-' : '+'}}</span>
-            <span class="text-danger" v-show="!isFolder && model.hash !== model.hash_new">*</span>
+            <span class="text-white" :class="{'text-green': !isFolder && model.hash !== model.hash_new}">{{model.name}}</span>
+            <span class="text-yellow" v-show="!isFolder && model.hash !== model.hash_new">*</span>
         </Button>
         <ul v-show="open" v-if="isFolder" class="subtree">
             <file-tree v-for="model in model.children" :key="model.path" :model="model" v-on:select="upSelectEvent">
@@ -75,5 +74,8 @@ export default {
 }
 .text-info{
     color: #2d8cf0
+}
+.text-green{
+    color: green
 }
 </style>
