@@ -56,12 +56,8 @@ let rules = {
 
 export default {
     name: 'create-section-modal',
-    model: {
-        prop: '_show',
-        event: 'close'
-    },
     props: {
-        _show: Boolean,
+        value: Boolean,
         course: {
             type: Object,
             required: true
@@ -97,7 +93,7 @@ export default {
                         title: '创建小节成功'
                     })
                     this.$emit('ok', ch)
-                    this.$emit('close', false)
+                    this.show = false
                     this.$refs['new-section-form'].resetFields()
                 } catch (err) {
                     console.log(err)
@@ -120,10 +116,10 @@ export default {
     computed: {
         show: {
             get: function () {
-                return this._show
+                return this.value
             },
-            set: function (v) {
-                this.$emit('close', v)
+            set: function (value) {
+                this.$emit('input', value)
             }
         }
     },

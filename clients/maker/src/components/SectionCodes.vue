@@ -9,18 +9,18 @@
             <div style="background-color:rgb(11, 76, 97);height:600px;">
                 <div class="toolbar">
                     <ButtonGroup class="button-group">
-                        <Button type="text" size="small" class="text-white" @click="createFile">
+                        <Button type="text" size="small" class="text-white" @click="createFileModal = true">
                             <Icon type="ios-plus-empty"></Icon>
                             新建文件
                         </Button>
-                        <Button type="text" size="small" class="text-white" @click="createFolder">
+                        <Button type="text" size="small" class="text-white" @click="createFolderModal = true">
                             <Icon type="folder"></Icon>
                             新建文件夹
                         </Button>
                     </ButtonGroup>
                 </div>
                 <ul style="margin-left: 3px">
-                    <file-tree v-for="file in files" :editing="currentFile" :key="file.path" :model="file" v-on:select="onSelectFile">
+                    <file-tree v-for="file in files" :editing="currentSelected" :key="file.path" :model="file" v-on:select="onSelectFile">
                     </file-tree>
                 </ul>
             </div>
@@ -29,6 +29,8 @@
             <codemirror v-model="currentFile.content" :options="options" width="100%" height="600px" @input="onFileContentChange"></codemirror>
             </Col>
         </Row>
+        <CreateSectionCodesFile v-model="createFileModal" type="file" :selected = "currentSelected" @ok="createFile"></CreateSectionCodesFile>
+        <CreateSectionCodesFile v-model="createFolderModal" type="folder" :selected = "currentSelected" @ok="createFolder"></CreateSectionCodesFile>
     </div>
 </template>
 
@@ -36,13 +38,39 @@
 import codemirror from './codemirror'
 import course from '@/api/course'
 import FileTree from './FileTree'
-const md5 = require('blueimp-md5')
+import CreateSectionCodesFile from './CreateSectionCodesFile'
+import md5 from 'blueimp-md5'
 
 export default {
     name: 'section-codes',
     components: {
         codemirror,
-        FileTree
+        FileTree,
+        CreateSectionCodesFile
+    },
+        data() {
+        return {
+            section: {},
+            files: [],
+            currentFile: {
+                content: null,
+                name: '',
+            },
+            currentSelected: {},
+            options: {
+                tabSize: 4,
+                theme: 'solarized dark',
+                lineNumbers: true,
+                lineWrapping: true,
+                mode: 'js',
+                line: true,
+                foldGutter: true,
+                gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+                lineSeparator: "\n"
+            },
+            createFileModal: false,
+            createFolderModal: false
+        }
     },
     async mounted() {
         this.section = await course.getSection(this.$route.params.sid)
@@ -77,6 +105,7 @@ export default {
                 this.currentFile = file
                 this.options.mode = file.name
             }
+            this.currentSelected = file
         },
         async onFileContentChange(data) {
             this.currentFile.hash_new = md5(data)
@@ -85,70 +114,9 @@ export default {
             let files = getChangedFiles(this.files)
             console.log(files)
         },
-        async createFile() {
-            let name = prompt('请输入文件名')
-            if (!name)
-                return;
-            let p = this.currentFile.parent
-            let ret = p.children.filter(c => c.name === name)
-            const reg = /^[^#%&*\/|:<>?\"]*$/
-            if (!reg.test(name))
-                return console.log("名字有问题，再来")
-
-            if (ret.length)
-                return console.log('有问题，名字存在了，重来吧')
-
-            p.children.push({
-                path: `${p.path}/${name}`,
-                name,
-                type: 'file',
-                content: null,
-                hash: md5(''),
-                hash_new: null,
-                parent: p
-            })
+        async createFile(file) {
         },
-        async createFolder() {
-            let name = prompt('请输入文件夹名')
-            if (!name)
-                return;
-            let p = this.currentFile.parent
-            let ret = p.children.filter(c => c.name === name)
-            const reg = /^[^#%&*\/|:<>?\"]*$/
-            if (!reg.test(name))
-                return console.log("名字有问题，再来")
-
-            if (ret.length)
-                return console.log('有问题，名字存在了，重来吧')
-
-            p.children.push({
-                path: `${p.path}/${name}`,
-                name,
-                type: 'dir',
-                children: null,
-                parent: p
-            })
-        }
-    },
-    data() {
-        return {
-            section: {},
-            files: [],
-            currentFile: {
-                content: null,
-                name: '',
-            },
-            options: {
-                tabSize: 4,
-                theme: 'solarized dark',
-                lineNumbers: true,
-                lineWrapping: true,
-                mode: 'js',
-                line: true,
-                foldGutter: true,
-                gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-                lineSeparator: "\n"
-            }
+        async createFolder(folder) {
         }
     }
 }

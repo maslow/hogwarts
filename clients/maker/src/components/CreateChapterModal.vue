@@ -34,12 +34,8 @@ let rules = {
 
 export default {
     name: 'create-chapter-modal',
-    model: {
-        prop: '_show',
-        event: 'close'
-    },
     props: {
-        _show: Boolean,
+        value: Boolean,
         course: Object
     },
     data() {
@@ -63,8 +59,7 @@ export default {
                         title: '创建章节成功'
                     })
                     this.$emit('ok', ch)
-                    this.$emit('close', false)
-                    this.value = ''
+                    this.show = false
                 } catch (err) {
                     console.log(err)
                     this.$Notice.error({
@@ -84,10 +79,10 @@ export default {
     computed: {
         show: {
             get: function () {
-                return this._show
+                return this.value
             },
-            set: function (v) {
-                this.$emit('close', v)
+            set: function (value) {
+                this.$emit('input', value)
             }
         }
     }

@@ -67,7 +67,7 @@ router.post('/createCourse', async function (req, res) {
     req
         .checkBody('name')
         .notEmpty()
-        .isInt({min: 1})
+        .isLength(1, 64)
     req
         .checkBody('description')
         .notEmpty()
