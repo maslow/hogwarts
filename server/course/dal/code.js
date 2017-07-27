@@ -48,6 +48,49 @@ async function GetCodeFileContent(sectionId, templateId, file, dev = false) {
     return await fs.readFile(p)
 }
 
+/**
+ * 创建文件夹
+ * @param {int} sectionId 小节ID
+ * @param {String} file 文件夹目录
+ */
+async function CreateFolder(sectionId, file) {
+    let codesPath = path.join(CoursesRoot(true), sectionId, 'codes')
+    await fs.ensureDir(codesPath)
+
+    let p = path.join(codesPath, file)
+    if (await fs.pathExists(p))
+        return false
+
+    await fs.ensureDir(p)
+    return true
+}
+
+async function WriteFile(sectionId, file, content) {
+    let codesPath = path.join(CoursesRoot(true), sectionId, 'codes')
+    await fs.ensureDir(codesPath)
+
+    let p = path.join(codesPath, file)
+    try {
+        await fs.writeFile(p, content)
+        return null
+    } catch (err) {
+        return err
+    }
+}
+
+async function DeleteFile(sectionId, file) {
+    let codesPath = path.join(CoursesRoot(true), sectionId, 'codes')
+    await fs.ensureDir(codesPath)
+
+    let p = path.join(codesPath, file)
+    try {
+        await fs.remove(p)
+        return null
+    } catch (err) {
+        return err
+    }
+}
+
 function CoursesRoot(dev = false) {
     let p = dev ? 'dev' : 'pub'
     return path.join(__dirname, '..', 'data', 'courses', p)
@@ -60,6 +103,7 @@ function SecurityChecking(sectionId, file, dev = false) {
     let p1 = path.relative(p0, p)
     if (p1.indexOf("..") >= 0)
         return false
+
     return true
 }
 
@@ -67,5 +111,8 @@ module.exports = {
     GetCodeDirFiles,
     GetCodeFileContent,
     CoursesRoot,
-    SecurityChecking
+    SecurityChecking,
+    CreateFolder,
+    WriteFile,
+    DeleteFile
 }

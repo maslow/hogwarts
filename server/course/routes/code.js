@@ -70,24 +70,70 @@ router.get("/getSectionCodeFileContent", async function (req, res) {
 })
 
 router.post("/createSectionCodeFolder", async function (req, res) {
-    let section = await course.GetSection(req.query.sid)
+    let p = req.body.path
+    let sectionId = req.body.sid || 0
+
+    if (!code.SecurityChecking(sectionId, p, true))
+        return res.status(422).send('File Path invalid')
+
+    let section = await course.GetSection(sectionId)
     if (!section)
         return res.status(404).send('Section not found')
 
-    //TODO 
-    return res.status(200).send('API TBD')
-})
+    if (req.uid != section.created_by)
+        return res.status(401).send('Permission denied')
 
-router.post("/renameSectionCodeFileName", async function (req, res) {
-    let section = await course.GetSection(req.query.sid)
-    if (!section)
-        return res.status(404).send('Section not found')
-
-    //TODO 
-    return res.status(200).send('API TBD')
+    let ret = await code.CreateFolder(sectionId, p)
+    if (ret)
+        return res.status(201).send('ok')
+    else
+        return res.status(200).send('exist')
 })
 
 router.post("/updateSectionCodeFileContent", async function (req, res) {
+    let p = req.body.path
+    let sectionId = req.body.sid || 0
+    let content = req.body.content || ''
+
+    if (!code.SecurityChecking(sectionId, p, true))
+        return res.status(422).send('File Path invalid')
+
+    let section = await course.GetSection(sectionId)
+    if (!section)
+        return res.status(404).send('Section not found')
+
+    if (req.uid != section.created_by)
+        return res.status(401).send('Permission denied')
+
+    let err = await code.WriteFile(sectionId, p, content)
+    if (!err)
+        return res.status(200).send('ok')
+    else
+        return res.status(400).send(err)
+})
+
+router.post("/deleteCodeFile", async function (req, res) {
+    let p = req.body.path
+    let sectionId = req.body.sid || 0
+
+    if (!code.SecurityChecking(sectionId, p, true))
+        return res.status(422).send('File Path invalid')
+
+    let section = await course.GetSection(sectionId)
+    if (!section)
+        return res.status(404).send('Section not found')
+
+    if (req.uid != section.created_by)
+        return res.status(401).send('Permission denied')
+
+    let err = await code.DeleteFile(sectionId, p)
+    if (!err)
+        return res.status(200).send('deleted')
+    else
+        return res.status(400).send(err)
+})
+
+router.post("/renameSectionCodeFileName", async function (req, res) {
     let section = await course.GetSection(req.query.sid)
     if (!section)
         return res.status(404).send('Section not found')

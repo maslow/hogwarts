@@ -17,6 +17,10 @@
                             <Icon type="folder"></Icon>
                             新建文件夹
                         </Button>
+                        <Button type="text" size="small" class="text-white" @click="deleteFile">
+                            <Icon type="trash-b"></Icon>
+                            删除
+                        </Button>
                     </ButtonGroup>
                 </div>
                 <ul style="margin-left: 3px">
@@ -29,8 +33,8 @@
             <codemirror v-model="currentFile.content" :options="options" width="100%" height="600px" @input="onFileContentChange"></codemirror>
             </Col>
         </Row>
-        <CreateSectionCodesFile v-model="createFileModal" type="file" :selected = "currentSelected" @ok="createFile"></CreateSectionCodesFile>
-        <CreateSectionCodesFile v-model="createFolderModal" type="folder" :selected = "currentSelected" @ok="createFolder"></CreateSectionCodesFile>
+        <CreateSectionCodesFile v-model="createFileModal" type="file" :selected="currentSelected" @ok="saveFile"></CreateSectionCodesFile>
+        <CreateSectionCodesFile v-model="createFolderModal" type="folder" :selected="currentSelected" @ok="createFolder"></CreateSectionCodesFile>
     </div>
 </template>
 
@@ -48,7 +52,7 @@ export default {
         FileTree,
         CreateSectionCodesFile
     },
-        data() {
+    data() {
         return {
             section: {},
             files: [],
@@ -101,6 +105,7 @@ export default {
                     let data = await course.getSectionCodeFileContent(this.section.id, file.path, true)
                     file.content = data.content
                     file.hash = data.hash
+                    file.hash_new = data.hash
                 }
                 this.currentFile = file
                 this.options.mode = file.name
@@ -112,11 +117,40 @@ export default {
         },
         async saveFiles() {
             let files = getChangedFiles(this.files)
-            console.log(files)
+            for (let i = 0; i < files.length; i++) {
+                let file = files[i]
+                await course.updateSectionCodeFileContent(this.section.id, file.path, file.content)
+                file.hash = file.hash_new
+            }
+            this.$Notice.success({
+                title: '文件提交保存成功！'
+            })
         },
-        async createFile(file) {
+        async saveFile(file) {
+            this.onSelectFile(file)
         },
-        async createFolder(folder) {
+        async createFolder(file) {
+            await course.createSectionCodeFolder(this.section.id, file.path)
+            this.$Notice.success({
+                title: '创建文件夹成功'
+            })
+            this.onSelectFile(file)
+        },
+        async deleteFile() {
+            let file = this.currentSelected
+            await course.deleteCodeFile(this.section.id, file.path)
+            this.$Notice.success({
+                title: '文件已删除！'
+            })
+            let p = file.parent
+            for (let i = 0; i < p.children.length; i++) {
+                let f = p.children[i]
+                if (f.name === file.name) {
+                    console.log(file.name)
+                    p.children.splice(i, 1)
+                    break;
+                }
+            }
         }
     }
 }

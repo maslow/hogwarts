@@ -27,7 +27,10 @@ export default {
   adjustSectionSeq,
 
   getSectionCodeFiles,
-  getSectionCodeFileContent
+  getSectionCodeFileContent,
+  createSectionCodeFolder,
+  updateSectionCodeFileContent,
+  deleteCodeFile
 }
 
 function getImages() {
@@ -223,6 +226,49 @@ function getSectionCodeFileContent(section_id, path, dev = false) {
   return $.ajax({
     url: G_API + `/getSectionCodeFileContent?sid=${section_id}&path=${path}&dev=${dev}`,
     method: 'get',
+    headers: {
+      'Authorization': 'Bearer ' + Identity.getAccessToken()
+    }
+  })
+}
+
+function createSectionCodeFolder(section_id, path) {
+  return $.ajax({
+    url: G_API + `/createSectionCodeFolder`,
+    data: {
+      sid: section_id,
+      path
+    },
+    method: 'post',
+    headers: {
+      'Authorization': 'Bearer ' + Identity.getAccessToken()
+    }
+  })
+}
+
+function updateSectionCodeFileContent(section_id, path, content) {
+  return $.ajax({
+    url: G_API + `/updateSectionCodeFileContent`,
+    data: {
+      sid: section_id,
+      path,
+      content
+    },
+    method: 'post',
+    headers: {
+      'Authorization': 'Bearer ' + Identity.getAccessToken()
+    }
+  })
+}
+
+function deleteCodeFile(section_id, path) {
+  return $.ajax({
+    url: G_API + `/deleteCodeFile`,
+    data: {
+      sid: section_id,
+      path
+    },
+    method: 'post',
     headers: {
       'Authorization': 'Bearer ' + Identity.getAccessToken()
     }

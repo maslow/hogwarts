@@ -46,8 +46,8 @@ let services = [
             "/updateSection",
 
             "/createSectionCodeFolder",
-            "/renameSectionCodeFileName",
-            "/updateSectionCodeFileContent"
+            "/updateSectionCodeFileContent",
+            "/deleteCodeFile"
         ],
         target: servers.COURSE,
         auth: true

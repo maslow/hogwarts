@@ -32,10 +32,14 @@ export default {
 
             const reg = /^[^#%&*\/|:<>?\"]*$/
             if (!reg.test(this.name))
-                return window.alert("名字有问题，再来")
+                return this.$Notice.error({
+                    title: '文件名有非法字符'
+                })
 
             if (p.children.filter(c => c.name === this.name).length)
-                return window.alert('有问题，名字存在了，重来吧')
+                return this.$Notice.error({
+                    title: '文件名已存在'
+                })
 
             let file = {}
             if (this.type === 'folder') {
@@ -51,8 +55,8 @@ export default {
                     path: `${p.path}/${this.name}`,
                     name: this.name,
                     type: 'file',
-                    content: null,
-                    hash: md5(''),
+                    content: '',
+                    hash: '',
                     hash_new: null,
                     parent: p
                 }
@@ -72,8 +76,8 @@ export default {
                 this.$emit('input', value)
             }
         },
-        title:{
-            get(){
+        title: {
+            get() {
                 return this.type === 'dir' ? '新建文件夹' : '新建文件'
             }
         }
