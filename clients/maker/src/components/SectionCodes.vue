@@ -1,14 +1,14 @@
 <template>
     <div>
         <Row>
-            <Col :span="4">
-            <h2>{{section.name}}</h2>
-            <Button type="success" @click="saveFiles">提交保存</Button>
-            </Col>
-            <Col :span="4">
+            <Col :span="6">
             <div style="background-color:rgb(11, 76, 97);height:600px;">
                 <div class="toolbar">
                     <ButtonGroup class="button-group">
+                        <Button type="text" size="small" class="text-white" @click="saveFiles">
+                            <Icon type="checkmark"></Icon>
+                            提交保存
+                        </Button>
                         <Button type="text" size="small" class="text-white" @click="createFileModal = true">
                             <Icon type="ios-plus-empty"></Icon>
                             新建文件
@@ -25,7 +25,7 @@
                 </ul>
             </div>
             </Col>
-            <Col :span="16">
+            <Col :span="18">
             <codemirror v-model="currentFile.content" :options="options" width="100%" height="600px" @input="onFileContentChange"></codemirror>
             </Col>
         </Row>
