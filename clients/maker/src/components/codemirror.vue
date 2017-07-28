@@ -122,7 +122,11 @@ function loadMode(mode) {
   if (!m)
     m = CodeMirror.findModeByFileName(mode)
 
-  // require language
+  if(!m)
+    return {
+      mime: ''
+    }
+
   if (m && m !== 'null')
     require('codemirror/mode/' + m.mode + '/' + m.mode + '.js')
 

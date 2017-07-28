@@ -19,7 +19,7 @@
                         </Button>
                     </ButtonGroup>
                 </div>
-                <ul style="margin-left: 3px">
+                <ul style="margin-left: 3px;overflow: scroll;">
                     <file-tree v-for="file in files" :editing="currentSelected" :key="file.path" :model="file" v-on:select="onSelectFile" v-on:delete="onDeleteFile">
                     </file-tree>
                 </ul>
@@ -83,7 +83,10 @@ export default {
         }
         this.files = files.map(f => transferFileFormat(f, parent))
         parent.children = this.files
-        this.onSelectFile(this.files[0])
+        if (!this.files.length)
+            this.onSelectFile(parent)
+        else
+            this.onSelectFile(this.files[0])
     },
     methods: {
         async onSelectFile(file) {
