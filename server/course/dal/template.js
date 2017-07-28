@@ -36,8 +36,14 @@ async function GetTemplateFileContent(templateId, file) {
     return await fs.readFile(p)
 }
 
+async function Exists(templateId, file) {
+    let p = path.join(templateRoot, templateId, file)
+    return await fs.pathExists(p)
+}
+
 module.exports = {
     GetTemplateDirFiles,
     GetTemplateFileContent,
-    GetTemplates
+    GetTemplates,
+    Exists
 }

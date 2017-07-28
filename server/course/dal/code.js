@@ -11,13 +11,21 @@ const _ = require("lodash")
  * @param {string} file 
  */
 async function GetCodeDirFiles(sectionId, templateId, file, dev = false) {
-    let p = path.join(CoursesRoot(dev), sectionId, 'codes', file)
+    let codesPath = path.join(CoursesRoot(dev), sectionId, 'codes', file)
+    let p = path.join(codesPath, file)
 
-    let tplFiles = await tpl.GetTemplateDirFiles(templateId, file)
+    let tplFiles0 = await tpl.GetTemplateDirFiles(templateId, file)
+    let tplFiles = []
+    for (let i = 0; i < tplFiles0.length; i++) {
+        if (!await ExistsWhiteout(codesPath, tplFiles0[i].name))
+            tplFiles.push(tplFiles0[i])
+    }
+
     if (!await fs.pathExists(p))
         return tplFiles
 
     let codeFiles = await fs.readdir(p)
+    codeFiles = codeFiles.filter(f => f !== '.whiteout')
 
     for (let i = 0; i < codeFiles.length; i++) {
         let stats = await fs.stat(path.join(p, codeFiles[i]))
@@ -78,17 +86,37 @@ async function WriteFile(sectionId, file, content) {
     }
 }
 
-async function DeleteFile(sectionId, file) {
+async function DeleteFile(sectionId, templateId, file) {
     let codesPath = path.join(CoursesRoot(true), sectionId, 'codes')
     await fs.ensureDir(codesPath)
 
     let p = path.join(codesPath, file)
     try {
-        await fs.remove(p)
+        if (await fs.pathExists(p))
+            await fs.remove(p)
+
+        if (await tpl.Exists(templateId, file))
+            await AddWhiteout(codesPath, file)
+
         return null
     } catch (err) {
         return err
     }
+}
+
+async function AddWhiteout(codesPath, file) {
+    let whiteout = path.join(codesPath, '.whiteout')
+    await fs.ensureDir(whiteout)
+
+    let p = path.join(whiteout, file)
+    await fs.open(p, 'w+')
+}
+
+async function ExistsWhiteout(codesPath, file) {
+    let whiteout = path.join(codesPath, '.whiteout')
+
+    let p = path.join(whiteout, file)
+    return await fs.pathExists(p)
 }
 
 function CoursesRoot(dev = false) {

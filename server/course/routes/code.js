@@ -126,7 +126,7 @@ router.post("/deleteCodeFile", async function (req, res) {
     if (req.uid != section.created_by)
         return res.status(401).send('Permission denied')
 
-    let err = await code.DeleteFile(sectionId, p)
+    let err = await code.DeleteFile(sectionId, section.template_id.toString(), p)
     if (!err)
         return res.status(200).send('deleted')
     else
