@@ -63,7 +63,7 @@ router.post('/createSection', async function (req, res) {
     if (course0.created_by != req.uid) 
         return res.status(401).send('Permission denied')
 
-    if (!await course.GetChapterById(courseId, req.body.chapter_id)) 
+    if (!await course.GetChapterById(req.body.chapter_id)) 
         return res.status(422).send({chapter_id: "Chapter Id is invalid"})
 
     let env = {
