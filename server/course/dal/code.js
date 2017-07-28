@@ -14,7 +14,7 @@ async function GetCodeDirFiles(sectionId, templateId, file, dev = false) {
     let codesPath = path.join(CoursesRoot(dev), sectionId, 'codes', file)
     let p = path.join(codesPath, file)
 
-    let tplFiles0 = await tpl.GetTemplateDirFiles(templateId, file)
+    let tplFiles0 = await tpl.GetTemplateDirFiles(templateId, file) || []
     let tplFiles = []
     for (let i = 0; i < tplFiles0.length; i++) {
         if (!await ExistsWhiteout(codesPath, tplFiles0[i].name))

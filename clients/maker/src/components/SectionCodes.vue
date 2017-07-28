@@ -17,14 +17,10 @@
                             <Icon type="folder"></Icon>
                             新建文件夹
                         </Button>
-                        <Button type="text" size="small" class="text-white" @click="deleteFile">
-                            <Icon type="trash-b"></Icon>
-                            删除
-                        </Button>
                     </ButtonGroup>
                 </div>
                 <ul style="margin-left: 3px">
-                    <file-tree v-for="file in files" :editing="currentSelected" :key="file.path" :model="file" v-on:select="onSelectFile">
+                    <file-tree v-for="file in files" :editing="currentSelected" :key="file.path" :model="file" v-on:select="onSelectFile" v-on:delete="onDeleteFile">
                     </file-tree>
                 </ul>
             </div>
@@ -33,8 +29,8 @@
             <codemirror v-model="currentFile.content" :options="options" width="100%" height="600px" @input="onFileContentChange"></codemirror>
             </Col>
         </Row>
-        <CreateSectionCodesFile v-model="createFileModal" type="file" :selected="currentSelected" @ok="saveFile"></CreateSectionCodesFile>
-        <CreateSectionCodesFile v-model="createFolderModal" type="folder" :selected="currentSelected" @ok="createFolder"></CreateSectionCodesFile>
+        <CreateSectionCodesFile v-model="createFileModal" type="file" :selected="currentSelected" @ok="onSelectFile"></CreateSectionCodesFile>
+        <CreateSectionCodesFile v-model="createFolderModal" type="folder" :selected="currentSelected" @ok="onFolderCreated"></CreateSectionCodesFile>
     </div>
 </template>
 
@@ -87,11 +83,7 @@ export default {
         }
         this.files = files.map(f => transferFileFormat(f, parent))
         parent.children = this.files
-        for (let i = 0; i < this.files.length; i++)
-            if (this.files[i].type === 'file') {
-                this.onSelectFile(this.files[i])
-                break
-            }
+        this.onSelectFile(this.files[0])
     },
     methods: {
         async onSelectFile(file) {
@@ -126,31 +118,37 @@ export default {
                 title: '文件提交保存成功！'
             })
         },
-        async saveFile(file) {
-            this.onSelectFile(file)
-        },
-        async createFolder(file) {
+        async onFolderCreated(file) {
             await course.createSectionCodeFolder(this.section.id, file.path)
             this.$Notice.success({
                 title: '创建文件夹成功'
             })
             this.onSelectFile(file)
         },
-        async deleteFile() {
-            let file = this.currentSelected
-            await course.deleteCodeFile(this.section.id, file.path)
-            this.$Notice.success({
-                title: '文件已删除！'
-            })
-            let p = file.parent
-            for (let i = 0; i < p.children.length; i++) {
-                let f = p.children[i]
-                if (f.name === file.name) {
-                    console.log(file.name)
-                    p.children.splice(i, 1)
-                    break;
+        async onDeleteFile(file) {
+            this.$Modal.confirm({
+                title: '删除确定',
+                content: `<p>删除<span style="color:red"> { ${file.path} } </span>？</p>`,
+                loading: true,
+                onOk: async () => {
+                    //let file = this.currentSelected
+                    await course.deleteCodeFile(this.section.id, file.path)
+                    this.$Notice.success({
+                        title: '文件已删除！'
+                    })
+                    let p = file.parent
+                    for (let i = 0; i < p.children.length; i++) {
+                        let f = p.children[i]
+                        if (f.name === file.name) {
+                            console.log(file.name)
+                            p.children.splice(i, 1)
+                            break;
+                        }
+                    }
+                    this.onSelectFile(p)
+                    this.$Modal.remove()
                 }
-            }
+            })
         }
     }
 }

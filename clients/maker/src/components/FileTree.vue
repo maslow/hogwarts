@@ -1,14 +1,19 @@
 <template>
     <li class="file-tree-item">
-        <Button type="text" size="small" @click="toggle" class="file-name" :class="{'file-active': editing === model}">
-            <Icon type="android-folder-open" class="text-golden" v-if="isFolder && open"></Icon>
-            <Icon type="android-folder" class="text-golden" v-if="isFolder && !open"></Icon>    
-            <Icon type="code" v-if="!isFolder" class="text-info"></Icon>
-            <span class="Filename" :class="{'modified': !isFolder && model.hash !== model.hash_new}">{{model.name}}</span>
-            <span class="text-yellow" v-show="!isFolder && model.hash !== model.hash_new">*</span>
-        </Button>
+        <div style="width:100%;">
+            <Button type="text" size="small" @click="toggle" class="file-name" :class="{'file-active': editing === model}">
+                <Icon type="android-folder-open" class="text-golden" v-if="isFolder && open"></Icon>
+                <Icon type="android-folder" class="text-golden" v-if="isFolder && !open"></Icon>
+                <Icon type="code" v-if="!isFolder" class="text-info"></Icon>
+                <span class="Filename" :class="{'modified': !isFolder && model.hash !== model.hash_new}">{{model.name}}</span>
+                <span class="text-yellow" v-show="!isFolder && model.hash !== model.hash_new">*</span>
+            </Button>
+            <Button type="text" size="small" @click="onDelete">
+                <Icon type="ios-close-empty" class="button-delete"></Icon>
+            </Button>
+        </div>
         <ul v-show="open" v-if="isFolder" class="subtree">
-            <file-tree v-for="model in model.children" :key="model.path" :editing="editing" :model="model" v-on:select="upSelectEvent">
+            <file-tree v-for="model in model.children" :key="model.path" :editing="editing" :model="model" v-on:select="upSelectEvent" v-on:delete="upDeleteEvent">
             </file-tree>
         </ul>
     </li>
@@ -21,7 +26,7 @@ export default {
         editing: Object,
         model: Object
     },
-    data: function () {
+    data () {
         return {
             open: false
         }
@@ -35,10 +40,16 @@ export default {
         }
     },
     methods: {
-        upSelectEvent: function (model) {
+        onDelete(){
+            this.$emit('delete', this.model)
+        },
+        upDeleteEvent(model) {
+            this.$emit('delete', model)
+        },
+        upSelectEvent (model) {
             this.$emit('select', model)
         },
-        toggle: function () {
+        toggle () {
             if (this.isFolder) {
                 this.open = !this.open
             }
@@ -69,7 +80,7 @@ export default {
     color: lightgray;
 }
 
-.Filename.modified{
+.Filename.modified {
     color: goldenrod;
 }
 
@@ -91,5 +102,15 @@ export default {
 
 .text-green {
     color: green
+}
+
+.button-delete{
+    color: rgb(37, 144, 179);
+    font-size: 14px;
+}
+
+.button-delete:hover{
+    color: red;
+    font-size: 20px;
 }
 </style>
