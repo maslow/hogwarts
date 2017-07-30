@@ -2,7 +2,7 @@
     <div>
         <Row>
             <Col :span="6">
-            <div style="background-color:rgb(11, 76, 97);height:600px;">
+            <div style="background-color:rgb(11, 76, 97);height:600px;overflow: auto; ">
                 <div class="toolbar">
                     <ButtonGroup class="button-group">
                         <Button type="text" size="small" class="text-white" @click="saveFiles">
@@ -19,7 +19,7 @@
                         </Button>
                     </ButtonGroup>
                 </div>
-                <ul style="margin-left: 3px;overflow: scroll;">
+                <ul style="margin-left: 3px">
                     <file-tree v-for="file in files" :editing="currentSelected" :key="file.path" :model="file" v-on:select="onSelectFile" v-on:delete="onDeleteFile">
                     </file-tree>
                 </ul>
