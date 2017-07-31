@@ -8,7 +8,7 @@ module.exports = {
         "check": "String"
       }],
       "output": "String",
-      "colour": 70,
+      "colour": 170,
       "tooltip": "运行命令(Exec)，返回该命令执行后的标准输出文本.",
     })
   }

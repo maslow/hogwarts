@@ -88,17 +88,11 @@ function createCourse(data) {
 }
 
 function updateCourseDescription(course_id, description) {
-  return _updateCourse({
-    course_id,
-    description
-  })
+  return _updateCourse({course_id, description})
 }
 
 function renameCourse(course_id, name) {
-  return _updateCourse({
-    course_id,
-    name
-  })
+  return _updateCourse({course_id, name})
 }
 
 function publishCourse(courseId) {
@@ -131,24 +125,15 @@ function createChapter(courseId, chapterName, chapterDescription) {
 }
 
 function renameChapter(chapter_id, name) {
-  return _updateChapter({
-    chapter_id,
-    name
-  })
+  return _updateChapter({chapter_id, name})
 }
 
 function updateChapterDescription(chapter_id, description) {
-  return _updateChapter({
-    chapter_id,
-    description
-  })
+  return _updateChapter({chapter_id, description})
 }
 
 function adjustChapterSeq(chapter_id, seq) {
-  return _updateChapter({
-    chapter_id,
-    seq
-  })
+  return _updateChapter({chapter_id, seq})
 }
 
 function deleteChapter(chapterId) {
@@ -194,24 +179,15 @@ function createSection(courseId, chapterId, templateId, name, description, image
 }
 
 function renameSection(section_id, name) {
-  return _updateSection({
-    section_id,
-    name
-  })
+  return _updateSection({section_id, name})
 }
 
 function updateSectionDescription(section_id, description) {
-  return _updateSection({
-    section_id,
-    description
-  })
+  return _updateSection({section_id, description})
 }
 
 function adjustSectionSeq(section_id, seq) {
-  return _updateSection({
-    section_id,
-    seq
-  })
+  return _updateSection({section_id, seq})
 }
 
 /**************** Codes ***************/
@@ -280,19 +256,26 @@ function deleteCodeFile(section_id, path) {
 
 /****************** Tests ***************** */
 function updateSectionTests(section_id, codes) {
-  return new Promise((resolve, reject) => {
-    setTimeout(resolve, 1000)
+  return $.ajax({
+    url: G_API + '/updateSectionTests',
+    data: {
+      section_id,
+      codes
+    },
+    method: 'post',
+    headers: {
+      'Authorization': 'Bearer ' + Identity.getAccessToken()
+    }
   })
 }
 
 function getSectionTests(section_id) {
-  let codes = `
-<xml xmlns="http://www.w3.org/1999/xhtml"><variables></variables><block type="before_test" id="[mJsPp-$:BjKNrN;CB{a" x="243" y="87"></block><block type="test" id="rpjZ2RknABNls!f" x="592" y="84"><value name="NAME"><shadow type="text" id="wfawaq$%hDRkvWu:%b},"><field name="TEXT">标题</field></shadow></value></block></xml>
-`
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(codes)
-    }, 1000)
+  return $.ajax({
+    url: G_API + '/getSectionTests?section_id=' + section_id,
+    method: 'get',
+    headers: {
+      'Authorization': 'Bearer ' + Identity.getAccessToken()
+    }
   })
 }
 

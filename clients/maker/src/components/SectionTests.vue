@@ -1,10 +1,10 @@
 <template>
-    <div class="section-tests">
-        <Button type="ghost" icon="checkmark" @click="save" :loading="loading">提交保存</Button>
-        <div id="editor" style="margin-top: 5px;height: 600px; width: 100%;">
-        </div>
-        <pre id="js"></pre>
+  <div class="section-tests">
+    <Button type="ghost" icon="checkmark" @click="save" :loading="loading">提交保存</Button>
+    <div id="editor" style="margin-top: 5px;height: 600px; width: 100%;">
     </div>
+    <pre id="js"></pre>
+  </div>
 </template>
 
 <script>
@@ -20,7 +20,7 @@ Blockly.Blocks['exec'] = require('@/blocks/exec')
 
 let toolbox = `
 <xml id="toolbox" style="display: none">
-    <category name="测试" colour="70">
+    <category name="测试" colour="65">
       <block type="test">
         <value name="NAME">
           <shadow type="text"><field name="TEXT">标题</field></shadow>
@@ -41,9 +41,9 @@ let toolbox = `
         </value>
       </block>
     </category>
-    <category name="文件" colour="70"></category>
-    <category name="目录" colour="70"></category>
-    <category name="网络" colour="70"></category>
+    <category name="文件" colour="75"></category>
+    <category name="目录" colour="90"></category>
+    <category name="网络" colour="115"></category>
     <sep></sep>
     <category name="逻辑" colour="%{BKY_LOGIC_HUE}">
       <block type="controls_if"></block>
@@ -342,53 +342,53 @@ let toolbox = `
   </xml>
 `
 export default {
-    name: 'section-tests',
-    data() {
-        return {
-            section: {},
-            codes: '',
-            loading: false
-        }
-    },
-    async mounted() {
-        this.section = await course.getSection(this.$route.params.sid)
-
-        let toolbox_xml = Blockly.Xml.textToDom(toolbox)
-        let editor = Blockly.inject('editor', {
-            toolbox: toolbox_xml
-        })
-
-        let codes = await course.getSectionTests(this.section.id)
-        if (codes) {
-            let codesXml = Blockly.Xml.textToDom(codes)
-            Blockly.Xml.domToWorkspace(codesXml, editor);
-        }
-
-        editor.addChangeListener(() => {
-            let xml = Blockly.Xml.workspaceToDom(editor);
-            document.getElementById('js').innerText = Blockly.Xml.domToText(xml)
-            this.codes = Blockly.Xml.domToText(xml)
-        })
-    },
-    methods: {
-        async save() {
-            this.loading = true
-            try {
-                await course.updateSectionTests(this.section.id, this.codes)
-                this.$Notice.success({
-                    title: '保存成功！'
-                })
-            } catch (err) {
-                this.$Notice.fail({
-                    title: '操作失败',
-                    desc: err.toString()
-                })
-            }
-            this.loading = false
-        }
-    },
-    components: {
+  name: 'section-tests',
+  data() {
+    return {
+      section: {},
+      codes: '',
+      loading: false
     }
+  },
+  async mounted() {
+    this.section = await course.getSection(this.$route.params.sid)
+
+    let toolbox_xml = Blockly.Xml.textToDom(toolbox)
+    let editor = Blockly.inject('editor', {
+      toolbox: toolbox_xml
+    })
+
+    let codes = await course.getSectionTests(this.section.id)
+    if (codes && codes.length) {
+      let codesXml = Blockly.Xml.textToDom(codes)
+      Blockly.Xml.domToWorkspace(codesXml, editor);
+    }
+
+    editor.addChangeListener(() => {
+      let xml = Blockly.Xml.workspaceToDom(editor);
+      document.getElementById('js').innerText = Blockly.Xml.domToText(xml)
+      this.codes = Blockly.Xml.domToText(xml)
+    })
+  },
+  methods: {
+    async save() {
+      this.loading = true
+      try {
+        await course.updateSectionTests(this.section.id, this.codes)
+        this.$Notice.success({
+          title: '保存成功！'
+        })
+      } catch (err) {
+        this.$Notice.fail({
+          title: '操作失败',
+          desc: err.toString()
+        })
+      }
+      this.loading = false
+    }
+  },
+  components: {
+  }
 }
 </script>
 
