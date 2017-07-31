@@ -17,6 +17,8 @@ Blockly.Blocks['test'] = require('@/blocks/test')
 Blockly.Blocks['before_test'] = require('@/blocks/before_test')
 Blockly.Blocks['assert_string'] = require('@/blocks/assert_string')
 Blockly.Blocks['exec'] = require('@/blocks/exec')
+Blockly.Blocks['read_file'] = require('@/blocks/read_file')
+Blockly.Blocks['write_file'] = require('@/blocks/write_file')
 
 let toolbox = `
 <xml id="toolbox" style="display: none">
@@ -41,8 +43,21 @@ let toolbox = `
         </value>
       </block>
     </category>
-    <category name="文件" colour="75"></category>
-    <category name="目录" colour="90"></category>
+    <category name="文件" colour="75">
+      <block type="read_file">
+        <value name="PATH">
+          <shadow type="text"></shadow>
+        </value>
+      </block>
+      <block type="write_file">
+        <value name="PATH">
+          <shadow type="text"></shadow>
+        </value>
+        <value name="DATA">
+          <shadow type="text"></shadow>
+        </value>
+      </block>
+    </category>
     <category name="网络" colour="115"></category>
     <sep></sep>
     <category name="逻辑" colour="%{BKY_LOGIC_HUE}">
