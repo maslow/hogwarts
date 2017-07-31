@@ -30,7 +30,10 @@ export default {
   getSectionCodeFileContent,
   createSectionCodeFolder,
   updateSectionCodeFileContent,
-  deleteCodeFile
+  deleteCodeFile,
+
+  getSectionTests,
+  updateSectionTests
 }
 
 function getImages() {
@@ -272,6 +275,24 @@ function deleteCodeFile(section_id, path) {
     headers: {
       'Authorization': 'Bearer ' + Identity.getAccessToken()
     }
+  })
+}
+
+/****************** Tests ***************** */
+function updateSectionTests(section_id, codes) {
+  return new Promise((resolve, reject) => {
+    setTimeout(resolve, 1000)
+  })
+}
+
+function getSectionTests(section_id) {
+  let codes = `
+<xml xmlns="http://www.w3.org/1999/xhtml"><variables></variables><block type="before_test" id="[mJsPp-$:BjKNrN;CB{a" x="243" y="87"></block><block type="test" id="rpjZ2RknABNls!f" x="592" y="84"><value name="NAME"><shadow type="text" id="wfawaq$%hDRkvWu:%b},"><field name="TEXT">标题</field></shadow></value></block></xml>
+`
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(codes)
+    }, 1000)
   })
 }
 
