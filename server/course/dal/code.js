@@ -79,6 +79,7 @@ async function WriteFile(sectionId, file, content) {
 
     let p = path.join(codesPath, file)
     try {
+        await fs.ensureDir(path.dirname(p))
         await fs.writeFile(p, content)
         return null
     } catch (err) {

@@ -7,11 +7,8 @@ import router from './router'
 Vue.config.productionTip = false
 
 async function main() {
-  await
-  import ('iview/dist/styles/iview.css')
-  let iView = await
-  import ('iview')
-
+  await import ('iview/dist/styles/iview.css')
+  let iView = await import ('iview')
 
   Vue.use(iView)
 
