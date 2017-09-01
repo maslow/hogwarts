@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import codemirror from './codemirror.vue'
+import codemirror from '@/components/codemirror.vue'
 
 export default {
   components: {

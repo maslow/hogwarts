@@ -123,17 +123,17 @@
 <script>
 import _ from 'lodash'
 import course from '@/api/course'
-import RenameCourseModal from './RenameCourseModal'
-import UpdateCourseDescriptionModal from './UpdateCourseDescriptionModal'
-import CreateChapterModal from './CreateChapterModal'
-import RenameChapter from './RenameChapter'
-import UpdateChapterDescription from './UpdateChapterDescription'
-import AdjustChapterSeq from './AdjustChapterSeq'
-import DeleteChapter from './DeleteChapter'
-import CreateSectionModal from './CreateSectionModal'
-import RenameSection from './RenameSection'
-import UpdateSectionDescription from './UpdateSectionDescription'
-import AdjustSectionSeq from './AdjustSectionSeq'
+import RenameCourseModal from '@/components/RenameCourseModal'
+import UpdateCourseDescriptionModal from '@/components/UpdateCourseDescriptionModal'
+import CreateChapterModal from '@/components/CreateChapterModal'
+import RenameChapter from '@/components/RenameChapter'
+import UpdateChapterDescription from '@/components/UpdateChapterDescription'
+import AdjustChapterSeq from '@/components/AdjustChapterSeq'
+import DeleteChapter from '@/components/DeleteChapter'
+import CreateSectionModal from '@/components/CreateSectionModal'
+import RenameSection from '@/components/RenameSection'
+import UpdateSectionDescription from '@/components/UpdateSectionDescription'
+import AdjustSectionSeq from '@/components/AdjustSectionSeq'
 
 export default {
     data() {

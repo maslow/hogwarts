@@ -42,9 +42,9 @@
 
 <script>
 import course from '@/api/course'
-import CreateCourseModal from './CreateCourseModal'
-import RenameCourseModal from './RenameCourseModal'
-import UpdateCourseDescriptionModal from './UpdateCourseDescriptionModal'
+import CreateCourseModal from '@/components/CreateCourseModal'
+import RenameCourseModal from '@/components/RenameCourseModal'
+import UpdateCourseDescriptionModal from '@/components/UpdateCourseDescriptionModal'
 
 export default {
   name: 'user-courses',

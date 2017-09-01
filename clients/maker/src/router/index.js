@@ -7,27 +7,27 @@ export default new Router({
   routes: [
     {
       path: '/',
-      component: () => import('@/components/UserCourses')
+      component: () => import('@/pages/UserCourses')
     },
     {
       path: '/courses',
-      component: () => import('@/components/UserCourses')
+      component: () => import('@/pages/UserCourses')
     },
     {
       path: '/guide',
-      component: () => import('@/components/Guide')
+      component: () => import('@/pages/Guide')
     },
     {
       path: '/course/:id',
-      component: () => import ('@/components/Course')
+      component: () => import ('@/pages/Course')
     },
     {
       path: '/section-codes/:sid',
-      component: () => import ('@/components/SectionCodes')
+      component: () => import ('@/pages/SectionCodes')
     },
     {
       path: '/section-tests/:sid',
-      component: () => import ('@/components/SectionTests')
+      component: () => import ('@/pages/SectionTests')
     }
   ]
 })

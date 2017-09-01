@@ -35,10 +35,10 @@
 </template>
 
 <script>
-import codemirror from './codemirror'
+import codemirror from '@/components/codemirror'
 import course from '@/api/course'
-import FileTree from './FileTree'
-import CreateSectionCodesFile from './CreateSectionCodesFile'
+import FileTree from '@/components/FileTree'
+import CreateSectionCodesFile from '@/components/CreateSectionCodesFile'
 import md5 from 'blueimp-md5'
 
 export default {
