@@ -27,7 +27,7 @@ export default new Router({
     },
     {
       path: '/section-tests/:sid',
-      component: () => import ('@/pages/SectionTests')
+      component: () => import ('@/pages/SectionTestBlockly')
     }
   ]
 })
