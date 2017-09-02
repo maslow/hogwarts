@@ -2,7 +2,7 @@
     <div class="layout">
         <Menu mode="horizontal" theme="dark" active-name="/" @on-select="onSelect">
             <div class="layout-logo"></div>
-            <div class="layout-nav">
+            <div class="layout-nav" v-if="isLogined">
                 <Menu-item name="/courses">
                     <Icon type="flag"></Icon>
                     我的作品
@@ -11,10 +11,14 @@
                     <Icon type="ios-analytics"></Icon>
                     指南
                 </Menu-item>
+                <Menu-item name="/logout">
+                    <Icon type="ios-analytics"></Icon>
+                    退出登录
+                </Menu-item>
             </div>
         </Menu>
         <div class="layout-content">
-            <transition  mode="out-in">
+            <transition mode="out-in">
                 <router-view></router-view>
             </transition>
         </div>
@@ -25,6 +29,8 @@
 </template> 
 
 <script>
+import identity from '@/api/identity'
+
 export default {
     name: 'app',
     data() {
@@ -33,7 +39,16 @@ export default {
     },
     methods: {
         onSelect(name) {
+            if(name === '/logout'){
+                identity.clear()
+                return window.location.reload()
+            }
             this.$router.push(name)
+        }
+    },
+    computed: {
+        isLogined(){
+            return !identity.isExpired()
         }
     }
 }
@@ -41,6 +56,7 @@ export default {
 
 <style scoped>
 .layout {
+    font-size: 18px;
     border: 1px solid #d7dde4;
     background: #f5f7f9;
 }

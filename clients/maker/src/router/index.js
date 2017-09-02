@@ -6,6 +6,10 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
+      path: '/login',
+      component: () => import('@/pages/Login')
+    },
+    {
       path: '/',
       component: () => import('@/pages/UserCourses')
     },

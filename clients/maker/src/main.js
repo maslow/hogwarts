@@ -3,18 +3,27 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import identity from '@/api/identity'
 
 Vue.config.productionTip = false
 
 async function main() {
-  await import ('iview/dist/styles/iview.css')
-  let iView = await import ('iview')
+  await
+  import ('iview/dist/styles/iview.css')
+  let iView = await
+  import ('iview')
 
   Vue.use(iView)
 
   router.beforeEach((to, from, next) => {
-    iView.LoadingBar.start()
-    next()
+    if (identity.isExpired() && to.path !== '/login') {
+      router.push('/login')
+    } else if (!identity.isExpired() && to.path === '/login') {
+      router.push('/')
+    } else {
+      iView.LoadingBar.start()
+      next()
+    }
   })
 
   router.afterEach((to, from, next) => {
