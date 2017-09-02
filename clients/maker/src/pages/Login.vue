@@ -73,6 +73,7 @@ export default {
 }
 .login-form h3{
     font-weight:300;
+    font-size: 18px;
 }
 .login-form hr{
     margin-bottom: 50px;

@@ -56,7 +56,6 @@ export default {
 
 <style scoped>
 .layout {
-    font-size: 18px;
     border: 1px solid #d7dde4;
     background: #f5f7f9;
 }
