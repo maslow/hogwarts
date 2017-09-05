@@ -32,6 +32,10 @@ export default new Router({
     {
       path: '/section-tests/:sid',
       component: () => import ('@/pages/SectionTestCodes')
+    },
+    {
+      path: '/section-docs/:sid',
+      component: () => import ('@/pages/SectionDocs')
     }
   ]
 })

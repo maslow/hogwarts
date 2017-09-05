@@ -33,7 +33,9 @@ export default {
   deleteCodeFile,
 
   getSectionTests,
-  updateSectionTests
+  updateSectionTests,
+  getSectionDocs,
+  updateSectionDocs
 }
 
 function getImages() {
@@ -88,11 +90,17 @@ function createCourse(data) {
 }
 
 function updateCourseDescription(course_id, description) {
-  return _updateCourse({course_id, description})
+  return _updateCourse({
+    course_id,
+    description
+  })
 }
 
 function renameCourse(course_id, name) {
-  return _updateCourse({course_id, name})
+  return _updateCourse({
+    course_id,
+    name
+  })
 }
 
 function publishCourse(courseId) {
@@ -125,15 +133,24 @@ function createChapter(courseId, chapterName, chapterDescription) {
 }
 
 function renameChapter(chapter_id, name) {
-  return _updateChapter({chapter_id, name})
+  return _updateChapter({
+    chapter_id,
+    name
+  })
 }
 
 function updateChapterDescription(chapter_id, description) {
-  return _updateChapter({chapter_id, description})
+  return _updateChapter({
+    chapter_id,
+    description
+  })
 }
 
 function adjustChapterSeq(chapter_id, seq) {
-  return _updateChapter({chapter_id, seq})
+  return _updateChapter({
+    chapter_id,
+    seq
+  })
 }
 
 function deleteChapter(chapterId) {
@@ -179,15 +196,24 @@ function createSection(courseId, chapterId, templateId, name, description, image
 }
 
 function renameSection(section_id, name) {
-  return _updateSection({section_id, name})
+  return _updateSection({
+    section_id,
+    name
+  })
 }
 
 function updateSectionDescription(section_id, description) {
-  return _updateSection({section_id, description})
+  return _updateSection({
+    section_id,
+    description
+  })
 }
 
 function adjustSectionSeq(section_id, seq) {
-  return _updateSection({section_id, seq})
+  return _updateSection({
+    section_id,
+    seq
+  })
 }
 
 /**************** Codes ***************/
@@ -326,5 +352,18 @@ function _updateSection(data) {
     headers: {
       'Authorization': 'Bearer ' + Identity.getAccessToken()
     }
+  })
+}
+
+function getSectionDocs(sid) {
+  return new Promise(function (resolve, reject) {
+    let data = `> 编写一个程序，使用**异步**方法，读取一个文件，计算该文件内容的行数，并在终端输出行数。`
+    resolve(data)
+  })
+}
+
+function updateSectionDocs(sid, data) {
+  return new Promise(function (resolve, reject) {
+    setTimeout(resolve, 1000)
   })
 }
