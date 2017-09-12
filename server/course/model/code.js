@@ -51,25 +51,21 @@ async function GetFile(sectionId, templateId, file, dev = false) {
  * @param {String} file 文件夹目录
  */
 async function CreateFolder(sectionId, file) {
-    let codesPath = path.join(root(true), sectionId, 'codes')
-    await fs.ensureDir(codesPath)
+    let filePath = path.join(root(true), sectionId, 'codes', file)
 
-    let p = path.join(codesPath, file)
-    if (await fs.pathExists(p))
+    if (await fs.pathExists(filePath))
         return false
 
-    await fs.ensureDir(p)
+    await fs.ensureDir(filePath)
     return true
 }
 
 async function WriteFile(sectionId, file, content) {
-    let codesPath = path.join(root(true), sectionId, 'codes')
-    await fs.ensureDir(codesPath)
+    let filePath = path.join(root(true), sectionId, 'codes', file)
 
-    let p = path.join(codesPath, file)
     try {
-        await fs.ensureDir(path.dirname(p))
-        await fs.writeFile(p, content)
+        await fs.ensureDir(path.dirname(filePath))
+        await fs.writeFile(filePath, content)
         return null
     } catch (err) {
         return err
@@ -77,14 +73,11 @@ async function WriteFile(sectionId, file, content) {
 }
 
 async function DeleteFile(sectionId, templateId, file) {
-    let codesPath = path.join(root(true), sectionId, 'codes')
-    await fs.ensureDir(codesPath)
+    let filePath = path.join(root(true), sectionId, 'codes', filePath)
 
-    let p = path.join(codesPath, file)
     try {
-        if (await fs.pathExists(p))
-            await fs.remove(p)
-
+        if (await fs.pathExists(filePath))
+            await fs.remove(filePath)
         return null
     } catch (err) {
         return err
