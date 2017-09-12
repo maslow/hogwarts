@@ -16,6 +16,9 @@ let router = express.Router()
 router.get("/getSectionCodeFiles", async function (req, res) {
     let p = req.query.path || "/"
     let dev = req.query.dev || false
+    if (dev == 'false' || dev == '0')
+        dev = false
+
     let sectionId = req.query.sid || 0
 
     if (!code.SecurityChecking(sectionId, p, dev))
@@ -45,6 +48,9 @@ router.get("/getSectionCodeFiles", async function (req, res) {
 router.get("/getSectionCodeFileContent", async function (req, res) {
     let p = req.query.path
     let dev = req.query.dev || false
+    if (dev == 'false' || dev == '0')
+        dev = false
+
     let sectionId = req.query.sid || 0
 
     if (!code.SecurityChecking(sectionId, p, dev))
