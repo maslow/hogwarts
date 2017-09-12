@@ -1,12 +1,5 @@
 /** 
  * Proxy Gate
- *
- * 1. Get service by url's pathname from services list. Response 404 if no service matched
- * 2. Proxy the service to target server directly if the service needn't to be authrized
- * 3. Validate the token before proxy services that should be authrized
- *    i.   Parse token from request object
- *    ii.  Validate token by calling the api provided by auth service
- *    iii. Proxy the service to target server if the token is valid
  */
 
 const httpProxy = require('http-proxy')
@@ -17,16 +10,6 @@ const path = require('path')
 const express = require('express')
 
 const { servers, services } = require('./services.js')
-/*
-let config = fs.readJsonSync(path.join(__dirname, 'config.json'))
-let keyPath = config.ssl_key
-let certPath = config.ssl_cert
-
-let options = {
-    key: fs.readFileSync(keyPath, 'utf8'),
-    cert: fs.readFileSync(certPath, 'utf8')
-}
-*/
 
 const app = express()
 const proxy = httpProxy.createProxyServer({})

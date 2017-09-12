@@ -15,14 +15,6 @@ let mysql = require('./mysql')
 let app = express()
 let secret = "adf344t9fdslf4i3qjf"
 
-// 跨域
-// app.all('*', function (req, res, next) {
-//     res.header("Access-Control-Allow-Origin", "*");
-//     res.header("Access-Control-Allow-Headers", "X-Requested-With");
-//     res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
-//     next();
-// })
-
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(expressValidator())
