@@ -1,6 +1,6 @@
 const express = require("express")
-const tests = require("../dal/tests")
-const course = require("../dal/course")
+const tests = require("../model/tests")
+const course = require("../model/course")
 let router = express.Router()
 
 router.post('/updateSectionTests', async function (req, res) {

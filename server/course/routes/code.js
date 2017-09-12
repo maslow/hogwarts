@@ -1,6 +1,6 @@
 const express = require("express")
-const course = require("../dal/course")
-const code = require("../dal/code")
+const course = require("../model/course")
+const code = require("../model/code")
 const path = require("path")
 const util0 = require("../util")
 

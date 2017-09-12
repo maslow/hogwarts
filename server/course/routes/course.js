@@ -1,5 +1,5 @@
 const express = require("express")
-const course = require("../dal/course")
+const course = require("../model/course")
 
 let router = express.Router()
 

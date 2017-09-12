@@ -16,63 +16,56 @@ let app = express()
 let secret = "adf344t9fdslf4i3qjf"
 
 // 跨域
-app.all('*', function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
-    next();
-})
+// app.all('*', function (req, res, next) {
+//     res.header("Access-Control-Allow-Origin", "*");
+//     res.header("Access-Control-Allow-Headers", "X-Requested-With");
+//     res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
+//     next();
+// })
 
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.urlencoded({ extended: false }))
 app.use(expressValidator())
 
-app.get('/users/:id', (req, res) => {
-    req
-        .checkParams('id')
-        .notEmpty()
-        .isInt()
-    let errors = req.validationErrors()
-    if (errors) 
+app.get('/getUser', (req, res) => {
+    req.checkQuery('id').notEmpty().isInt()
+    const errors = req.validationErrors()
+    if (errors)
         return res.status(422).send(errors)
-    let conn = mysql()
+
+    const conn = mysql()
     conn
-        .query("select id,email from users where id = ?", [req.params.id])
+        .query("select id,email from users where id = ?", [req.query.id])
         .then(rows => {
-            if (!rows.length) 
-                return res.status(404).send({param: 'id', msg: 'Not exist'})
-            return res
-                .status(200)
-                .send(rows[0])
+            if (!rows.length)
+                return res.status(404).send('Not exist')
+
+            return res.status(200).send(rows[0])
         })
         .catch(err => res.status(500).send('Server Exception'))
         .then(() => conn.close())
 })
 
 app.post('/users', (req, res) => {
-    req
-        .checkBody('email', 'Email is incorrect')
-        .notEmpty()
-        .isEmail()
-    req
-        .checkBody('password', 'Password is incorrect')
-        .notEmpty()
-        .isLength({min: 6, max: 16})
-    let errors = req.validationErrors()
-    if (errors) 
+    req.checkBody('email', 'Email is incorrect').notEmpty().isEmail()
+    req.checkBody('password', 'Password is incorrect').notEmpty().isLength({ min: 6, max: 16 })
+    
+    const errors = req.validationErrors()
+    if (errors)
         return res.status(422).send(errors)
-    let conn = mysql()
+
+    const conn = mysql()
     conn
         .query('SELECT email from users where email = ?', [req.body.email])
         .then(rows => {
-            if (rows.length) 
-                return res.status(422).send({param: 'email', msg: 'Already existed'})
+            if (rows.length)
+                return res.status(422).send({ param: 'email', msg: 'Already existed' })
             let password_hash = hash(req.body.password)
             return conn
                 .query('INSERT INTO users(email, password_hash) VALUES(?, ?)', [req.body.email, password_hash])
                 .then(result => res.status(201).send(result))
         })
-        .catch(err => res.status(500).send({msg: err}))
+        .catch(err => res.status(500).send({ msg: err }))
         .then(() => conn.close())
 })
 
@@ -84,19 +77,19 @@ app.post('/tokens', (req, res) => {
     req
         .checkBody('password')
         .notEmpty()
-        .isLength({min: 6, max: 16})
+        .isLength({ min: 6, max: 16 })
     let errors = req.validationErrors()
-    if (errors) 
+    if (errors)
         return res.status(422).send(errors)
     let conn = mysql()
     conn
         .query('SELECT id, email, password_hash from users where email = ?', [req.body.email])
         .then(rows => {
-            if (!rows.length) 
-                return res.status(404).send({param: 'email', msg: 'Not Found'})
+            if (!rows.length)
+                return res.status(404).send({ param: 'email', msg: 'Not Found' })
             let user = rows[0];
-            if (user.password_hash !== hash(req.body.password)) 
-                return res.status(401).send({msg: "Invalid Params"})
+            if (user.password_hash !== hash(req.body.password))
+                return res.status(401).send({ msg: "Invalid Params" })
             let expire = new Date().getTime() + 60 * 60 * 24 * 7 * 1000
             let result = {
                 uid: user.id,
@@ -110,7 +103,7 @@ app.post('/tokens', (req, res) => {
         .catch(err => {
             res
                 .status(500)
-                .send({msg: 'Server Exception'})
+                .send({ msg: 'Server Exception' })
             console.log(err)
         })
         .then(() => conn.close())
@@ -121,11 +114,11 @@ app.get('/tokens', (req, res) => {
         .checkQuery('token')
         .notEmpty()
     let errors = req.validationErrors()
-    if (errors) 
+    if (errors)
         return res.status(422).send(errors)
     let payload = fromToken(req.query.token)
-    if (!payload) 
-        return res.status(401).send({msg: 'Invalid Token'})
+    if (!payload)
+        return res.status(401).send({ msg: 'Invalid Token' })
     return res
         .status(200)
         .send(payload)
@@ -145,11 +138,11 @@ function getToken(user_id, expire) {
 
 function fromToken(token) {
     let pair = token.split('.')
-    if (2 !== pair.length || hash(pair[0]) !== pair[1]) 
+    if (2 !== pair.length || hash(pair[0]) !== pair[1])
         return false;
     let buf = new Buffer(pair[0], 'base64')
     let payload = JSON.parse(buf.toString())
-    if (!payload.expire || payload.expire <= new Date().getTime()) 
+    if (!payload.expire || payload.expire <= new Date().getTime())
         return false
     return payload
 }

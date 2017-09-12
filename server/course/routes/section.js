@@ -1,8 +1,8 @@
 const express = require("express")
 const $ = require("validator")
 
-const course = require("../dal/course")
-const template = require("../dal/template")
+const course = require("../model/course")
+const template = require("../model/template")
 
 let router = express.Router()
 

@@ -1,24 +1,17 @@
 const servers = {
     AUTH: 'http://127.0.0.1:8000',
     COURSE: 'http://127.0.0.1:8001',
-    JOB: 'http://127.0.0.1:8002',
-    EVAL: 'http://127.0.0.1:8003',
-    DBM: 'http://127.0.0.1:8004'
+    JOB: 'http://127.0.0.1:8002'
 }
 
-let services = [
-    {
-        routes: ['/db/mysql/:jobid'],
-        target: servers.DBM,
-        auth: true
-    }, {
+let services = [{
         routes: [
             "/tokens", "/users"
         ],
         target: servers.AUTH,
         auth: false
     }, {
-        routes: ["/users/:id"],
+        routes: ["/getUser"],
         target: servers.AUTH,
         auth: true
     }, {
