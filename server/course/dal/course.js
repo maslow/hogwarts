@@ -35,7 +35,7 @@ async function CreateCourse(name, description, userId) {
     }
     let [rets] = await mysql.Query(createCourseSql, params)
     let [rets0] = await mysql.Query("select * from course where `id` = ?", [rets.insertId])
-    return rets0
+    return rets0[0]
 }
 
 async function UpdateCourse(courseId, data) {
@@ -66,7 +66,7 @@ async function CreateChapter(course_id, name, description, seq = 0) {
     }
     let [rets] = await mysql.Query(sql, params)
     let [rets0] = await mysql.Query("select * from chapter where id = ?", [rets.insertId])
-    return rets0
+    return rets0[0]
 }
 
 async function GetChapters(course_id) {
@@ -131,7 +131,7 @@ async function CreateSection(course_id, chapter_id, name, description, template_
     }
     let [rets] = await mysql.Query(sql, params)
     let [rets0] = await mysql.Query("select * from section where id = ?", [rets.insertId])
-    return rets0
+    return rets0[0]
 }
 
 async function UpdateSection(sectionId, data) {

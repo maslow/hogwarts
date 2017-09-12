@@ -1,0 +1,19 @@
+{
+  "name": "job",
+  "version": "1.0.0",
+  "description": "The Job Service of Hogwarts.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "maslow",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "fs-extra": "^3.0.1",
+    "lodash": "^4.17.4",
+    "mysql": "^2.13.0",
+    "validator": "^8.0.0"
+  }
+}
