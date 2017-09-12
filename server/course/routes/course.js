@@ -8,8 +8,8 @@ let router = express.Router()
  */
 router.get('/getUserCourses', async function (req, res) {
     let uid = req.query.uid || false
-    if (!uid) 
-        return res.status(422).send(errors.mapped())
+    if (!uid)
+        return res.status(422).send('User Id can not be empty')
 
     let rets = await course.GetCoursesByUserId(uid)
     rets = rets.filter(c => {
@@ -19,9 +19,7 @@ router.get('/getUserCourses', async function (req, res) {
         return c.status >= s
     })
 
-    res
-        .status(200)
-        .send(rets)
+    res.status(200).send(rets)
 })
 
 /**
@@ -31,19 +29,19 @@ router.get('/getCourseDetail', async function (req, res) {
     req
         .checkQuery('id')
         .notEmpty()
-        .isInt({min: 1})
+        .isInt({ min: 1 })
 
     let errors = await req.getValidationResult()
     errors.useFirstErrorOnly()
-    if (errors.isEmpty() === false) 
+    if (errors.isEmpty() === false)
         return res.status(422).send(errors.mapped())
 
     let courseId = req.query.id
     let course0 = await course.GetCourseById(courseId)
-    if (!course0) 
+    if (!course0)
         return res.status(404).send("Object not found")
 
-    if (course0.created_by != req.uid && course0.status === course.COURSE_CREATED) 
+    if (course0.created_by != req.uid && course0.status === course.COURSE_CREATED)
         return res.status(403).send("Permission denied")
 
     let chapters = await course.GetChapters(courseId)
@@ -57,7 +55,7 @@ router.get('/getCourseDetail', async function (req, res) {
 
     return res
         .status(200)
-        .send({course: course0, chapters, sections})
+        .send({ course: course0, chapters, sections })
 })
 
 /**
@@ -75,11 +73,11 @@ router.post('/createCourse', async function (req, res) {
 
     let errors = await req.getValidationResult()
     errors.useFirstErrorOnly()
-    if (errors.isEmpty() === false) 
+    if (errors.isEmpty() === false)
         return res.status(422).send(errors.mapped())
 
-    if (await course.GetCourseByName(req.body.name)) 
-        return res.status(422).send({name: "Name exist"})
+    if (await course.GetCourseByName(req.body.name))
+        return res.status(422).send({ name: "Name exist" })
 
     let ret = await course.CreateCourse(req.body.name, req.body.description, req.uid)
     res
@@ -96,10 +94,10 @@ router.post('/updateCourse', async function (req, res) {
     let description = req.body.description || null
 
     let course0 = await course.GetCourseById(course_id)
-    if (!course0) 
+    if (!course0)
         return res.status(404).send("Object not found")
 
-    if (course0.created_by != req.uid) 
+    if (course0.created_by != req.uid)
         return res.status(401).send('Permission denied')
 
     let data = {}
@@ -119,25 +117,25 @@ router.post('/publishCourse', async function (req, res) {
     req
         .checkBody('id')
         .notEmpty()
-        .isInt({min: 1})
+        .isInt({ min: 1 })
 
     let errors = await req.getValidationResult()
     errors.useFirstErrorOnly()
-    if (errors.isEmpty() === false) 
+    if (errors.isEmpty() === false)
         return res.status(422).send(errors.mapped())
 
     let courseId = req.body.id
     let course0 = await course.GetCourseById(courseId)
-    if (!course0) 
+    if (!course0)
         return res.status(404).send("Object not found")
 
-    if (course0.created_by != req.uid) 
+    if (course0.created_by != req.uid)
         return res.status(401).send('Permission denied')
 
-    if (course0.status !== 0) 
+    if (course0.status !== 0)
         return res.status(422).send("Course was already published or deleted")
 
-    let ret = await course.UpdateCourse(courseId, {status: course.COURSE_PUBLISHED})
+    let ret = await course.UpdateCourse(courseId, { status: course.COURSE_PUBLISHED })
     res
         .status(201)
         .send(ret)

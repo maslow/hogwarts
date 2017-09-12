@@ -11,14 +11,14 @@ async function GetCoursesByUserId(userId) {
 
 async function GetCourseById(id) {
     let [rets] = await mysql.Query("select * from course where id = ?", [id])
-    if (rets.length === 0) 
+    if (rets.length === 0)
         return false
     return rets[0]
 }
 
 async function GetCourseByName(name) {
     let [rets] = await mysql.Query("select * from course where name = ?", [name])
-    if (rets.length === 0) 
+    if (rets.length === 0)
         return false
     return rets[0]
 }
@@ -76,7 +76,7 @@ async function GetChapters(course_id) {
 
 async function GetChapterById(chapterId) {
     let [rets] = await mysql.Query("select * from chapter where id = ?", [chapterId])
-    if (rets.length === 0) 
+    if (rets.length === 0)
         return false
     return rets[0]
 }
@@ -109,7 +109,7 @@ async function GetSections(course_id) {
 
 async function GetSection(section_id) {
     let [rets] = await mysql.Query("select * from section where id = ?", [section_id])
-    if (rets.length === 0) 
+    if (rets.length === 0)
         return false
     return rets[0]
 }
