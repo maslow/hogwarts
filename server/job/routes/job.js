@@ -6,7 +6,7 @@ const router = express.Router()
 /**
  * 获取当前登录用户的一个作业详情
  */
-router.get('/getUserJob', async function (req, res) {
+router.get('/getUserJobBySectionId', async function (req, res) {
     const sectionId = req.query.sid || 0
     if (!sectionId)
         return res.status(422).send('Section Id can not be empty')
