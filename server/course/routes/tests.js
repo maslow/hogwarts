@@ -8,32 +8,28 @@ router.post('/updateSectionTests', async function (req, res) {
     let codes = req.body.codes || null
 
     let section = await course.GetSection(section_id)
-    if (!section) 
+    if (!section)
         return res.status(422).send("Section not found")
 
-    if (section.created_by != req.uid) 
+    if (section.created_by != req.uid)
         return res.status(401).send('Permission denied')
 
-    let rets = await tests.updateTests(section_id, codes)
-    return res
-        .status(200)
-        .send(rets)
+    let rets = await tests.updateCode(section_id, codes)
+    return res.status(200).send(rets)
 })
 
 router.get('/getSectionTests', async function (req, res) {
     let section_id = req.query.section_id
 
     let section = await course.GetSection(section_id)
-    if (!section) 
+    if (!section)
         return res.status(422).send("Section not found")
 
-    if (section.created_by != req.uid) 
+    if (section.created_by != req.uid)
         return res.status(401).send('Permission denied')
 
-    let rets = await tests.getTests(section_id)
-    return res
-        .status(200)
-        .send(rets)
+    let rets = await tests.getCode(section_id)
+    return res.status(200).send(rets)
 })
 
 module.exports = router

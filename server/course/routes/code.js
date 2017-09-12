@@ -28,7 +28,7 @@ router.get("/getSectionCodeFiles", async function (req, res) {
     if (dev && req.uid != section.created_by)
         return res.status(401).send('Permission denied')
 
-    let rets = await code.GetCodeDirFiles(section.id.toString(), section.template_id.toString(), p, dev)
+    let rets = await code.GetFiles(section.id.toString(), section.template_id.toString(), p, dev)
     if (rets === null)
         return res.status(404).send('Section Code not found')
 
@@ -57,7 +57,7 @@ router.get("/getSectionCodeFileContent", async function (req, res) {
     if (dev && req.uid != section.created_by)
         return res.status(401).send('Permission denied')
 
-    let rets = await code.GetCodeFileContent(section.id.toString(), section.template_id.toString(), p, dev)
+    let rets = await code.GetFile(section.id.toString(), section.template_id.toString(), p, dev)
     if (rets === null)
         return res.status(404).send('Section code file not found')
 

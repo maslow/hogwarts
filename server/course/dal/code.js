@@ -10,30 +10,19 @@ const _ = require("lodash")
  * @param {int} templateId 
  * @param {string} file 
  */
-async function GetCodeDirFiles(sectionId, templateId, file, dev = false) {
-    let codesPath = path.join(SectionsRoot(dev), sectionId, 'codes', file)
-    let p = path.join(codesPath, file)
+async function GetFiles(sectionId, templateId, file, dev = false) {
+    const codesPath = path.join(root(dev), sectionId, 'codes')
+    const p = path.join(codesPath, file)
 
-    let tplFiles0 = await tpl.GetTemplateDirFiles(templateId, file) || []
-    let tplFiles = []
-    for (let i = 0; i < tplFiles0.length; i++) {
-        if (!await ExistsWhiteout(codesPath, tplFiles0[i].name))
-            tplFiles.push(tplFiles0[i])
-    }
-
+    const tplFiles = await tpl.getFiles(templateId, file) || []
     if (!await fs.pathExists(p))
         return tplFiles
 
     let codeFiles = await fs.readdir(p)
-    codeFiles = codeFiles.filter(f => f !== '.whiteout')
-
     for (let i = 0; i < codeFiles.length; i++) {
-        let stats = await fs.stat(path.join(p, codeFiles[i]))
-        let type = stats.isDirectory() ? 'dir' : 'file'
-        codeFiles[i] = {
-            type,
-            name: codeFiles[i]
-        }
+        const stats = await fs.stat(path.join(p, codeFiles[i]))
+        const type = stats.isDirectory() ? 'dir' : 'file'
+        codeFiles[i] = { type, name: codeFiles[i] }
     }
 
     let files = codeFiles.concat(tplFiles || [])
@@ -47,11 +36,11 @@ async function GetCodeDirFiles(sectionId, templateId, file, dev = false) {
  * @param {int} templateId 
  * @param {string} file 
  */
-async function GetCodeFileContent(sectionId, templateId, file, dev = false) {
-    let p = path.join(SectionsRoot(dev), sectionId, 'codes', file)
+async function GetFile(sectionId, templateId, file, dev = false) {
+    let p = path.join(root(dev), sectionId, 'codes', file)
 
     if (!await fs.pathExists(p))
-        return await tpl.GetTemplateFileContent(templateId, file)
+        return await tpl.getFile(templateId, file)
 
     return await fs.readFile(p)
 }
@@ -62,7 +51,7 @@ async function GetCodeFileContent(sectionId, templateId, file, dev = false) {
  * @param {String} file 文件夹目录
  */
 async function CreateFolder(sectionId, file) {
-    let codesPath = path.join(SectionsRoot(true), sectionId, 'codes')
+    let codesPath = path.join(root(true), sectionId, 'codes')
     await fs.ensureDir(codesPath)
 
     let p = path.join(codesPath, file)
@@ -74,7 +63,7 @@ async function CreateFolder(sectionId, file) {
 }
 
 async function WriteFile(sectionId, file, content) {
-    let codesPath = path.join(SectionsRoot(true), sectionId, 'codes')
+    let codesPath = path.join(root(true), sectionId, 'codes')
     await fs.ensureDir(codesPath)
 
     let p = path.join(codesPath, file)
@@ -88,7 +77,7 @@ async function WriteFile(sectionId, file, content) {
 }
 
 async function DeleteFile(sectionId, templateId, file) {
-    let codesPath = path.join(SectionsRoot(true), sectionId, 'codes')
+    let codesPath = path.join(root(true), sectionId, 'codes')
     await fs.ensureDir(codesPath)
 
     let p = path.join(codesPath, file)
@@ -96,37 +85,19 @@ async function DeleteFile(sectionId, templateId, file) {
         if (await fs.pathExists(p))
             await fs.remove(p)
 
-        if (await tpl.Exists(templateId, file))
-            await AddWhiteout(codesPath, file)
-
         return null
     } catch (err) {
         return err
     }
 }
 
-async function AddWhiteout(codesPath, file) {
-    let whiteout = path.join(codesPath, '.whiteout')
-    await fs.ensureDir(whiteout)
-
-    let p = path.join(whiteout, file)
-    await fs.open(p, 'w+')
-}
-
-async function ExistsWhiteout(codesPath, file) {
-    let whiteout = path.join(codesPath, '.whiteout')
-
-    let p = path.join(whiteout, file)
-    return await fs.pathExists(p)
-}
-
-function SectionsRoot(dev = false) {
+function root(dev = false) {
     let p = dev ? 'dev' : 'pub'
     return path.join(__dirname, '..', 'data', 'courses', p)
 }
 
 function SecurityChecking(sectionId, file, dev = false) {
-    let p0 = path.join(SectionsRoot(dev), sectionId, 'codes')
+    let p0 = path.join(root(dev), sectionId, 'codes')
     let p = path.join(p0, file)
 
     let p1 = path.relative(p0, p)
@@ -137,9 +108,9 @@ function SecurityChecking(sectionId, file, dev = false) {
 }
 
 module.exports = {
-    GetCodeDirFiles,
-    GetCodeFileContent,
-    SectionsRoot,
+    GetFiles,
+    GetFile,
+    root,
     SecurityChecking,
     CreateFolder,
     WriteFile,

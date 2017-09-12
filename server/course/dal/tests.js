@@ -3,13 +3,13 @@ const code = require('./code')
 const path = require('path')
 
 module.exports = {
-    updateTests,
-    getTests
+    updateCode,
+    getCode
 }
 
-async function updateTests(section_id, tests) {
+async function updateCode(section_id, tests) {
     try {
-        let testsPath = path.join(code.SectionsRoot(true), section_id, 'tests')
+        let testsPath = path.join(code.root(true), section_id, 'tests')
         await fs.ensureDir(testsPath)
 
         let file = path.join(testsPath, 'tests.js')
@@ -21,9 +21,9 @@ async function updateTests(section_id, tests) {
     }
 }
 
-async function getTests(section_id, tests) {
+async function getCode(section_id, tests) {
     try {
-        let testsPath = path.join(code.SectionsRoot(true), section_id, 'tests')
+        let testsPath = path.join(code.root(true), section_id, 'tests')
         await fs.ensureDir(testsPath)
 
         let file = path.join(testsPath, 'tests.js')
