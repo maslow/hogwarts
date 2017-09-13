@@ -1,7 +1,8 @@
 <template>
     <div class="layout">
         <Menu mode="horizontal" theme="dark" active-name="/" @on-select="onSelect">
-            <div class="layout-logo"></div>
+            <div class="layout-logo">
+            </div>
             <div class="layout-nav" v-if="isLogined">
                 <Menu-item name="/courses">
                     <Icon type="flag"></Icon>
@@ -61,14 +62,18 @@ export default {
 }
 
 .layout-logo {
-    width: 100px;
+    width: 30px;
     height: 30px;
-    background: #5b6270;
-    border-radius: 3px;
+    background: white;
+    border-radius: 15px;
     float: left;
     position: relative;
     top: 15px;
     left: 20px;
+    background-image: url("./assets/wizard-hat.png");
+    background-size: 80% 80%;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 .layout-nav {

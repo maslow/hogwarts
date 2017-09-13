@@ -6,10 +6,27 @@ import router from './router'
 
 Vue.config.productionTip = false
 
-/* eslint-disable no-new */
-new Vue({
-  el: '#app',
-  router,
-  template: '<App/>',
-  components: { App }
-})
+async function main() {
+  await import('iview/dist/styles/iview.css')
+  const iView = await import('iview')
+
+  Vue.use(iView)
+
+  router.beforeEach((to, from, next) => {
+    iView.LoadingBar.start()
+    next()
+  })
+
+  router.afterEach((to, from, next) => {
+    iView.LoadingBar.finish()
+  })
+
+  new Vue({
+    el: '#app',
+    router,
+    template: '<App/>',
+    components: { App }
+  })
+}
+
+main()
