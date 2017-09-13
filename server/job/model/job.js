@@ -9,12 +9,24 @@ module.exports = {
     FAILED,
     PASSED,
     GetUserJobBySectionId,
-    CreateUserJob
+    CreateUserJob,
+    GetJobById
 }
 
 async function GetUserJobBySectionId(userId, sectionId) {
     const sql = "select * from job where uid = ? and sectionId = ?"
     const params = [userId, sectionId]
+
+    const [rets] = await db.Query(sql, params)
+    if (rets.length === 0)
+        return false
+
+    return rets[0]
+}
+
+async function GetJobById(jobId) {
+    const sql = "select * from job where id = ?"
+    const params = [jobId]
 
     const [rets] = await db.Query(sql, params)
     if (rets.length === 0)

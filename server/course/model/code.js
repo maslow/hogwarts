@@ -14,7 +14,7 @@ async function GetFiles(sectionId, templateId, file, dev = false) {
     const codesPath = path.join(root(dev), sectionId, 'codes')
     const p = path.join(codesPath, file)
 
-    const tplFiles = await tpl.getFiles(templateId, file) || []
+    const tplFiles = await tpl.getFiles(templateId, file) || null
     if (!await fs.pathExists(p))
         return tplFiles
 
@@ -73,7 +73,7 @@ async function WriteFile(sectionId, file, content) {
 }
 
 async function DeleteFile(sectionId, templateId, file) {
-    let filePath = path.join(root(true), sectionId, 'codes', filePath)
+    const filePath = path.join(root(true), sectionId, 'codes', file)
 
     try {
         if (await fs.pathExists(filePath))

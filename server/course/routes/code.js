@@ -71,7 +71,7 @@ router.get("/getSectionCodeFileContent", async function (req, res) {
     return res.status(200).send({
         name: req.query.path,
         hash: util0.md5(data),
-        content: rets.toString('utf-8')
+        content: data
     })
 })
 

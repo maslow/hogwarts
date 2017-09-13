@@ -13,7 +13,7 @@ async function GetFiles(jobId, file, sectionId) {
     const codePath = path.join(root(), jobId, 'codes')
     const filePath = path.join(codePath, file)
 
-    const sectionFiles = await section.GetFiles(sectionId) || []
+    const sectionFiles = await section.GetFiles(sectionId) || null
     if (!await fs.pathExists(p))
         return sectionFiles
 

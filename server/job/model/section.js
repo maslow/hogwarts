@@ -25,7 +25,8 @@ async function GetFiles(sectionId, file) {
         const res = await req
         return res.body
     } catch (err) {
-        return err
+        console.error(err)
+        return false
     }
 }
 
@@ -39,6 +40,7 @@ async function GetFile(sectionId, file) {
         const res = await req
         return res.body
     } catch (err) {
-        return err
+        console.error(err)
+        return false
     }
 }
