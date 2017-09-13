@@ -23,19 +23,23 @@ export default new Router({
     },
     {
       path: '/course/:id',
-      component: () => import ('@/pages/Course')
+      component: () => import('@/pages/Course')
     },
     {
       path: '/section-codes/:sid',
-      component: () => import ('@/pages/SectionCodes')
+      component: () => import('@/pages/SectionCodes')
     },
     {
       path: '/section-tests/:sid',
-      component: () => import ('@/pages/SectionTestCodes')
+      component: () => import('@/pages/SectionTestCodes')
+    },
+    {
+      path: '/section-tests-blockly/:sid',
+      component: () => import('@/pages/SectionTestBlockly')
     },
     {
       path: '/section-docs/:sid',
-      component: () => import ('@/pages/SectionDocs')
+      component: () => import('@/pages/SectionDocs')
     }
   ]
 })
