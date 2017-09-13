@@ -3,52 +3,40 @@ const bodyParser = require('body-parser');
 const path = require('path')
 const fs = require('fs-extra')
 const url = require('url')
-const EventEmitter = require('events')
 const mysql = require('./mysql')
-let evt = new EventEmitter()
 
 let app = express()
 app.use(bodyParser.json())
-app.use(function (req, res, next) {
-    req.uid = req.get('x-uid')
-    if (!req.uid) 
-        return res.status(422).send('params missing: uid is required')
-    next()
-})
 
-app.post('/db/mysql/:jobid', function (req, res) {
-    let jobid = req.param('jobid')
-    let uid = req.uid
-    let status = null
-    let name = getDatabaseName(uid, jobid)
-    let user = generateUserName(uid, jobid)
-    let passwd = generatePasswd(uid, jobid)
-    getDatabase(name, user, passwd).then(() => {
-        let data = {
-            jobid: jobid,
-            host: '127.0.0.1',
-            port: 3306,
-            db: name,
-            user: user,
-            passwd: passwd
+app.post('/getMysqlForJob', async function (req, res) {
+    const jobid = req.query.jobId
+    const uid = req.query.uid
+
+    try {
+        const data = {
+            jobid, host: '127.0.0.1', port: 3306,
+            db: getDatabaseName(uid, jobid),
+            user: generateUserName(uid, jobid),
+            passwd: generatePasswd(uid, jobid)
         }
-        return res
-            .status(200)
-            .send(data)
-    }).catch(err => evt.emit('error', err, req, res))
+        await getDatabase(data.db, data.user, data.passwd)
+
+        return res.status(200).send(data)
+    } catch (err) {
+        console.error(err)
+        return res.status(500).send(`服务器提出了一个问题: ${err.message}`)
+    }
 })
 
-app.listen(process.argv[2] || 8004, '127.0.0.1', (err) => {
-    if (err) 
+const server = app.listen(process.argv[2] || 8004, '127.0.0.1', (err) => {
+    if (err)
         throw err
     console.log(`listening on port ` + (process.argv[2] || 8004))
-}).on('request', (r) => console.log(new Date().toLocaleString() + ' ' + r.headers.host + r.url))
+})
 
-evt.on('error', (err, req, res) => {
-    res
-        .status(500)
-        .send(`服务器提出了一个问题: ${err.message}`)
-    console.error(err)
+server.on('request', function (r) {
+    const time = new Date().toLocaleString()
+    console.log(`${time}  ${r.headers.host} ${r.url}`)
 })
 
 /**
@@ -57,11 +45,11 @@ evt.on('error', (err, req, res) => {
  * @param {string} jobid
  * @param {string} name
  */
-function getDatabase(name, user, passwd) {
+async function getDatabase(name, user, passwd) {
     let conn = mysql()
-    return deleteDatabase(conn, name).then(() => {
-        return createDatabase(conn, name)
-    }).then(() => grantDatabase(conn, name, user, passwd))
+    await deleteDatabase(conn, name)
+    await createDatabase(conn, name)
+    await grantDatabase(conn, name, user, passwd)
 }
 
 /**
