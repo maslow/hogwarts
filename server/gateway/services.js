@@ -19,9 +19,16 @@ let services = [
     },
     {
         routes: [
+            "/getPublishedCourses",
+            "/getCourseDetail"            
+        ],
+        target: servers.COURSE,
+        auth: false
+    },
+    {
+        routes: [
             "/getTemplates",
             "/getUserCourses",
-            "/getCourseDetail",
             "/getSectionDetail",
             "/getSectionCodeFiles",
             "/getSectionCodeFileContent"

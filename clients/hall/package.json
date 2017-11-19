@@ -10,8 +10,13 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "blueimp-md5": "^2.10.0",
+    "codemirror": "^5.31.0",
     "iview": "^2.3.2",
+    "jquery": "^3.2.1",
+    "markdown-it": "^8.4.0",
     "superagent": "^3.6.0",
+    "validator": "^9.1.1",
     "vue": "^2.4.2",
     "vue-router": "^2.7.0"
   },

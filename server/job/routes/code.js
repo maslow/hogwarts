@@ -25,7 +25,7 @@ router.get('/getJobFiles', async function (req, res) {
 
     const files = await code.GetFiles(jobId, file, job0.sectionId)
     if (!files)
-        return res.status(404).send('Job Code Files Not Founc')
+        return res.status(404).send('Job Code Files Not Found')
 
     return res.status(200).send(files)
 })

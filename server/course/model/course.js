@@ -4,6 +4,11 @@ const COURSE_DELETED = -1
 const COURSE_CREATED = 0
 const COURSE_PUBLISHED = 1
 
+async function GetCourses() {
+    let [rets] = await mysql.Query("select * from course")
+    return rets
+}
+
 async function GetCoursesByUserId(userId) {
     let [rets] = await mysql.Query("select * from course where created_by = ?", [userId])
     return rets
@@ -151,6 +156,7 @@ async function UpdateSection(sectionId, data) {
 }
 
 module.exports = {
+    GetCourses,
     GetCoursesByUserId,
     GetCourseById,
     GetCourseByName,

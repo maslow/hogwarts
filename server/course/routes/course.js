@@ -4,6 +4,17 @@ const course = require("../model/course")
 let router = express.Router()
 
 /**
+ * 获取所有已发布的课程列表
+ */
+router.get('/getPublishedCourses', async function (req, res) {
+
+    let rets = await course.GetCourses()
+    rets = rets.filter(c => c.status == course.COURSE_PUBLISHED)
+
+    res.status(200).send(rets)
+})
+
+/**
  * 获取一个用户创建的课程
  */
 router.get('/getUserCourses', async function (req, res) {

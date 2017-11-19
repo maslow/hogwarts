@@ -13,15 +13,15 @@ async function GetFiles(jobId, file, sectionId) {
     const codePath = path.join(root(), jobId, 'codes')
     const filePath = path.join(codePath, file)
 
-    const sectionFiles = await section.GetFiles(sectionId) || null
-    if (!await fs.pathExists(p))
+    const sectionFiles = await section.GetFiles(sectionId, file) || null
+    if (!await fs.pathExists(filePath))
         return sectionFiles
 
     const s = await fs.stat(filePath)
     if (s.isDirectory() === false)
         return false
 
-    let codeFiles = await fs.readdir(p)
+    let codeFiles = await fs.readdir(filePath)
     for (let i = 0; i < codeFiles.length; i++) {
         const name = codeFiles[i]
         const stats = await fs.stat(path.join(filePath, name))
@@ -43,8 +43,10 @@ async function GetFiles(jobId, file, sectionId) {
 async function GetFile(jobId, file, sectionId) {
     const filePath = path.join(root(), jobId, 'codes', file)
 
-    if (!await fs.pathExists(filePath))
-        return await section.GetFile(sectionId, file)
+    if (!await fs.pathExists(filePath)){
+        let f =  await section.GetFile(sectionId, file)
+        return f.content
+    }
 
     const s = await fs.stat(filePath)
     if (s.isDirectory() === true)

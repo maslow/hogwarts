@@ -11,6 +11,7 @@ router.get('/getUserJobBySectionId', async function (req, res) {
     if (!sectionId)
         return res.status(422).send('Section Id can not be empty')
 
+    const userId = req.uid;
     let job0 = await job.GetUserJobBySectionId(userId, sectionId)
     if (!job0)
         job0 = await job.CreateUserJob(userId, sectionId)
