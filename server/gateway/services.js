@@ -19,16 +19,12 @@ let services = [
     },
     {
         routes: [
-            "/getPublishedCourses",
-            "/getCourseDetail"            
-        ],
-        target: servers.COURSE,
-        auth: false
-    },
-    {
-        routes: [
             "/getTemplates",
             "/getUserCourses",
+
+            "/getPublishedCourses",
+            "/getCourseDetail" ,           
+
             "/getSectionDetail",
             "/getSectionCodeFiles",
             "/getSectionCodeFileContent"
@@ -63,7 +59,10 @@ let services = [
         routes: [
             "/getUserJobBySectionId",
             "/getJobFiles",
-            "/getJobFileContent"
+            "/getJobFileContent",
+            "/updateJobFileContent",
+            "/createJobFolder",
+            "/deleteJobFile"
         ],
         target: servers.JOB,
         auth: true

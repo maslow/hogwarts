@@ -27,7 +27,7 @@ const createDbSql = `create database ${config.database} CHARACTER SET utf8 COLLA
 const createSql0 = `
 CREATE TABLE job (
     id int NOT NULL AUTO_INCREMENT, 
-    uid varchar(64) NOT NULL UNIQUE,
+    uid varchar(64) NOT NULL,
     sectionId varchar(255), 
     status int DEFAULT 0 NOT NULL,
     updated_at int NOT NULL,

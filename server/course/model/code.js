@@ -72,7 +72,7 @@ async function WriteFile(sectionId, file, content) {
     }
 }
 
-async function DeleteFile(sectionId, templateId, file) {
+async function DeleteFile(sectionId, file) {
     const filePath = path.join(root(true), sectionId, 'codes', file)
 
     try {

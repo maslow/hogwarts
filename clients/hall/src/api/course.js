@@ -14,11 +14,12 @@ export default {
 
 /**************** Courses  ****************/
 function getPublishedCourses() {
+
   return $.ajax({
-    url: G_API + '/getPublishedCourses?uid=' + Identity.getUserId(),
+    url: G_API + '/getPublishedCourses',
     method: 'get',
     headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
+      'Authorization': getBearer()
     }
   })
 }
@@ -28,7 +29,7 @@ function getCourse(courseId) {
     url: G_API + "/getCourseDetail?id=" + courseId,
     method: 'get',
     headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
+      'Authorization': getBearer()
     }
   })
 }
@@ -39,7 +40,7 @@ function getSection(sectionId) {
     url: G_API + "/getSectionDetail?id=" + sectionId,
     method: 'get',
     headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
+      'Authorization': getBearer()
     }
   })
 }
@@ -49,4 +50,12 @@ function getSectionDocs(sid) {
     let data = `> 编写一个程序，使用**异步**方法，读取一个文件，计算该文件内容的行数，并在终端输出行数。`
     resolve(data)
   })
+}
+
+function getBearer() {
+  const token = Identity.getAccessToken()
+  if (!token)
+    return ""
+    
+  return 'Bearer ' + token
 }

@@ -8,9 +8,9 @@ export default {
 
   getFiles,
   getFileContent,
-  createSectionCodeFolder,
-  updateSectionCodeFileContent,
-  deleteCodeFile
+  updateFileContent,  
+  createFolder,
+  deleteFile
 }
 
 /**************** Jobs  ****************/
@@ -46,11 +46,11 @@ function getFileContent(jobId, path) {
   })
 }
 
-function createSectionCodeFolder(section_id, path) {
+function createFolder(jobId, path) {
   return $.ajax({
-    url: G_API + `/createSectionCodeFolder`,
+    url: G_API + `/createJobFolder`,
     data: {
-      sid: section_id,
+      jid: jobId,
       path
     },
     method: 'post',
@@ -60,11 +60,11 @@ function createSectionCodeFolder(section_id, path) {
   })
 }
 
-function updateSectionCodeFileContent(section_id, path, content) {
+function updateFileContent(jobId, path, content) {
   return $.ajax({
-    url: G_API + `/updateSectionCodeFileContent`,
+    url: G_API + `/updateJobFileContent`,
     data: {
-      sid: section_id,
+      jid: jobId,
       path,
       content
     },
@@ -75,11 +75,11 @@ function updateSectionCodeFileContent(section_id, path, content) {
   })
 }
 
-function deleteCodeFile(section_id, path) {
+function deleteFile(jobId, path) {
   return $.ajax({
-    url: G_API + `/deleteCodeFile`,
+    url: G_API + `/deleteJobFile`,
     data: {
-      sid: section_id,
+      jid: jobId,
       path
     },
     method: 'post',
@@ -88,4 +88,3 @@ function deleteCodeFile(section_id, path) {
     }
   })
 }
-

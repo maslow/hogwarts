@@ -97,9 +97,12 @@ router.post("/createSectionCodeFolder", async function (req, res) {
 })
 
 router.post("/updateSectionCodeFileContent", async function (req, res) {
-    let p = req.body.path
+    let p = req.body.path || null
     let sectionId = req.body.sid || 0
     let content = req.body.content || ''
+
+    if (!p || !p.length)
+        return res.status(422).send('File Path invalid #0')
 
     if (!code.SecurityChecking(sectionId, p, true))
         return res.status(422).send('File Path invalid')
@@ -132,7 +135,7 @@ router.post("/deleteCodeFile", async function (req, res) {
     if (req.uid != section.created_by)
         return res.status(401).send('Permission denied')
 
-    let err = await code.DeleteFile(sectionId, section.template_id.toString(), p)
+    let err = await code.DeleteFile(sectionId, p)
     if (!err)
         return res.status(200).send('deleted')
     else
