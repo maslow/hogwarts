@@ -1,5 +1,5 @@
 const express = require("express")
-const job = require("../model/job")
+const JobModel = require("../model/job")
 
 const router = express.Router()
 
@@ -7,16 +7,16 @@ const router = express.Router()
  * 获取当前登录用户的一个作业详情
  */
 router.get('/getUserJobBySectionId', async function (req, res) {
-    const sectionId = req.query.sid || 0
-    if (!sectionId)
+    const section_id = req.query.sid || 0
+    if (!section_id)
         return res.status(422).send('Section Id can not be empty')
 
-    const userId = req.uid;
-    let job0 = await job.GetUserJobBySectionId(userId, sectionId)
-    if (!job0)
-        job0 = await job.CreateUserJob(userId, sectionId)
+    const user_id = req.uid
+    let job = await JobModel.GetUserJobBySectionId(user_id, section_id)
+    if (!job)
+        job = await JobModel.CreateUserJob(user_id, section_id)
 
-    return res.status(200).send(job0)
+    return res.status(200).send(job)
 })
 
 module.exports = router

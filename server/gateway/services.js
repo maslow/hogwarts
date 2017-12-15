@@ -1,7 +1,7 @@
 const servers = {
-    AUTH: 'http://127.0.0.1:8000',
-    COURSE: 'http://127.0.0.1:8001',
-    JOB: 'http://127.0.0.1:8002'
+    AUTH: 'http://auth.hogwarts:80',
+    COURSE: 'http://course.hogwarts:80',
+    JOB: 'http://job.hogwarts:80'
 }
 
 let services = [

@@ -146,4 +146,5 @@ function hash(content) {
         .digest('hex')
 }
 
-app.listen(process.argv[2] || 8000, '127.0.0.1', () => console.log(`listening on 8000`))
+const port = process.argv[2] || 80
+app.listen(port, () => console.log(`listening on ${port}`))

@@ -1,12 +1,10 @@
 const express = require("express")
-const bodyParser = require('body-parser')
+const body_parser = require('body-parser')
 
-let app = express()
+const app = express()
 
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({
-    extended: false
-}))
+app.use(body_parser.json())
+app.use(body_parser.urlencoded({ extended: false }))
 
 app.use(function (req, res, next) {
     req.uid = req.get('x-uid')
@@ -19,5 +17,5 @@ app.use(function (req, res, next) {
 app.use(require("./routes/job"))
 app.use(require("./routes/code"))
 
-const port = process.argv[2] || 8002
-app.listen(port, '127.0.0.1', () => console.log(`listening on ${port}`))
+const port = process.argv[2] || 80
+app.listen(port, '0.0.0.0', () => console.log(`listening on ${port}`))

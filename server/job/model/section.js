@@ -8,7 +8,7 @@ async function () {
     console.log(file)
 }
  */
-const courseAddr = "http://127.0.0.1:8888"
+const courseAddr = "http://course.hogwarts:80"
 
 module.exports = {
     GetFiles,

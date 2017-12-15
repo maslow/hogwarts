@@ -65,11 +65,11 @@ app.all('*', async function (req, res) {
     }
 })
 
-const server = app.listen(process.argv[2] || 8888, '127.0.0.1', (err) => {
+const port = process.argv[2] || 80
+
+const server = app.listen(port, (err) => {
     if (err) throw err
-    const host = server.address().address;
-    const port = server.address().port;
-    console.log(`listening on port ${host}:${port}`)
+    console.log(`listening on port ${port}`)
 })
 
 server.on('request', (r) => console.log(new Date().toLocaleString() + ' ' + `${r.headers.host}${r.url}  ${r.method}`))

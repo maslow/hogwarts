@@ -26,4 +26,5 @@ app.use(require('./routes/code'))
 app.use(require('./routes/template'))
 app.use(require('./routes/tests'))
 
-app.listen(process.argv[2] || 8001, '127.0.0.1', () => console.log(`listening on 8001`))
+const port = process.argv[2] || 80
+app.listen(port,  () => console.log(`listening on ${port}`))
