@@ -13,10 +13,10 @@ const gateway_path = path.join(pwd, 'gateway')
 if (cmd === 'init') {
     cp.execSync(`docker run -d --name mysql.hogwarts -e MYSQL_ROOT_PASSWORD=kissme mysql:5.7`)
     
-    cp.execSync(`docker run -d -v ${auth_path}:/app --name auth.hogwarts -w /app --link mysql.hogwarts node node app.js`)
-    cp.execSync(`docker run -d -v ${course_path}:/app --name course.hogwarts -w /app --link mysql.hogwarts node node app.js`)
-    cp.execSync(`docker run -d -v ${job_path}:/app --name job.hogwarts -w /app --link mysql.hogwarts --link course.hogwarts node node app.js`)
-    cp.execSync(`docker run -d -v ${gateway_path}:/app --name gateway.hogwarts -e DEBUG=gateway:* -p 8888:80 -w /app --link auth.hogwarts --link course.hogwarts --link job.hogwarts node node app.js`)
+    cp.execSync(`docker run -d -v ${auth_path}:/app --name auth.hogwarts -e DEBUG=AUTH:* -w /app --link mysql.hogwarts node node app.js`)
+    cp.execSync(`docker run -d -v ${course_path}:/app --name course.hogwarts -e DEBUG=COURSE:* -w /app --link mysql.hogwarts node node app.js`)
+    cp.execSync(`docker run -d -v ${job_path}:/app --name job.hogwarts -e DEBUG=JOB:* -w /app --link mysql.hogwarts --link course.hogwarts node node app.js`)
+    cp.execSync(`docker run -d -v ${gateway_path}:/app --name gateway.hogwarts -e DEBUG=GATEWAY:* -p 8888:80 -w /app --link auth.hogwarts --link course.hogwarts --link job.hogwarts node node app.js`)
     
     console.log('DATABASE MIGRATION...')
     

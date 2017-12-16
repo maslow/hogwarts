@@ -10,8 +10,8 @@ const path = require('path')
 const express = require('express')
 const debug = require('debug')
 
-const _log = debug('gateway:prod')
-const _debug = debug('gateway:dev')
+const _log = debug('GATEWAY:PROD')
+const _debug = debug('GATEWAY:DEV')
 
 const { servers, services } = require('./services.js')
 
@@ -36,7 +36,7 @@ app.all('*', function (req, res, next) {
 app.options('*', (req, res) => res.send())
 
 app.all('*', async function (req, res) {
-    _log('Accept [%s %s] request from %s', req.method, req.url, req.ip)
+    _log('Accept [%s %s %s] request from [%s]', req.hostname, req.method, req.url, req.ip)
 
     const urlObj = url.parse(req.url)
     const pn = urlObj.pathname
@@ -47,7 +47,7 @@ app.all('*', async function (req, res) {
             if (r == pn) {
                 target = services[i].target
                 auth = services[i].auth
-                _log("Delivery [%s %s] to %s (auth: %s)", req.method, req.url, target, auth ? 'true' : 'false')
+                _log("[%s %s %s] mapped to [%s] (auth: %s)", req.hostname, req.method, req.url, target, auth ? 'true' : 'false')
                 break
             }
         }
@@ -58,16 +58,21 @@ app.all('*', async function (req, res) {
         return res.status(502).send('Gateway Not Found')
 
     const token = parseToken(req)
-    if (!token && auth === false)
+    if (!token && auth === false){
+        _log("Delivery [%s %s %s] to [%s] (auth: %s)", req.hostname, req.method, req.url, target, auth ? 'true' : 'false')
         return proxy.web(req, res, { target })
+    }
 
-    if (!token)
+    if (!token){
+        _log('Delivery [%s %s %s] to [%s] Cancelled: Unauthroized Request - Invalid Token', req.hostname, req.method, req.url, target)
         return res.status(407).send('Unauthroized Request : Invalid Token')
+    }
 
     try {
         const payload = await validateToken(token)
         req.headers['x-uid'] = payload.uid
         req.headers['x-token-expire'] = payload.expire
+        _log("Delivery [%s %s %s] to [%s] (auth: %s)", req.hostname, req.method, req.url, target, auth ? 'true' : 'false')
         return proxy.web(req, res, { target })
     } catch (err) {
         _debug('Unauthroized request [%s %s], token validation failed, error: %o', req.method, req.url, err)

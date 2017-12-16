@@ -1,8 +1,10 @@
 const express = require("express")
+const debug = require('debug')
 const JobModel = require("../model/job")
 const CodeModel = require("../model/code")
 
 const router = express.Router()
+const _debug = debug('JOB:DEV')
 
 /**
  * 获取作业指定目录的文件列表
@@ -13,21 +15,28 @@ router.get('/getJobFiles', async function (req, res) {
         return res.status(422).send('Job Id can not be empty')
 
     const file = req.query.path || '/'
-    if (!CodeModel.SecurityChecking(jobId, file))
-        return res.status(422).send('Path is Invalid')
 
-    let job0 = await JobModel.GetJobById(jobId)
-    if (!job0)
-        return res.status(404).send('Object Not Exists')
+    try {
+        if (!CodeModel.SecurityChecking(jobId, file))
+            return res.status(422).send('Path is Invalid')
 
-    if (req.uid != job0.uid)
-        return res.status(401).send('Permission denied')
+        let job = await JobModel.GetJobById(jobId)
+        if (!job)
+            return res.status(404).send('Object Not Exists')
 
-    const files = await CodeModel.GetFiles(jobId, file, job0.sectionId)
-    if (!files)
-        return res.status(404).send('Job Code Files Not Found')
+        if (req.uid != job.uid)
+            return res.status(401).send('Permission denied')
 
-    return res.status(200).send(files)
+        const files = await CodeModel.GetFiles(jobId, file, job.sectionId)
+        if (!files)
+            return res.status(404).send('Job Code Files Not Found')
+
+        return res.status(200).send(files)
+
+    } catch (err) {
+        _debug('Retrieve job files by job id %s caught an error: %o', jobId, err)
+    }
+
 })
 
 router.get('/getJobFileContent', async function (req, res) {
@@ -36,26 +45,33 @@ router.get('/getJobFileContent', async function (req, res) {
         return res.status(422).send('Job Id can not be empty')
 
     const file = req.query.path || null
-    if (!file || !CodeModel.SecurityChecking(jobId, file))
-        return res.status(422).send('Path is Invalid')
+    try {
+        if (!file || !CodeModel.SecurityChecking(jobId, file))
+            return res.status(422).send('Path is Invalid')
 
-    let job0 = await JobModel.GetJobById(jobId)
-    if (!job0)
-        return res.status(404).send('Object Not Exists')
+        let job0 = await JobModel.GetJobById(jobId)
+        if (!job0)
+            return res.status(404).send('Object Not Exists')
 
-    if (req.uid != job0.uid)
-        return res.status(401).send('Permission denied')
+        if (req.uid != job0.uid)
+            return res.status(401).send('Permission denied')
 
-    const rets = await CodeModel.GetFile(jobId, file, job0.sectionId)
-    if (!rets)
-        return res.status(404).send('Job Code File Not Found')
+        const rets = await CodeModel.GetFile(jobId, file, job0.sectionId)
+        if (!rets)
+            return res.status(404).send('Job Code File Not Found')
 
-    const data = rets.toString('utf-8')
-    return res.status(200).send({
-        name: file,
-        hash: md5(data),
-        content: data
-    })
+        const data = rets.toString('utf-8')
+
+        return res.status(200).send({
+            name: file,
+            hash: md5(data),
+            content: data
+        })
+
+    } catch (err) {
+        _debug('Retrieve job file contents by job id %s caught an error: %o', jobId, err)
+    }
+
 })
 
 router.post("/updateJobFileContent", async function (req, res) {
@@ -65,22 +81,26 @@ router.post("/updateJobFileContent", async function (req, res) {
 
     if (!p || !p.length)
         return res.status(422).send('File Path invalid #0')
+    try {
+        if (!CodeModel.SecurityChecking(jobId, p))
+            return res.status(422).send('File Path invalid')
 
-    if (!CodeModel.SecurityChecking(jobId, p))
-        return res.status(422).send('File Path invalid')
+        let jobObj = await JobModel.GetJobById(jobId)
+        if (!jobObj)
+            return res.status(404).send('Job not found')
 
-    let jobObj = await JobModel.GetJobById(jobId)
-    if (!jobObj)
-        return res.status(404).send('Job not found')
+        if (req.uid != jobObj.uid)
+            return res.status(401).send('Permission denied')
 
-    if (req.uid != jobObj.uid)
-        return res.status(401).send('Permission denied')
+        let err = await CodeModel.WriteFile(jobId, p, content)
+        if (!err)
+            return res.status(200).send('ok')
+        else
+            return res.status(400).send(err)
+    } catch (err) {
+        _debug('Updata job file contents by job id %s caught an error: %o', jobId, err)
+    }
 
-    let err = await CodeModel.WriteFile(jobId, p, content)
-    if (!err)
-        return res.status(200).send('ok')
-    else
-        return res.status(400).send(err)
 })
 
 router.post("/createJobFolder", async function (req, res) {
@@ -89,22 +109,25 @@ router.post("/createJobFolder", async function (req, res) {
 
     if (!p || !p.length)
         return res.status(422).send('File Path invalid #0')
+    try {
+        if (!CodeModel.SecurityChecking(jobId, p))
+            return res.status(422).send('File Path invalid')
 
-    if (!CodeModel.SecurityChecking(jobId, p))
-        return res.status(422).send('File Path invalid')
+        let jobObj = await JobModel.GetJobById(jobId)
+        if (!jobObj)
+            return res.status(404).send('Job not found')
 
-    let jobObj = await JobModel.GetJobById(jobId)
-    if (!jobObj)
-        return res.status(404).send('Job not found')
+        if (req.uid != jobObj.uid)
+            return res.status(401).send('Permission denied')
 
-    if (req.uid != jobObj.uid)
-        return res.status(401).send('Permission denied')
-
-    let ret = await CodeModel.CreateFolder(jobId, p)
-    if (ret)
-        return res.status(201).send('ok')
-    else
-        return res.status(200).send('exist')
+        let ret = await CodeModel.CreateFolder(jobId, p)
+        if (ret)
+            return res.status(201).send('ok')
+        else
+            return res.status(200).send('exist')
+    } catch (err) {
+        _debug('Create job folder by job id %s caught an error: %o', jobId, err)
+    }
 })
 
 
@@ -114,22 +137,25 @@ router.post("/deleteJobFile", async function (req, res) {
 
     if (!p || !p.length)
         return res.status(422).send('File Path invalid #0')
+    try {
+        if (!CodeModel.SecurityChecking(jobId, p))
+            return res.status(422).send('File Path invalid')
 
-    if (!CodeModel.SecurityChecking(jobId, p))
-        return res.status(422).send('File Path invalid')
+        let jobObj = await JobModel.GetJobById(jobId)
+        if (!jobObj)
+            return res.status(404).send('Job not found')
 
-    let jobObj = await JobModel.GetJobById(jobId)
-    if (!jobObj)
-        return res.status(404).send('Job not found')
+        if (req.uid != jobObj.uid)
+            return res.status(401).send('Permission denied')
 
-    if (req.uid != jobObj.uid)
-        return res.status(401).send('Permission denied')
-
-    let err = await CodeModel.DeleteFile(jobId, p)
-    if (!err)
-        return res.status(200).send('deleted')
-    else
-        return res.status(400).send(err)
+        let err = await CodeModel.DeleteFile(jobId, p)
+        if (!err)
+            return res.status(200).send('deleted')
+        else
+            return res.status(400).send(err)
+    } catch (err) {
+        _debug('Delete job file by job id %s caught an error: %o', jobId, err)
+    }
 })
 
 module.exports = router

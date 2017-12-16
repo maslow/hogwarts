@@ -62,7 +62,8 @@ let services = [
             "/getJobFileContent",
             "/updateJobFileContent",
             "/createJobFolder",
-            "/deleteJobFile"
+            "/deleteJobFile",
+            "/evalUserJobByJobId"
         ],
         target: servers.JOB,
         auth: true
