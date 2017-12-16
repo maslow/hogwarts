@@ -1,9 +1,0 @@
-{
-  "description": "",
-  "title": "Hello World",
-  "env": {
-    "lang": "php",
-    "tester": "mocha"
-  },
-  "order": 1
-}

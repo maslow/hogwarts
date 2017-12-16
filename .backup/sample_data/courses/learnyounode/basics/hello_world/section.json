@@ -1,9 +1,0 @@
-{
-  "description": "",
-  "title": "Hello World",
-  "env": {
-    "lang": "node",
-    "tester": "mocha"
-  },
-  "order" : 1
-}

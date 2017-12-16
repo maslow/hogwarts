@@ -1,9 +1,0 @@
-{
-  "title": "模块化",
-  "env": {
-    "lang": "node",
-    "tester": "mocha"
-  },
-  "description": "",
-  "order" : 6
-}

@@ -1,9 +1,0 @@
-{
-  "title": "过滤文件",
-  "env": {
-    "lang": "node",
-    "tester": "mocha"
-  },
-  "description": "",
-  "order" : 5
-}

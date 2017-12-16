@@ -8,6 +8,7 @@ const request = require('request')
 const fs = require('fs-extra')
 const path = require('path')
 const express = require('express')
+const debug = require('debug')
 
 const { servers, services } = require('./services.js')
 
@@ -30,6 +31,7 @@ app.all('*', function (req, res, next) {
 app.options('*', (req, res) => res.send())
 
 app.all('*', async function (req, res) {
+    debug('hello world')
     const urlObj = url.parse(req.url)
     const pn = urlObj.pathname
     let auth = false, target = null

@@ -1,9 +1,0 @@
-{
-  "description": "",
-  "title": "第一个文件IO",
-  "env": {
-    "lang": "node",
-    "tester": "mocha"
-  },
-  "order" : 3
-}

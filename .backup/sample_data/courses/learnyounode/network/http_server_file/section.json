@@ -1,9 +1,0 @@
-{
-    "title": "创建一个HTTP文件服务器",
-    "env": {
-        "lang": "node",
-        "tester": "mocha"
-    },
-    "description": "",
-    "order": 3
-}
