@@ -10,13 +10,18 @@ const path = require('path')
 const express = require('express')
 const debug = require('debug')
 
+const _log = debug('gateway:prod')
+const _debug = debug('gateway:dev')
+
 const { servers, services } = require('./services.js')
 
 const app = express()
 const proxy = httpProxy.createProxyServer({})
 
 proxy.on('error', (err, req, res) => {
-    console.error(err)
+    _log('Proxy request (%s %s) got an error %o', req.method, req.url, err)
+    _debug('Proxy request [%s %s, headers:%o] got an error: %o, ', req.method, req.url, req.headers, err)
+
     res.writeHead(502)
     res.end('Something went wrong')
 })
@@ -31,7 +36,8 @@ app.all('*', function (req, res, next) {
 app.options('*', (req, res) => res.send())
 
 app.all('*', async function (req, res) {
-    debug('hello world')
+    _log('Accept [%s %s] request from %s', req.method, req.url, req.ip)
+
     const urlObj = url.parse(req.url)
     const pn = urlObj.pathname
     let auth = false, target = null
@@ -41,6 +47,7 @@ app.all('*', async function (req, res) {
             if (r == pn) {
                 target = services[i].target
                 auth = services[i].auth
+                _log("Delivery [%s %s] to %s (auth: %s)", req.method, req.url, target, auth ? 'true' : 'false')
                 break
             }
         }
@@ -63,6 +70,7 @@ app.all('*', async function (req, res) {
         req.headers['x-token-expire'] = payload.expire
         return proxy.web(req, res, { target })
     } catch (err) {
+        _debug('Unauthroized request [%s %s], token validation failed, error: %o', req.method, req.url, err)
         return res.status(407).send('Unauthroized Request: Token Validation Failed')
     }
 })
@@ -71,10 +79,8 @@ const port = process.argv[2] || 80
 
 const server = app.listen(port, (err) => {
     if (err) throw err
-    console.log(`listening on port ${port}`)
+    _log(`Listening on port ${port}`)
 })
-
-server.on('request', (r) => console.log(new Date().toLocaleString() + ' ' + `${r.headers.host}${r.url}  ${r.method}`))
 
 
 function parseToken(req) {
