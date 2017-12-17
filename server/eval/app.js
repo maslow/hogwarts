@@ -1,99 +1,61 @@
 const express = require('express')
-const bodyParser = require('body-parser');
+const body_parser = require('body-parser');
 const path = require('path')
 const fs = require('fs-extra')
-const url = require('url')
-const EventEmitter = require('events')
-const request = require('request')
+const debug = require('debug')
 
-const eval = require('./eval.js')
+const eval = require('./eval')
 
-let evt = new EventEmitter()
-let config = fs.readJsonSync(path.join(__dirname, 'config.json'))
-let jobsBasePath = config.jobsBasePath
-let jobs_server = config.jobs_server
+const app = express()
+const _log = debug('EVAL:PROD')
+const DATA_TMP_SRC_PATH = path.resolve('./data')
+fs.ensureDirSync(DATA_TMP_SRC_PATH)
 
-let app = express()
-app.use(bodyParser.json())
+app.use(body_parser.json())
 app.use(function (req, res, next) {
-    req.uid = req.get('x-uid')
-    if (!req.uid)
-        return res.status(422).send('params missing: uid is required')
+    _log("Accept request (hostname:%s, method:%s, url:%s) from %s", req.hostname, req.method, req.url, req.ip)
     next()
 })
 
-app.post('/eval/:jobid', function (req, res) {
-    let job_id = req.param('jobid')
+app.post('/eval', async function (req, res) {
+    const job_id = req.body.job_id
+    const job_codes = req.body.job_codes
+    const job_tests = req.body.job_tests
+    const job_image = req.body.job_image
 
-    let codespath = path.join(jobsBasePath, job_id)
+    try {
+        const tmp_src_path = await get_tmp_src_path(job_id)   // TODO: imp get_tmp_src_path()
+        await extract_codes(tmp_src_path)  // TODO: imp extract_codes()
+        await extract_tests(tmp_src_path)  // TODO: imp extract_tests()
 
-    let status = null
-    getJob(req.uid, job_id)
-        .then(data => {
-            status = data.job.status
-            env = data.section.env
-            lang = env.lang || null
-            tester = env.tester || null
-            db = env.db || null
-            return eval(codespath, lang, tester, db)
-        })
-        .then(data => {
-            let s = data.ok ? 1 : -1
-            if (status === s)
-                return res.status(200).send(data)
-            return setJobStatus(req.uid, job_id, s).then(() => res.status(200).send(data))
-        })
-        .catch(err => evt.emit('error', err, req, res))
+        const result = await eval.run(job_image, tmp_src_path)
+        if(!result)
+            throw new Error('EMPTY RESULT')
+
+        return res.status(200).send(result)
+    } catch (err) {
+        _log("Evaluating job caught an error:%o", err)
+        return res.status(404).send('Internal Error')
+    }
 })
 
-const server = app.listen(process.argv[2] || 8003, '127.0.0.1', (err) => {
+const port = process.argv[2] || 80
+app.listen(port, (err) => {
     if (err) throw err
-    let host = server.address().address;
-    let port = server.address().port;
-    console.log(`listening on port ${host}:${port}`)
+    _log(`listening on port %s`, port)
 })
 
-evt.on('error', (err, req, res) => {
-    res.status(500).send(`服务器提出了一个问题: ${err.message}`)
-    console.error(err)
-})
-server.on('request', (r) => console.log(new Date().toLocaleString() + ' ' + r.headers.host + r.url))
-
-function setJobStatus(uid, jobid, status) {
-    return new Promise((resolve, reject) => {
-        let _url = jobs_server + `/jobs/${jobid}/status/${status}`
-        request({
-            url: _url,
-            method: 'POST',
-            headers: {
-                'x-uid': uid
-            }
-        }, (err, response, body) => {
-            if (err) return reject(err)
-            if (response.statusCode === 200) {
-                resolve(JSON.parse(body))
-            } else {
-                reject(response)
-            }
-        })
-    })
+async function get_tmp_src_path(job_id){
+    const time = (new Date()).getMilliseconds()
+    const number = Math.random() * 10000 * 10000 | 0
+    const tmp_path = path.join(DATA_TMP_SRC_PATH, `tmp-${job_id}.${time}.${number}`)
+    return tmp_path
 }
 
-function getJob(uid, jobid) {
-    return new Promise((resolve, reject) => {
-        let _url = jobs_server + `/jobs/${jobid}`
-        request({
-            url: _url,
-            headers: {
-                'x-uid': uid
-            }
-        }, (err, response, body) => {
-            if (err) return reject(err)
-            if (response.statusCode === 200) {
-                resolve(JSON.parse(body))
-            } else {
-                reject(response)
-            }
-        })
-    })
+// TODO
+async function extract_codes(tmp_src_path){
+}
+
+// TODO
+async function extract_tests(tmp_src_path){
 }

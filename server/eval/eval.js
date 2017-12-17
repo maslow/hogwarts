@@ -1,63 +1,39 @@
 const cp = require('child_process')
-const path = require('path')
-const report = require('./report.js')
-const fs = require('fs-extra')
-const commands = require('./commands.js')
+const util = require('util')
+const debug = require('debug')
 
-module.exports = function (codespath, lang, tester, db) {
-    return new Promise((resolve, reject) => {
-        if (!lang || !tester) 
-            return reject('ERROR: EMPTY PARAMS(`lang` or `tester`)')
+const _log = debug('EVAL:PROD')
+const _debug = debug('EVAL:DEV')
 
-        let containerName = getName(codespath)
-        let cmd = getCommand(codespath, lang, tester, containerName)
-        let hasRemoved = false
+const resolve_report_result = require('./reporter/mocha')
 
-        if (!cmd) 
-            return reject('ERROR: getCommand() Failed.')
-        function removeContainer() {
-            if (hasRemoved) 
-                return false
-            hasRemoved = true
-            cp.exec(`docker rm ${containerName}`, (e, so, te) => {
-                if (e) 
-                    return console.error(e)
-            })
-        }
-        let timer = setTimeout(removeContainer, 1000 * 60)
-        cp.exec(cmd, (error, stdout, stderr) => {
-            if (stdout) {
-                let rs = report(stdout, tester)
-                let savedPath = path.join(codespath, 'report.json')
-                fs.writeJson(savedPath, rs, err => err
-                    ? reject(err)
-                    : resolve(rs))
-            } else if (error) 
-                reject(error)
-            if (!hasRemoved) {
-                clearTimeout(timer)
-                removeContainer()
-            }
-        })
+const exec_async = util.promisify(cp.exec)
 
-    })
+module.exports = {
+    run
 }
 
-function getCommand(codespath, lang, tester, containerName) {
-    let rs = commands.filter(cmd => {
-        return cmd.lang === lang && cmd.tester === tester
-    })
-    if (!rs || !rs.length) 
+async function run(docker_image, src_path) {
+    const container_name = get_container_name()
+    const cmd = get_command(container_name, docker_image, src_path) 
+
+    try {
+        const [stdout, stderr] = await exec_async(cmd)
+        _debug('Docker-run results, stdout: %O, stderr: %O', stdout, stderr)
+        const ret = resolve_report_result(stdout)
+        return ret
+    } catch (err) {
+        _log("Docker-run caught an error: %o", err)
         return null
-
-    let obj = rs.shift()
-    let cmd = obj.cmd
-    let image = obj.image
-
-    let docker_cmd = `docker run --name ${containerName} -v ${codespath}:/app:ro ${image} ${cmd}`
-    return docker_cmd
+    }
 }
 
-function getName(codespath) {
-    return 'container-' + codespath.replace(/[\/\\:]/g, '-')
+function get_container_name(){
+    const time = (new Date()).getMilliseconds()
+    const random_number = Math.random() * 10000 * 10000 | 0
+    return `job-testing-container.${time}.${random_number}`
+}
+
+function get_command(container_name, docker_image, src_path){
+    return `docker run --rm -v ${src_path}:/app ${docker_image} mocha -t 10000 /app/tests -R json`
 }
