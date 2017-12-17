@@ -21,7 +21,7 @@ function Login(email, password) {
 
 function Register(email, password) {
   return $.ajax({
-    url: G_API + '/user',
+    url: G_API + '/users',
     method: 'post',
     data: {
       email,

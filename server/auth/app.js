@@ -6,20 +6,25 @@
  * @api GET  /users/:id         # 获取用户
  */
 
-let crypto = require('crypto')
-let express = require('express')
-let bodyParser = require('body-parser')
-let expressValidator = require('express-validator')
-let mysql = require('./mysql')
+const crypto = require('crypto')
+const express = require('express')
+const bodyParser = require('body-parser')
+const expressValidator = require('express-validator')
+const debug = require('debug')
+const mysql = require('./mysql')
 
-let app = express()
-let secret = "adf344t9fdslf4i3qjf"
+const secret = "adf344t9fdslf4i3qjf"
+const app = express()
+const _log = debug('AUTH:PROD')
+const _debug = debug('AUTH:DEV')
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(expressValidator())
 
+
 app.get('/getUser', (req, res) => {
+    _log('Accept [GET /getuser] request')
     req.checkQuery('id').notEmpty().isInt()
     const errors = req.validationErrors()
     if (errors)
@@ -39,6 +44,7 @@ app.get('/getUser', (req, res) => {
 })
 
 app.post('/users', (req, res) => {
+    _log('Accept [POST /users] request, email: %s', req.body.email)
     req.checkBody('email', 'Email is incorrect').notEmpty().isEmail()
     req.checkBody('password', 'Password is incorrect').notEmpty().isLength({ min: 6, max: 16 })
     
