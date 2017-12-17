@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.15.2",
+    "debug": "^3.1.0",
     "express": "^4.14.0",
     "express-validator": "^2.20.8",
     "fs-extra": "^1.0.0",
