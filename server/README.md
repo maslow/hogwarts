@@ -40,15 +40,8 @@
 
 > 启动服务端服务组
 ```shell
-    # 创建并启动服务组
-    node server.js init
-
-    # 停止正在运行的服务组
-    node server.js stop
-
-    # 启动已停止的服务组
-    node server.js start
-
-    # 删除已停止的服务组
-    node server.js remove
+    node server.js init     #创建并启动服务组
+    node server.js stop     #or 停止正在运行的服务组
+    node server.js start    #or 启动已停止的服务组
+    node server.js remove   #or 删除已停止的服务组
 ```
