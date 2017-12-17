@@ -1,117 +1,109 @@
 const express = require("express")
-const $ = require("validator")
+const validator = require("validator")
+const debug = require('debug')
 
-const course = require("../model/course")
-const template = require("../model/template")
+const CourseModel = require("../model/course")
+const TemplateModel = require("../model/template")
 
-let router = express.Router()
+const router = express.Router()
+const _log = debug('COURSE:PROD')
 
 router.get('/getSectionDetail', async function (req, res) {
-    let id = req.query.id
-    if (!$.isInt(id, {min: 1})) 
-        return res.status(422).send('Invalid section id')
+    const section_id = req.query.id || null
 
-    let section = await course.GetSection(id)
-    if (!section) 
-        return res.status(422).send("Section not exists")
+    try {
+        const section = await CourseModel.GetSection(section_id)
+        if (!section)
+            return res.status(422).send("Section not exists")
 
-    if (req.uid != section.created_by && section.status === course.COURSE_CREATED) 
-        return res.status(403).send("Permisson denied")
+        if (req.uid != section.created_by && section.status !== CourseModel.COURSE_PUBLISHED)
+            return res.status(403).send("Permisson denied")
 
-    return res
-        .status(200)
-        .send(section)
+        return res.status(200).send(section)
+    } catch (err) {
+        _log('Retrieve section (id:%s) detail caught an error: %o', section_id, err)
+        return res.status(400).send('Internal Error')
+    }
 })
 
 /**
  * 创建小节
  */
 router.post('/createSection', async function (req, res) {
-    req
-        .checkBody('course_id')
-        .notEmpty()
-        .isInt({min: 1})
-    req
-        .checkBody('chapter_id')
-        .notEmpty()
-        .isInt({min: 1})
-    req
-        .checkBody('name')
-        .notEmpty()
-        .isLength(1, 64)
-    req
-        .checkBody('description')
-        .notEmpty()
-        .isLength(1, 255)
-    req
-        .checkBody('image')
-        .notEmpty()
+    const course_id = req.body.course_id
+    const chapter_id = req.body.chapter_id
+    const section_name = req.body.name
+    const section_description = req.body.description
+    const section_seq = req.body.seq || 50
+    const section_template_id = req.body.template_id || 0
 
-    let errors = await req.getValidationResult()
-    errors.useFirstErrorOnly()
-    if (!errors.isEmpty()) 
-        return res.status(422).send(errors.mapped())
+    if (!validator.isLength(section_name, { min: 1, max: 64 }))
+        return res.status(422).send('Invalid section name')
 
-    let courseId = req.body.course_id
-    let seq = req.body.seq || 50
-    let template_id = req.body.template_id || 0
+    if (!validator.isLength(section_description, { min: 1, max: 64 }))
+        return res.status(422).send('Invalid section description')
 
-    let course0 = await course.GetCourseById(courseId)
-    if (!course0) 
-        return res.status(422).send("Course not found")
+    try {
+        const course = await CourseModel.GetCourseById(course_id)
+        if (!course)
+            return res.status(422).send("Course not found")
 
-    if (course0.created_by != req.uid) 
-        return res.status(401).send('Permission denied')
+        const template = await TemplateModel.getTemplateById(section_template_id)
+        if (!template)
+            return res.status(422).send('Invalid template id')
 
-    if (!await course.GetChapterById(req.body.chapter_id)) 
-        return res.status(422).send({chapter_id: "Chapter Id is invalid"})
+        if (course.created_by != req.uid)
+            return res.status(401).send('Permission denied')
 
-    let env = {
-        image: req.body.image
+        if (!await CourseModel.GetChapterById(req.body.chapter_id))
+            return res.status(422).send({ chapter_id: "Invalid chapter id" })
+
+        // just ignore it now (TBD)
+        const env = {}
+        const section = await CourseModel.CreateSection(course_id, chapter_id,
+            section_name, section_description, section_template_id, section_seq, env, req.uid)
+
+        return res.status(200).send(section)
+    } catch (err) {
+        _log('Creating section (course id:%s, chapter id:%s) caught an error: %o', course_id, chapter_id, err)
+        return res.status(400).send('Internal Error')
     }
-
-    let section = await course.CreateSection(courseId, req.body.chapter_id, req.body.name, req.body.description, template_id, seq, env, req.uid)
-
-    return res
-        .status(200)
-        .send(section)
 })
 
 /**
  * 更新章节
  */
 router.post('/updateSection', async function (req, res) {
-    let section_id = req.body.section_id
-    let name = req.body.name || null
-    let description = req.body.description || null
-    let seq = req.body.seq || null
-    let template_id = req.body.template_id || null
-    let image = req.body.image || null
+    const section_id = req.body.section_id
+    const section_name = req.body.name || null
+    const section_description = req.body.description || null
+    const section_seq = req.body.seq || null
+    const section_template_id = req.body.template_id || null
 
-    /* Validations */
-    // TODO templateId (if exists)
+    try {
+        const section = await CourseModel.GetSection(section_id)
+        if (!section)
+            return res.status(422).send("Section not found")
 
-    let section = await course.GetSection(section_id)
-    if (!section) 
-        return res.status(422).send("Section not found")
+        const template = await TemplateModel.getTemplateById(section_template_id)
+        if (!template)
+            return res.status(422).send('Template not found')
 
-    if (section.created_by != req.uid) 
-        return res.status(401).send('Permission denied')
+        if (section.created_by != req.uid)
+            return res.status(401).send('Permission denied')
 
-    let data = {}
-    !name || (data.name = name)
-    !description || (data.description = description)
-    !seq || (data.seq = seq)
-    !template_id || (data.template_id = template_id)
+        const section_data = {}
+        !section_name || (section_data.name = section_name)
+        !section_description || (section_data.description = section_description)
+        !section_seq || (section_data.seq = section_seq)
+        !section_template_id || (section_data.template_id = section_template_id)
 
-    if (image !== null) {
-        data.env = section.env
-        data.env.image = image
+        const updated_section = await CourseModel.UpdateSection(section_id, section_data)
+        return res.status(200).send(updated_section)
+    } catch (err) {
+        _log('Updating section (id:%s) caught an error: %o', section_id, err)
+        return res.status(400).send('Internal Error')
     }
-    let rets = await course.UpdateSection(section_id, data)
-    return res
-        .status(200)
-        .send(rets)
 })
 
 module.exports = router

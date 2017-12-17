@@ -1,155 +1,167 @@
 const express = require("express")
-const course = require("../model/course")
+const CourseModel = require("../model/course")
+const debug = require('debug')
 
-let router = express.Router()
+const router = express.Router()
+const _log = debug('COURSE:PROD')
 
 /**
  * 获取所有已发布的课程列表
  */
 router.get('/getPublishedCourses', async function (req, res) {
+    try {
+        let courses = await CourseModel.GetCourses()
+        courses = courses.filter(c => c.status == CourseModel.COURSE_PUBLISHED)
 
-    let rets = await course.GetCourses()
-    rets = rets.filter(c => c.status == course.COURSE_PUBLISHED)
-
-    res.status(200).send(rets)
+        res.status(200).send(courses)
+    } catch (err) {
+        _log('Retrieve published courses caught an error: %o', err)
+        return res.status(400).send('Internal Error')
+    }
 })
 
 /**
  * 获取一个用户创建的课程
  */
 router.get('/getUserCourses', async function (req, res) {
-    let uid = req.query.uid || false
-    if (!uid)
+    const user_id = req.query.uid || false
+    if (!user_id)
         return res.status(422).send('User Id can not be empty')
 
-    let rets = await course.GetCoursesByUserId(uid)
-    rets = rets.filter(c => {
-        let s = (req.uid == uid)
-            ? course.COURSE_CREATED
-            : course.COURSE_PUBLISHED
-        return c.status >= s
-    })
+    try {
 
-    res.status(200).send(rets)
+        let courses = await CourseModel.GetCoursesByUserId(user_id)
+        courses = courses.filter(c => {
+            const s = (req.uid == user_id) ? CourseModel.COURSE_CREATED : CourseModel.COURSE_PUBLISHED
+            return c.status >= s
+        })
+
+        res.status(200).send(courses)
+    } catch (err) {
+        _log('Retrieve user (id:%s) courses caught an error: %o', user_id, err)
+        return res.status(400).send('Internal Error')
+    }
 })
 
 /**
  * 获取课程详情
  */
 router.get('/getCourseDetail', async function (req, res) {
-    req
-        .checkQuery('id')
-        .notEmpty()
-        .isInt({ min: 1 })
+    const course_id = req.query.id || null
+    if (!course_id || !validator.isInt(course_id))
+        return res.status(422).send('Invalid course id')
 
-    let errors = await req.getValidationResult()
-    errors.useFirstErrorOnly()
-    if (errors.isEmpty() === false)
-        return res.status(422).send(errors.mapped())
+    try {
+        const course = await CourseModel.GetCourseById(course_id)
+        if (!course)
+            return res.status(404).send("Object not found")
 
-    let courseId = req.query.id
-    let course0 = await course.GetCourseById(courseId)
-    if (!course0)
-        return res.status(404).send("Object not found")
+        if (course.created_by != req.uid && course.status === CourseModel.COURSE_CREATED)
+            return res.status(403).send("Permission denied")
 
-    if (course0.created_by != req.uid && course0.status === course.COURSE_CREATED)
-        return res.status(403).send("Permission denied")
+        const chapters = await CourseModel.GetChapters(course_id)
+        let sections = await CourseModel.GetSections(course_id)
+        sections = sections.filter(s => {
+            const status = (req.uid == s.created_by) ? CourseModel.COURSE_CREATED : CourseModel.COURSE_PUBLISHED
+            return s.status >= status
+        })
 
-    let chapters = await course.GetChapters(courseId)
-    let sections = await course.GetSections(courseId)
-    sections = sections.filter(s => {
-        let status = (req.uid == s.created_by)
-            ? course.COURSE_CREATED
-            : course.COURSE_PUBLISHED
-        return s.status >= status
-    })
-
-    return res
-        .status(200)
-        .send({ course: course0, chapters, sections })
+        return res.status(200).send({ course: course, chapters, sections })
+    } catch (err) {
+        _log('Retrieve course detail caught an error: %o', err)
+        return res.status(400).send('Internal Error')
+    }
 })
 
 /**
  * 创建课程
  */
 router.post('/createCourse', async function (req, res) {
-    req
-        .checkBody('name')
-        .notEmpty()
-        .isLength(1, 64)
-    req
-        .checkBody('description')
-        .notEmpty()
-        .isLength(1, 255)
+    const chapter_name = req.body.name || null
+    const chapter_description = req.body.description || null
 
-    let errors = await req.getValidationResult()
-    errors.useFirstErrorOnly()
-    if (errors.isEmpty() === false)
-        return res.status(422).send(errors.mapped())
+    if (!chapter_name || !validator.isLength(chapter_name, { min: 1, max: 64 }))
+        return res.status(422).send('Invalid chapter name')
 
-    if (await course.GetCourseByName(req.body.name))
-        return res.status(422).send({ name: "Name exist" })
+    if (!chapter_description || !validator.isLength(chapter_description, { min: 1, max: 255 }))
+        return res.status(422).send('Invalid chapter description')
 
-    let ret = await course.CreateCourse(req.body.name, req.body.description, req.uid)
-    res
-        .status(201)
-        .send(ret)
+    try {
+        if (await CourseModel.GetCourseByName(chapter_name))
+            return res.status(422).send({ name: "Chapter name exists" })
+
+        const course = await CourseModel.CreateCourse(chapter_name, chapter_description, req.uid)
+        res.status(201).send(ret)
+    } catch (err) {
+        _log('Creating course detail caught an error: %o', err)
+        return res.status(400).send('Internal Error')
+    }
 })
 
 /**
  * 更新课程
  */
 router.post('/updateCourse', async function (req, res) {
-    let course_id = req.body.course_id
-    let name = req.body.name || null
-    let description = req.body.description || null
+    const course_id = req.body.course_id
+    const chapter_name = req.body.name || null
+    const chapter_description = req.body.description || null
 
-    let course0 = await course.GetCourseById(course_id)
-    if (!course0)
-        return res.status(404).send("Object not found")
+    // Validation
+    if (!course_id || !validator.isInt(course_id))
+        return res.status(422).send('Invalid course id')
 
-    if (course0.created_by != req.uid)
-        return res.status(401).send('Permission denied')
+    if (!chapter_name || !validator.isLength(chapter_name, { min: 1, max: 64 }))
+        return res.status(422).send('Invalid chapter name')
 
-    let data = {}
-    !name || (data.name = name)
-    !description || (data.description = description)
+    if (!chapter_description || !validator.isLength(chapter_description, { min: 1, max: 255 }))
+        return res.status(422).send('Invalid chapter description')
 
-    let ret = await course.UpdateCourse(course_id, data)
-    res
-        .status(201)
-        .send(ret)
+    try {
+        const course = await CourseModel.GetCourseById(course_id)
+        if (!course)
+            return res.status(404).send("Object not found")
+
+        if (course.created_by != req.uid)
+            return res.status(401).send('Permission denied')
+
+        const course_data = {}
+        !chapter_name || (course_data.name = chapter_name)
+        !chapter_description || (course_data.description = chapter_description)
+
+        const updated_course = await CourseModel.UpdateCourse(course_id, course_data)
+        res.status(201).send(updated_course)
+    } catch (err) {
+        _log('Updating course (id:%s) detail caught an error: %o', course_id, err)
+        return res.status(400).send('Internal Error')
+    }
 })
 
 /**
  * 发布课程
  */
 router.post('/publishCourse', async function (req, res) {
-    req
-        .checkBody('id')
-        .notEmpty()
-        .isInt({ min: 1 })
+    const course_id = req.body.course_id || null
 
-    let errors = await req.getValidationResult()
-    errors.useFirstErrorOnly()
-    if (errors.isEmpty() === false)
-        return res.status(422).send(errors.mapped())
+    if (!course_id || !validator.isInt(course_id))
+        return res.status(422).send('Invalid course id')
 
-    let courseId = req.body.id
-    let course0 = await course.GetCourseById(courseId)
-    if (!course0)
-        return res.status(404).send("Object not found")
+    try {
+        const course = await CourseModel.GetCourseById(course_id)
+        if (!course)
+            return res.status(404).send("Object not found")
 
-    if (course0.created_by != req.uid)
-        return res.status(401).send('Permission denied')
+        if (course.created_by != req.uid)
+            return res.status(401).send('Permission denied')
 
-    if (course0.status !== 0)
-        return res.status(422).send("Course was already published or deleted")
+        if (course.status !== CourseModel.COURSE_CREATED)
+            return res.status(422).send("Course was already published or deleted")
 
-    let ret = await course.UpdateCourse(courseId, { status: course.COURSE_PUBLISHED })
-    res
-        .status(201)
-        .send(ret)
+        const published_course = await CourseModel.UpdateCourse(course_id, { status: CourseModel.COURSE_PUBLISHED })
+        return res.status(201).send(published_course)
+    } catch (err) {
+        _log('Publishing course (id:%s) detail caught an error: %o', course_id, err)
+        return res.status(400).send('Internal Error')
+    }
 })
 
 module.exports = router

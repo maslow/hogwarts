@@ -37,6 +37,7 @@ router.post('/createChapter', async function (req, res) {
         return res.status(201).send(chapter)
     } catch (err) {
         _log('Creating chapter of course id %s caught an error: %o', course_id, err)
+        return res.status(400).send('Internal Error')
     }
 })
 
@@ -70,6 +71,7 @@ router.post('/updateChapter', async function (req, res) {
         return res.status(201).send(chapter)
     }catch(err){
         _log('Updating chapter (id: %s) of course (id %s) caught an error: %o', chapter_id, course_id, err)        
+        return res.status(400).send('Internal Error')
     }
 })
 
@@ -102,6 +104,7 @@ router.post('/deleteChapter', async function (req, res) {
         res.status(201).send(ret)
     }catch(err){
         _log('Deleting chapter (id: %s) of course (id %s) caught an error: %o', chapter_id, course_id, err)                
+        return res.status(400).send('Internal Error')
     }
 })
 

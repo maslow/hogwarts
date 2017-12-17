@@ -10,6 +10,16 @@ async function getTemplates() {
     return rets
 }
 
+/**
+ * 根据模板ID获取一个模板信息
+ */
+async function getTemplateById(template_id) {
+    let [rets] = await mysql.Query("select * from template where id = ?", [template_id])
+    if (rets.length === 0)
+        return false
+    return rets[0]
+}
+
 const root = path.join(__dirname, '..', 'data', 'templates')
 
 /**
@@ -58,5 +68,6 @@ module.exports = {
     getFiles,
     getFile,
     getTemplates,
+    getTemplateById,
     exists
 }
