@@ -39,7 +39,7 @@
 ```
 
 > 启动服务端服务组
-```
+```shell
     # 创建并启动服务组
     node server.js init
 
