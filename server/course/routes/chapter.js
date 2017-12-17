@@ -1,112 +1,108 @@
 const express = require("express")
-const course = require("../model/course")
+const debug = require('debug')
+const validator = require('validator')
+const CourseModel = require("../model/course")
 
-let router = express.Router()
+const router = express.Router()
+const _log = debug('JOB:PROD')
 
 /**
- * 创建章节
+ * Create Chapter
  */
 router.post('/createChapter', async function (req, res) {
-    req
-        .checkBody('course_id')
-        .notEmpty()
-        .isInt({min: 1})
-    req
-        .checkBody('name')
-        .notEmpty()
-        .isLength(1, 64)
-    req
-        .checkBody('description')
-        .notEmpty()
-        .isLength(1, 255)
+    const course_id = req.body.course_id || null
+    const chapter_name = req.body.name || null
+    const chapter_description = req.body.description || null
 
-    let errors = await req.getValidationResult()
-    errors.useFirstErrorOnly()
-    if (!errors.isEmpty()) 
-        return res.status(422).send(errors.mapped())
+    if (!course_id || !validator.isInt(course_id))
+        return res.status(422).send('Invalid course id')
 
-    let courseId = req.body.course_id
-    let seq = req.body.seq || 50
-    let course0 = await course.GetCourseById(courseId)
-    if (!course0) 
-        return res.status(422).send("Course Id is invalid")
+    if (!validator.isLength(chapter_name, { min: 1, max: 64 }))
+        return res.status(422).send('Invalid chapter name')
 
-    if (course0.created_by != req.uid) 
-        return res.status(401).send('Permission denied')
+    if (!validator.isLength(chapter_description, { min: 1, max: 255 }))
+        return res.status(422).send('INvalid chapter description')
 
-    let chapter = await course.CreateChapter(courseId, req.body.name, req.body.description, seq)
-    return res
-        .status(201)
-        .send(chapter)
+    const seq = req.body.seq || 50
+
+    try {
+        const course = await CourseModel.GetCourseById(course_id)
+        if (!course)
+            return res.status(422).send("Course Id is invalid")
+
+        if (course.created_by != req.uid)
+            return res.status(401).send('Permission denied')
+
+        const chapter = await CourseModel.CreateChapter(course_id, chapter_name, chapter_description, seq)
+        return res.status(201).send(chapter)
+    } catch (err) {
+        _log('Creating chapter of course id %s caught an error: %o', course_id, err)
+    }
 })
 
 /**
- * 更新章节
+ * Update Chapter
  */
 router.post('/updateChapter', async function (req, res) {
-    let chapter_id = req.body.chapter_id
-    let name = req.body.name || null
-    let description = req.body.description || null
-    let seq = req.body.seq || null
+    const chapter_id = req.body.chapter_id
+    const chapter_name = req.body.name || null
+    const chapter_description = req.body.description || null
+    const seq = req.body.seq || null
 
-    let chapter = await course.GetChapterById(chapter_id)
-    if (!chapter) 
+    try{
+        const chapter = await CourseModel.GetChapterById(chapter_id)
+        if (!chapter)
         return res.status(404).send("Chapter not found")
-
-    let course0 = await course.GetCourseById(chapter.course_id)
-    if (!course0) 
+        
+        const course = await CourseModel.GetCourseById(chapter.course_id)
+        if (!course)
         return res.status(404).send("Course not found")
-
-    if (course0.created_by != req.uid) 
+        
+        if (course.created_by != req.uid)
         return res.status(401).send('Permission denied')
-
-    let data = {}
-    !name || (data.name = name)
-    !description || (data.description = description)
-    !seq || (data.seq = seq)
-
-    let ret = await course.UpdateChapter(chapter_id, data)
-    res
-        .status(201)
-        .send(ret)
+        
+        const chapter_data = {}
+        !chapter_name || (chapter_data.name = chapter_name)
+        !chapter_description || (chapter_data.description = chapter_description)
+        !seq || (chapter_data.seq = seq)
+        
+        const chapter = await CourseModel.UpdateChapter(chapter_id, chapter_data)
+        return res.status(201).send(chapter)
+    }catch(err){
+        _log('Updating chapter (id: %s) of course (id %s) caught an error: %o', chapter_id, course_id, err)        
+    }
 })
 
 /**
  * 删除章节
  */
 router.post('/deleteChapter', async function (req, res) {
-    req
-        .checkBody('id')
-        .notEmpty()
-        .isInt({min: 1})
+    const chapter_id = req.body.id || null
+    if(!chapter_id || !validator.isInt(chapter_id))
+        return res.status(422).send('Invalid chapter id')
 
-    let errors = await req.getValidationResult()
-    errors.useFirstErrorOnly()
-    if (errors.isEmpty() === false) 
-        return res.status(422).send(errors.mapped())
-
-    let chapterId = req.body.id
-    let chapter = await course.GetChapterById(chapterId)
-    if (!chapter) 
+    try{
+        const chapter = await CourseModel.GetChapterById(chapter_id)
+        if (!chapter)
         return res.status(404).send("Chapter not found")
-
-    let course0 = await course.GetCourseById(chapter.course_id)
-    if (!course0) 
+        
+        const course = await CourseModel.GetCourseById(chapter.course_id)
+        if (!course)
         return res.status(404).send("Course not found")
-
-    if (course0.created_by != req.uid) 
+        
+        if (course.created_by != req.uid)
         return res.status(401).send('Permission denied')
-
-    let sections = await course.GetSections(chapter.course_id)
-    sections = sections.filter(s => s.chapter_id === chapter.id)
-    if (sections.length) 
+        
+        const sections = await CourseModel.GetSections(chapter.course_id)
+        sections = sections.filter(s => s.chapter_id === chapter.id)
+        if (sections.length)
         return res.status(422).send('The chapter cannot be deleted util no sections in it.')
-
-    let ret = await course.DeleteChapter(chapterId)
-    console.log(ret)
-    res
-        .status(201)
-        .send(ret)
+        
+        const ret = await CourseModel.DeleteChapter(chapter_id)
+        res.status(201).send(ret)
+    }catch(err){
+        _log('Deleting chapter (id: %s) of course (id %s) caught an error: %o', chapter_id, course_id, err)                
+    }
 })
 
 module.exports = router

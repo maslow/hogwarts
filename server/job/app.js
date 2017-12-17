@@ -23,4 +23,4 @@ app.use(require("./routes/code"))
 
 
 const port = process.argv[2] || 80
-app.listen(port, () => console.log(`listening on ${port}`))
+app.listen(port, () => _log(`listening on ${port}`))

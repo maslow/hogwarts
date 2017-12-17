@@ -52,36 +52,20 @@ async function GetFile(sectionId, templateId, file, dev = false) {
  */
 async function CreateFolder(sectionId, file) {
     let filePath = path.join(root(true), sectionId, 'codes', file)
-
-    if (await fs.pathExists(filePath))
-        return false
-
     await fs.ensureDir(filePath)
-    return true
 }
 
 async function WriteFile(sectionId, file, content) {
     let filePath = path.join(root(true), sectionId, 'codes', file)
 
-    try {
-        await fs.ensureDir(path.dirname(filePath))
-        await fs.writeFile(filePath, content)
-        return null
-    } catch (err) {
-        return err
-    }
+    await fs.ensureDir(path.dirname(filePath))
+    await fs.writeFile(filePath, content)
 }
 
 async function DeleteFile(sectionId, file) {
     const filePath = path.join(root(true), sectionId, 'codes', file)
-
-    try {
-        if (await fs.pathExists(filePath))
-            await fs.remove(filePath)
-        return null
-    } catch (err) {
-        return err
-    }
+    if (await fs.pathExists(filePath))
+        await fs.remove(filePath)
 }
 
 function root(dev = false) {

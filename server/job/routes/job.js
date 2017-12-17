@@ -14,25 +14,23 @@ router.get('/getUserJobBySectionId', async function (req, res) {
         return res.status(422).send('Section Id can not be empty')
 
     const user_id = req.uid
-    try{
+    try {
         let job = await JobModel.GetUserJobBySectionId(user_id, section_id)
         if (!job)
             job = await JobModel.CreateUserJob(user_id, section_id)
-    }catch(err){
+        return res.status(200).send(job)
+    } catch (err) {
         _debug('Retrieve user job by section id %s caught an error: %o', section_id, err)
     }
-    
-
-    return res.status(200).send(job)
 })
 
-router.post('/evalUserJobByJobId', async function (req, res){
+router.post('/evalUserJobByJobId', async function (req, res) {
     const jobId = req.body.jid || 0
     if (!jobId)
         return res.status(422).send('Job Id can not be empty')
 
     const user_id = req.uid
-    
+
     try {
         const job = await JobModel.GetJobById(jobId)
         if (!job)
