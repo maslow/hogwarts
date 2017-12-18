@@ -1,6 +1,7 @@
 const express = require("express")
 const debug = require('debug')
 const JobModel = require("../model/job")
+const CodeModel = require("../model/code")
 
 const router = express.Router()
 const _debug = debug('JOB:DEV')
@@ -36,7 +37,8 @@ router.post('/evalUserJobByJobId', async function (req, res) {
         if (!job)
             return res.status(404).send("Job not exists")
 
-        // 合成代码  
+        const source = await CodeModel.GetSource(jobId, job.section_id)
+        _debug("source %O", source)
         // 请求eval
         // return result
         return res.status(200).send('To be done...')
