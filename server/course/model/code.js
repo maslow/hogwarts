@@ -1,5 +1,6 @@
 const fs = require("fs-extra")
 const path = require("path")
+const klaw = require('klaw')
 const tpl = require("./template")
 const course = require("./course")
 const _ = require("lodash")
@@ -37,12 +38,18 @@ async function GetFiles(sectionId, templateId, file, dev = false) {
  * @param {string} file 
  */
 async function GetFile(sectionId, templateId, file, dev = false) {
-    let p = path.join(root(dev), sectionId, 'codes', file)
+    const p = path.join(root(dev), sectionId, 'codes', file)
 
     if (!await fs.pathExists(p))
         return await tpl.getFile(templateId, file)
 
     return await fs.readFile(p)
+}
+
+async function GetSectionAllFileContents(sectionId){
+    const  p = path.join(root(true), sectionId, 'codes')
+    
+    return _get_files_and_content(p)
 }
 
 /**
@@ -84,9 +91,51 @@ function SecurityChecking(sectionId, file, dev = false) {
     return true
 }
 
+/**
+ * 获取指定目录下的所有文件及内容
+ * @param {*} code_path 
+ */
+async function _get_files_and_content(code_path){
+    const dir_path = path.resolve(code_path)
+    const absolute_paths = await _get_file_list(dir_path)
+    const relative_paths = absolute_paths.map(p => path.relative(dir_path, p))
+
+    const files = []
+    for(let i =0; i< absolute_paths.length; i++){ 
+	const stats = await fs.stat(absolute_paths[i])
+	
+	let file = {
+	    name: relative_paths[i],
+	    type: stats.isDirectory() ? 'dir' : 'file',
+	    data: null
+	}
+	if(file.type === 'file'){
+	    const file_data = await fs.readFile(absolute_paths[i])
+	    file.data = file_data.toString()	
+	}
+	files.push(file)	
+    }
+    return files
+}
+
+/**
+ * 获取指定目录下的所有文件列表,包括子目录中的文件
+ * @param {*} dir_path 
+ */
+function _get_file_list(dir_path){
+    return new Promise(function(resolve,reject){
+        const files = []
+        klaw(dir_path)
+          .on('data', item => files.push(item.path))
+          .on('end', () => resolve(files))
+	  .on('error', reject)
+    })
+}
+
 module.exports = {
     GetFiles,
     GetFile,
+    GetSectionAllFileContents,
     root,
     SecurityChecking,
     CreateFolder,

@@ -1,6 +1,7 @@
 const express = require("express")
-const CourseModel = require("../model/course")
 const debug = require('debug')
+const validator = require('validator')
+const CourseModel = require("../model/course")
 
 const router = express.Router()
 const _log = debug('COURSE:PROD')
@@ -91,7 +92,7 @@ router.post('/createCourse', async function (req, res) {
             return res.status(422).send({ name: "Chapter name exists" })
 
         const course = await CourseModel.CreateCourse(chapter_name, chapter_description, req.uid)
-        res.status(201).send(ret)
+        res.status(201).send(course)
     } catch (err) {
         _log('Creating course detail caught an error: %o', err)
         return res.status(400).send('Internal Error')
@@ -140,10 +141,7 @@ router.post('/updateCourse', async function (req, res) {
  * 发布课程
  */
 router.post('/publishCourse', async function (req, res) {
-    const course_id = req.body.course_id || null
-
-    if (!course_id || !validator.isInt(course_id))
-        return res.status(422).send('Invalid course id')
+    const course_id = req.body.id
 
     try {
         const course = await CourseModel.GetCourseById(course_id)
