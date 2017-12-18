@@ -17,10 +17,16 @@ router.post('/createChapter', async function (req, res) {
     if (!course_id || !validator.isInt(course_id))
         return res.status(422).send('Invalid course id')
 
-    if (!validator.isLength(chapter_name, { min: 1, max: 64 }))
+    if (!validator.isLength(chapter_name, {
+            min: 1,
+            max: 64
+        }))
         return res.status(422).send('Invalid chapter name')
 
-    if (!validator.isLength(chapter_description, { min: 1, max: 255 }))
+    if (!validator.isLength(chapter_description, {
+            min: 1,
+            max: 255
+        }))
         return res.status(422).send('INvalid chapter description')
 
     const seq = req.body.seq || 50
@@ -50,27 +56,27 @@ router.post('/updateChapter', async function (req, res) {
     const chapter_description = req.body.description || null
     const seq = req.body.seq || null
 
-    try{
+    try {
         const chapter = await CourseModel.GetChapterById(chapter_id)
         if (!chapter)
-        return res.status(404).send("Chapter not found")
-        
+            return res.status(404).send("Chapter not found")
+
         const course = await CourseModel.GetCourseById(chapter.course_id)
         if (!course)
-        return res.status(404).send("Course not found")
-        
+            return res.status(404).send("Course not found")
+
         if (course.created_by != req.uid)
-        return res.status(401).send('Permission denied')
-        
-        const chapter_data = {}
-        !chapter_name || (chapter_data.name = chapter_name)
-        !chapter_description || (chapter_data.description = chapter_description)
-        !seq || (chapter_data.seq = seq)
-        
-        const chapter = await CourseModel.UpdateChapter(chapter_id, chapter_data)
-        return res.status(201).send(chapter)
-    }catch(err){
-        _log('Updating chapter (id: %s) of course (id %s) caught an error: %o', chapter_id, course_id, err)        
+            return res.status(401).send('Permission denied')
+
+        const chapter_data = {};
+        !chapter_name || (chapter_data.name = chapter_name);
+        !chapter_description || (chapter_data.description = chapter_description);
+        !seq || (chapter_data.seq = seq);
+
+        const updated_chapter = await CourseModel.UpdateChapter(chapter_id, chapter_data)
+        return res.status(201).send(updated_chapter)
+    } catch (err) {
+        _log('Updating chapter (id: %s) of course (id %s) caught an error: %o', chapter_id, course_id, err)
         return res.status(400).send('Internal Error')
     }
 })
@@ -80,30 +86,30 @@ router.post('/updateChapter', async function (req, res) {
  */
 router.post('/deleteChapter', async function (req, res) {
     const chapter_id = req.body.id || null
-    if(!chapter_id || !validator.isInt(chapter_id))
+    if (!chapter_id || !validator.isInt(chapter_id))
         return res.status(422).send('Invalid chapter id')
 
-    try{
+    try {
         const chapter = await CourseModel.GetChapterById(chapter_id)
         if (!chapter)
-        return res.status(404).send("Chapter not found")
-        
+            return res.status(404).send("Chapter not found")
+
         const course = await CourseModel.GetCourseById(chapter.course_id)
         if (!course)
-        return res.status(404).send("Course not found")
-        
+            return res.status(404).send("Course not found")
+
         if (course.created_by != req.uid)
-        return res.status(401).send('Permission denied')
-        
+            return res.status(401).send('Permission denied')
+
         const sections = await CourseModel.GetSections(chapter.course_id)
         sections = sections.filter(s => s.chapter_id === chapter.id)
         if (sections.length)
-        return res.status(422).send('The chapter cannot be deleted util no sections in it.')
-        
+            return res.status(422).send('The chapter cannot be deleted util no sections in it.')
+
         const ret = await CourseModel.DeleteChapter(chapter_id)
         res.status(201).send(ret)
-    }catch(err){
-        _log('Deleting chapter (id: %s) of course (id %s) caught an error: %o', chapter_id, course_id, err)                
+    } catch (err) {
+        _log('Deleting chapter (id: %s) of course (id %s) caught an error: %o', chapter_id, course_id, err)
         return res.status(400).send('Internal Error')
     }
 })

@@ -3,6 +3,7 @@ const debug = require('debug')
 
 const TestsModel = require("../model/tests")
 const CourseModel = require("../model/course")
+const CodeModel = require("../model/code")
 
 const router = express.Router()
 const _log = debug('COURSE:PROD')
@@ -43,6 +44,19 @@ router.get('/getSectionTests', async function (req, res) {
     } catch (err) {
         _log("Updating section (id:%s) tests caught an error: %o", section_id, err)
         return res.status(400).send('Internal Error')
+    }
+})
+
+router.get('/get_section_sources', async function(req, res){
+    const section_id = req.query.section_id
+    try{
+        const result = {
+            codes:await CodeModel.GetSectionAllFileContents(section_id),
+            tests:await TestsModel.getCode(section_id)
+        }
+        return res.status(200).send(result)
+    }catch(err){
+        _log("get_section_sources (section id: %s) caught an error: %o", section_id, err)
     }
 })
 

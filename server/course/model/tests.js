@@ -21,19 +21,14 @@ async function updateCode(section_id, tests) {
     }
 }
 
-async function getCode(section_id, tests) {
-    try {
-        let testsPath = path.join(code.root(true), section_id, 'tests')
-        await fs.ensureDir(testsPath)
+async function getCode(section_id) {
+    let testsPath = path.join(code.root(true), section_id, 'tests')
+    await fs.ensureDir(testsPath)
 
-        let file = path.join(testsPath, 'tests.js')
-        let data = ""
-        if(await fs.pathExists(file))
-            data = await fs.readFile(file, tests)
+    let p = path.join(testsPath, 'tests.js')
+    let data = ""
+    if (await fs.pathExists(p))
+        data = await fs.readFile(p)
 
-        return data.toString()
-    } catch (err) {
-        console.error(err)
-        return false
-    }
+    return data.toString()
 }
