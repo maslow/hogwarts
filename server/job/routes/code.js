@@ -57,7 +57,7 @@ router.get('/getJobFileContent', async function (req, res) {
             return res.status(401).send('Permission denied')
 
         const rets = await CodeModel.GetFile(jobId, file, job0.sectionId)
-        if (!rets)
+        if (rets === false)
             return res.status(404).send('Job Code File Not Found')
 
         const data = rets.toString('utf-8')

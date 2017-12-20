@@ -50,6 +50,10 @@ router.get('/getSectionTests', async function (req, res) {
 router.get('/get_section_sources', async function(req, res){
     const section_id = req.query.section_id
     try{
+        const section = await CourseModel.GetSection(section_id)
+        if(!section)
+            return res.status(422).send('Invalid section id')
+            
         const result = {
             codes:await CodeModel.GetSectionAllFileContents(section_id),
             tests:await TestsModel.getCode(section_id)

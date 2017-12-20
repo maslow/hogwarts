@@ -37,7 +37,7 @@ router.post('/evalUserJobByJobId', async function (req, res) {
         if (!job)
             return res.status(404).send("Job not exists")
 
-        const source = await CodeModel.GetSource(jobId, job.section_id)
+        const source = await CodeModel.GetSource(jobId, job.sectionId)
         _debug("source %O", source)
         // 请求eval
         // return result

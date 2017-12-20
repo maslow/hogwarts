@@ -7,7 +7,7 @@ const CourseModel = require('../model/course')
 const util = require('../util')
 
 const router = express.Router()
-const _log = debug('JOB:PROD')
+const _log = debug('COURSE:PROD')
 
 /**
  * url: /getSectionCodeFiles

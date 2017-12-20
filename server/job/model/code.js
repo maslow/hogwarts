@@ -27,7 +27,10 @@ async function GetFiles(jobId, file, sectionId) {
         const name = codeFiles[i]
         const stats = await fs.stat(path.join(filePath, name))
         const type = stats.isDirectory() ? 'dir' : 'file'
-        codeFiles[i] = { type, name }
+        codeFiles[i] = {
+            type,
+            name
+        }
     }
 
     let files = codeFiles.concat(sectionFiles || [])
@@ -44,8 +47,8 @@ async function GetFiles(jobId, file, sectionId) {
 async function GetFile(jobId, file, sectionId) {
     const filePath = path.join(root(), jobId, 'codes', file)
 
-    if (!await fs.pathExists(filePath)){
-        let f =  await SectionModal.GetFile(sectionId, file)
+    if (!await fs.pathExists(filePath)) {
+        let f = await SectionModal.GetFile(sectionId, file)
         return f.content
     }
 
@@ -110,8 +113,9 @@ function SecurityChecking(jobId, file) {
  * @param {*} job_id 
  * @param {*} section_id 
  */
-async function GetSource(job_id, section_id){
+async function GetSource(job_id, section_id) {
     const code_path = path.join(root(), job_id, 'codes')
+    await fs.ensureDir(code_path)
 
     const job_codes = await _get_files_and_content(code_path)
 
@@ -133,25 +137,27 @@ async function GetSource(job_id, section_id){
  * 获取指定目录下的所有文件及内容
  * @param {*} code_path 
  */
-async function _get_files_and_content(code_path){
+async function _get_files_and_content(code_path) {
     const dir_path = path.resolve(code_path)
-    const absolute_paths = await _get_file_list(dir_path)
+    let absolute_paths = await _get_file_list(dir_path)
+    absolute_paths = absolute_paths.filter(p => path.relative(dir_path, p) != '')
+    
     const relative_paths = absolute_paths.map(p => path.relative(dir_path, p))
 
     const files = []
-    for(let i =0; i< absolute_paths.length; i++){ 
-	const stats = await fs.stat(absolute_paths[i])
-	
-	let file = {
-	    name: relative_paths[i],
-	    type: stats.isDirectory() ? 'dir' : 'file',
-	    data: null
-	}
-	if(file.type === 'file'){
-	    const file_data = await fs.readFile(absolute_paths[i])
-	    file.data = file_data.toString()	
-	}
-	files.push(file)	
+    for (let i = 0; i < absolute_paths.length; i++) {
+        const stats = await fs.stat(absolute_paths[i])
+
+        let file = {
+            name: relative_paths[i],
+            type: stats.isDirectory() ? 'dir' : 'file',
+            data: null
+        }
+        if (file.type === 'file') {
+            const file_data = await fs.readFile(absolute_paths[i])
+            file.data = file_data.toString()
+        }
+        files.push(file)
     }
     return files
 }
@@ -160,13 +166,13 @@ async function _get_files_and_content(code_path){
  * 获取指定目录下的所有文件列表,包括子目录中的文件
  * @param {*} dir_path 
  */
-function _get_file_list(dir_path){
-    return new Promise(function(resolve,reject){
+function _get_file_list(dir_path) {
+    return new Promise(function (resolve, reject) {
         const files = []
         klaw(dir_path)
-          .on('data', item => files.push(item.path))
-          .on('end', () => resolve(files))
-	  .on('error', reject)
+            .on('data', item => files.push(item.path))
+            .on('end', () => resolve(files))
+            .on('error', reject)
     })
 }
 

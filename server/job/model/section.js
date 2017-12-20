@@ -1,5 +1,7 @@
 const request = require('superagent')
+const debug = require('debug')
 
+const _debug = debug('JOB:DEV')
 /*
 const section = require('./section')
 
@@ -51,5 +53,6 @@ async function GetSource(section_id) {
         .type('json')
         .query({ section_id })
 
-    return JSON.parse(res.body)
+    _debug("Get source from course service , response body: %o", res.body)
+    return res.body
 }

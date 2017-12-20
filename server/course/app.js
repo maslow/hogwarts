@@ -4,8 +4,8 @@ const expressValidator = require('express-validator')
 const debug = require('debug')
 
 const app = express()
-const _log = debug('JOB:PROD')
-const _debug = debug('JOB:DEV')
+const _log = debug('COURSE:PROD')
+const _debug = debug('COURSE:DEV')
 
 app.use(body_parser.json())
 app.use(body_parser.urlencoded({extended: false}))

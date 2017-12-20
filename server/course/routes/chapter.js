@@ -4,7 +4,7 @@ const validator = require('validator')
 const CourseModel = require("../model/course")
 
 const router = express.Router()
-const _log = debug('JOB:PROD')
+const _log = debug('COURSE:PROD')
 
 /**
  * Create Chapter

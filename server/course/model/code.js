@@ -47,8 +47,7 @@ async function GetFile(sectionId, templateId, file, dev = false) {
 }
 
 async function GetSectionAllFileContents(sectionId){
-    const  p = path.join(root(true), sectionId, 'codes')
-    
+    const  p = path.join(root(true), `${sectionId}/codes`)
     return _get_files_and_content(p)
 }
 
@@ -97,7 +96,10 @@ function SecurityChecking(sectionId, file, dev = false) {
  */
 async function _get_files_and_content(code_path){
     const dir_path = path.resolve(code_path)
-    const absolute_paths = await _get_file_list(dir_path)
+    
+    let absolute_paths = await _get_file_list(dir_path)
+    absolute_paths = absolute_paths.filter(p => path.relative(dir_path, p) != '')
+
     const relative_paths = absolute_paths.map(p => path.relative(dir_path, p))
 
     const files = []
