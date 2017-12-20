@@ -82,6 +82,11 @@ CREATE TABLE template (
 )
 `
 
+let insertFirstTemplateSql = `
+INSERT INTO template (name, type, description, created_by, created_at)
+VALUES ('Empty Template', 0, 'Empty Template', 0, 0)
+`
+
 let dropSql = `DROP DATABASE ${config.database}`
 
 main()
@@ -97,6 +102,7 @@ async function main() {
             await Query(createSql1)
             await Query(createSql2)
             await Query(createSql3)
+            await Query(insertFirstTemplateSql)
         } else if (cmd === 'clear') {
             let ret = await Query(dropSql)
         } else
