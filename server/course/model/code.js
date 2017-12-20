@@ -47,7 +47,7 @@ async function GetFile(sectionId, templateId, file, dev = false) {
 }
 
 async function GetSectionAllFileContents(sectionId){
-    const  p = path.join(root(true), `${sectionId}/codes`)
+    const  p = path.join(root(false), `${sectionId}/codes`)
     return _get_files_and_content(p)
 }
 
