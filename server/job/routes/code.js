@@ -21,7 +21,7 @@ router.get('/getJobFiles', async function (req, res) {
         if (!CodeModel.SecurityChecking(jobId, file))
             return res.status(422).send('Path is Invalid')
 
-        let job = await JobModel.GetJobById(jobId)
+        const job = await JobModel.GetJobById(jobId)
         if (!job)
             return res.status(404).send('Object Not Exists')
 

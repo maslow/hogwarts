@@ -12,10 +12,10 @@ const _ = require("lodash")
  * @param {string} file 
  */
 async function GetFiles(sectionId, templateId, file, dev = false) {
-    const codesPath = path.join(root(dev), sectionId, 'codes')
+    const codesPath = path.join(root(dev), `${sectionId}/codes`)
     const p = path.join(codesPath, file)
 
-    const tplFiles = await tpl.getFiles(templateId, file) || null
+    const tplFiles = await tpl.getFiles(templateId.toString(), file) || []
     if (!await fs.pathExists(p))
         return tplFiles
 
@@ -38,10 +38,10 @@ async function GetFiles(sectionId, templateId, file, dev = false) {
  * @param {string} file 
  */
 async function GetFile(sectionId, templateId, file, dev = false) {
-    const p = path.join(root(dev), sectionId, 'codes', file)
+    const p = path.join(root(dev), `${sectionId}/codes`, file)
 
     if (!await fs.pathExists(p))
-        return await tpl.getFile(templateId, file)
+        return await tpl.getFile(templateId.toString(), file)
 
     return await fs.readFile(p)
 }
@@ -57,19 +57,19 @@ async function GetSectionAllFileContents(sectionId){
  * @param {String} file 文件夹目录
  */
 async function CreateFolder(sectionId, file) {
-    let filePath = path.join(root(true), sectionId, 'codes', file)
+    let filePath = path.join(root(true), `${sectionId}/codes`, file)
     await fs.ensureDir(filePath)
 }
 
 async function WriteFile(sectionId, file, content) {
-    let filePath = path.join(root(true), sectionId, 'codes', file)
+    let filePath = path.join(root(true), `${sectionId}/codes`, file)
 
     await fs.ensureDir(path.dirname(filePath))
     await fs.writeFile(filePath, content)
 }
 
 async function DeleteFile(sectionId, file) {
-    const filePath = path.join(root(true), sectionId, 'codes', file)
+    const filePath = path.join(root(true), `${sectionId}/codes`, file)
     if (await fs.pathExists(filePath))
         await fs.remove(filePath)
 }

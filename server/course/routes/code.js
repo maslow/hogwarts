@@ -22,7 +22,7 @@ router.get("/getSectionCodeFiles", async function (req, res) {
     if (dev == 'false' || dev == '0')
         dev = false
 
-    const section_id = req.query.sid || 0
+    const section_id = req.query.sid
 
     try {
         if (!CodeModel.SecurityChecking(section_id, code_path, dev))
@@ -36,10 +36,7 @@ router.get("/getSectionCodeFiles", async function (req, res) {
         if (dev && req.uid != section.created_by)
             return res.status(401).send('Permission denied')
 
-        const code_files = await CodeModel.GetFiles(section.id.toString(), section.template_id.toString(), code_path, dev)
-        if (code_files === null)
-            return res.status(404).send('Section Code not found')
-
+        const code_files = await CodeModel.GetFiles(section_id, section.template_id, code_path, dev)
         return res.status(200).send(code_files)
     } catch (err) {
         _log('Retrieve section (id: %s) code files (code_path: %s) caught an error: %o', section_id, code_path, err)
@@ -74,7 +71,7 @@ router.get("/getSectionCodeFileContent", async function (req, res) {
         if (dev && req.uid != section.created_by)
             return res.status(401).send('Permission denied')
 
-        const code_file = await CodeModel.GetFile(section.id.toString(), section.template_id.toString(), code_path, dev)
+        const code_file = await CodeModel.GetFile(section.id, section.template_id, code_path, dev)
         if (code_file === null)
             return res.status(404).send('Section code file not found')
 
