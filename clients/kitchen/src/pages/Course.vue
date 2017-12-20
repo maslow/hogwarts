@@ -101,6 +101,9 @@
                             </Button>
                         </router-link>
                     </Tooltip>
+                    <Tooltip placement="top" content="发布该小节">
+                        <Button type="text" shape="circle" size="small" icon="information-circled" @click="publishSection(s)"></Button>
+                    </Tooltip>
                 </Card>
             </div>
         </div>
@@ -121,99 +124,113 @@
 
 
 <script>
-import _ from 'lodash'
-import course from '@/api/course'
-import RenameCourseModal from '@/components/RenameCourseModal'
-import UpdateCourseDescriptionModal from '@/components/UpdateCourseDescriptionModal'
-import CreateChapterModal from '@/components/CreateChapterModal'
-import RenameChapter from '@/components/RenameChapter'
-import UpdateChapterDescription from '@/components/UpdateChapterDescription'
-import AdjustChapterSeq from '@/components/AdjustChapterSeq'
-import DeleteChapter from '@/components/DeleteChapter'
-import CreateSectionModal from '@/components/CreateSectionModal'
-import RenameSection from '@/components/RenameSection'
-import UpdateSectionDescription from '@/components/UpdateSectionDescription'
-import AdjustSectionSeq from '@/components/AdjustSectionSeq'
+import _ from "lodash";
+import course from "@/api/course";
+import RenameCourseModal from "@/components/RenameCourseModal";
+import UpdateCourseDescriptionModal from "@/components/UpdateCourseDescriptionModal";
+import CreateChapterModal from "@/components/CreateChapterModal";
+import RenameChapter from "@/components/RenameChapter";
+import UpdateChapterDescription from "@/components/UpdateChapterDescription";
+import AdjustChapterSeq from "@/components/AdjustChapterSeq";
+import DeleteChapter from "@/components/DeleteChapter";
+import CreateSectionModal from "@/components/CreateSectionModal";
+import RenameSection from "@/components/RenameSection";
+import UpdateSectionDescription from "@/components/UpdateSectionDescription";
+import AdjustSectionSeq from "@/components/AdjustSectionSeq";
 
 export default {
-    data() {
-        return {
-            courseId: this.$route.params.id,
-            course: {},
-            chapters: [],
-            renameCourseModal: false,
-            updateCourseDescriptionModal: false,
-            createChapterModal: false,
-            createSectionModal: false
+  data() {
+    return {
+      courseId: this.$route.params.id,
+      course: {},
+      chapters: [],
+      renameCourseModal: false,
+      updateCourseDescriptionModal: false,
+      createChapterModal: false,
+      createSectionModal: false
+    };
+  },
+  async created() {
+    this.getCourse();
+  },
+  methods: {
+    async getCourse() {
+      let data = await course.getCourse(this.courseId);
+      this.course = data.course;
+      data.chapters = _.sortBy(data.chapters, ["seq", "created_at"]);
+      this.chapters = data.chapters.map(ch => {
+        let ss = data.sections.filter(s => s.chapter_id === ch.id);
+        ch["sections"] = _.sortBy(ss, ["seq", "created_at"]);
+        return ch;
+      });
+    },
+    publishCourse() {
+      this.$Modal.confirm({
+        title: "发布确认",
+        content: `<p>确定发布该课程<span style="color:red"> { ${this.course
+          .name} } </span>？</p>`,
+        loading: true,
+        onOk: async () => {
+          let ret = await course.publishCourse(this.course.id)
+          await this.getCourse()
+          this.$Modal.remove()
         }
+      }) // end for this.$Modal.confirm
     },
-    async created() {
-        this.getCourse()
-    },
-    methods: {
-        async getCourse() {
-            let data = await course.getCourse(this.courseId)
-            this.course = data.course
-            data.chapters = _.sortBy(data.chapters, ['seq', 'created_at'])
-            this.chapters = data.chapters.map(ch => {
-                let ss = data.sections.filter(s => s.chapter_id === ch.id)
-                ch['sections'] = _.sortBy(ss, ['seq', 'created_at'])
-                return ch
-            })
-        },
-        publishCourse() {
-            this.$Modal.confirm({
-                title: '发布确认',
-                content: `<p>确定发布该课程<span style="color:red"> { ${this.course.name} } </span>？</p>`,
-                loading: true,
-                onOk: async () => {
-                    let ret = await course.publishCourse(this.course.id)
-                    await this.getCourse()
-                    this.$Modal.remove()
-                }
-            })
+    publishSection(section) {
+      this.$Modal.confirm({
+        title: "发布确认",
+        content: `<p>确定发布该小节<span style="color:red"> { ${section
+          .name} } </span>？</p>`,
+        loading: true,
+        onOk: async () => {
+          await course.publishSection(section.id)
+          await this.getCourse()
+          this.$Modal.remove()
         }
-    },
-    components: {
-        RenameCourseModal,
-        UpdateCourseDescriptionModal,
-        CreateChapterModal,
-        RenameChapter,
-        UpdateChapterDescription,
-        AdjustChapterSeq,
-        DeleteChapter,
-        CreateSectionModal,
-        RenameSection,
-        UpdateSectionDescription,
-        AdjustSectionSeq
+      }) // end for this.$Modal.confirm
     }
-}
+  },
+  components: {
+    RenameCourseModal,
+    UpdateCourseDescriptionModal,
+    CreateChapterModal,
+    RenameChapter,
+    UpdateChapterDescription,
+    AdjustChapterSeq,
+    DeleteChapter,
+    CreateSectionModal,
+    RenameSection,
+    UpdateSectionDescription,
+    AdjustSectionSeq
+  }
+};
 </script>
     
 <style scoped>
 h1,
 h2 {
-    font-weight: normal;
+  font-weight: normal;
 }
 
 #course-description {
-    margin-left: 30px;
-    color: #666;
-    margin-top: 20px;
-    padding: 3px;
-    border-left: 4px solid lightgray;
+  margin-left: 30px;
+  color: #666;
+  margin-top: 20px;
+  padding: 3px;
+  border-left: 4px solid lightgray;
 }
 
 .layout-chapter {
-    width: 600px;
-    margin: 25px 30px;
+  width: 600px;
+  margin: 25px 30px;
 }
 
 .layout-section {
-    margin: 5px 45px;
+  margin: 5px 45px;
 }
 
 .layout-section-item {
-    margin-top: 5px;
+  margin-top: 5px;
 }
 </style>

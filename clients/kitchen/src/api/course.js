@@ -4,7 +4,6 @@ import Identity from '@/api/identity'
 let G_API = Identity.G_API
 
 export default {
-  getImages,
   getTemplates,
 
   getUserCourses,
@@ -22,6 +21,7 @@ export default {
 
   getSection,
   createSection,
+  publishSection,
   renameSection,
   updateSectionDescription,
   adjustSectionSeq,
@@ -38,22 +38,11 @@ export default {
   updateSectionDocs
 }
 
-function getImages() {
-  let langs = ['php:7.1', 'node:8.0', 'python:2.7', 'python:3.0']
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(langs)
-    }, 500)
-  })
-}
-
 function getTemplates() {
   return $.ajax({
     url: G_API + '/getTemplates',
     method: 'get',
-    headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
-    }
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })
 }
 
@@ -62,9 +51,7 @@ function getUserCourses() {
   return $.ajax({
     url: G_API + '/getUserCourses?uid=' + Identity.getUserId(),
     method: 'get',
-    headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
-    }
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })
 }
 
@@ -72,9 +59,7 @@ function getCourse(courseId) {
   return $.ajax({
     url: G_API + "/getCourseDetail?id=" + courseId,
     method: 'get',
-    headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
-    }
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })
 }
 
@@ -83,36 +68,24 @@ function createCourse(data) {
     url: G_API + '/createCourse',
     data: data,
     method: 'post',
-    headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
-    }
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })
 }
 
 function updateCourseDescription(course_id, description) {
-  return _updateCourse({
-    course_id,
-    description
-  })
+  return _updateCourse({ course_id, description })
 }
 
 function renameCourse(course_id, name) {
-  return _updateCourse({
-    course_id,
-    name
-  })
+  return _updateCourse({ course_id, name })
 }
 
 function publishCourse(courseId) {
   return $.ajax({
     url: G_API + '/publishCourse',
-    data: {
-      id: courseId
-    },
+    data: { id: courseId },
     method: 'post',
-    headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
-    }
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })
 }
 
@@ -126,43 +99,28 @@ function createChapter(courseId, chapterName, chapterDescription) {
       description: chapterDescription
     },
     method: 'post',
-    headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
-    }
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })
 }
 
 function renameChapter(chapter_id, name) {
-  return _updateChapter({
-    chapter_id,
-    name
-  })
+  return _updateChapter({ chapter_id, name })
 }
 
 function updateChapterDescription(chapter_id, description) {
-  return _updateChapter({
-    chapter_id,
-    description
-  })
+  return _updateChapter({ chapter_id, description })
 }
 
 function adjustChapterSeq(chapter_id, seq) {
-  return _updateChapter({
-    chapter_id,
-    seq
-  })
+  return _updateChapter({ chapter_id, seq })
 }
 
 function deleteChapter(chapterId) {
   return $.ajax({
     url: G_API + '/deleteChapter',
-    data: {
-      id: chapterId
-    },
+    data: { id: chapterId },
     method: 'post',
-    headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
-    }
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })
 }
 
@@ -171,9 +129,7 @@ function getSection(sectionId) {
   return $.ajax({
     url: G_API + "/getSectionDetail?id=" + sectionId,
     method: 'get',
-    headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
-    }
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })
 }
 
@@ -189,31 +145,29 @@ function createSection(courseId, chapterId, templateId, name, description, image
       image
     },
     method: 'post',
-    headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
-    }
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
+  })
+}
+
+function publishSection(section_id) {
+  return $.ajax({
+    url: G_API + '/publishSection',
+    data: { section_id },
+    method: 'post',
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })
 }
 
 function renameSection(section_id, name) {
-  return _updateSection({
-    section_id,
-    name
-  })
+  return _updateSection({ section_id, name })
 }
 
 function updateSectionDescription(section_id, description) {
-  return _updateSection({
-    section_id,
-    description
-  })
+  return _updateSection({ section_id, description })
 }
 
 function adjustSectionSeq(section_id, seq) {
-  return _updateSection({
-    section_id,
-    seq
-  })
+  return _updateSection({ section_id, seq })
 }
 
 /**************** Codes ***************/
@@ -221,9 +175,7 @@ function getSectionCodeFiles(section_id, path, dev = false) {
   return $.ajax({
     url: G_API + `/getSectionCodeFiles?sid=${section_id}&path=${path}&dev=${dev}`,
     method: 'get',
-    headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
-    }
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })
 }
 
@@ -231,38 +183,25 @@ function getSectionCodeFileContent(section_id, path, dev = false) {
   return $.ajax({
     url: G_API + `/getSectionCodeFileContent?sid=${section_id}&path=${path}&dev=${dev}`,
     method: 'get',
-    headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
-    }
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })
 }
 
 function createSectionCodeFolder(section_id, path) {
   return $.ajax({
     url: G_API + `/createSectionCodeFolder`,
-    data: {
-      sid: section_id,
-      path
-    },
+    data: { sid: section_id, path },
     method: 'post',
-    headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
-    }
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })
 }
 
 function updateSectionCodeFileContent(section_id, path, content) {
   return $.ajax({
     url: G_API + `/updateSectionCodeFileContent`,
-    data: {
-      sid: section_id,
-      path,
-      content
-    },
+    data: { sid: section_id, path, content },
     method: 'post',
-    headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
-    }
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })
 }
 
@@ -274,9 +213,7 @@ function deleteCodeFile(section_id, path) {
       path
     },
     method: 'post',
-    headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
-    }
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })
 }
 
@@ -284,14 +221,9 @@ function deleteCodeFile(section_id, path) {
 function updateSectionTests(section_id, codes) {
   return $.ajax({
     url: G_API + '/updateSectionTests',
-    data: {
-      section_id,
-      codes
-    },
+    data: { section_id, codes },
     method: 'post',
-    headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
-    }
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })
 }
 
@@ -299,9 +231,7 @@ function getSectionTests(section_id) {
   return $.ajax({
     url: G_API + '/getSectionTests?section_id=' + section_id,
     method: 'get',
-    headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
-    }
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })
 }
 
@@ -315,9 +245,7 @@ function _updateCourse(data) {
       description: data.description || null
     },
     method: 'post',
-    headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
-    }
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })
 }
 
@@ -331,9 +259,7 @@ function _updateChapter(data) {
       seq: data.seq || null
     },
     method: 'post',
-    headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
-    }
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })
 }
 
@@ -349,9 +275,7 @@ function _updateSection(data) {
       seq: data.seq || null
     },
     method: 'post',
-    headers: {
-      'Authorization': 'Bearer ' + Identity.getAccessToken()
-    }
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })
 }
 

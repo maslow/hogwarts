@@ -79,6 +79,13 @@ function root(dev = false) {
     return path.join(__dirname, '..', 'data', 'courses', p)
 }
 
+async function Publish(section_id){
+    const dev_code_path = path.join(root(true), section_id)
+    const pub_code_path = path.join(root(false), section_id)
+    await fs.ensureDir(pub_code_path)
+    await fs.copy(dev_code_path, pub_code_path)
+}
+
 function SecurityChecking(sectionId, file, dev = false) {
     let p0 = path.join(root(dev), sectionId, 'codes')
     let p = path.join(p0, file)
@@ -89,6 +96,19 @@ function SecurityChecking(sectionId, file, dev = false) {
 
     return true
 }
+
+module.exports = {
+    GetFiles,
+    GetFile,
+    GetSectionAllFileContents,
+    root,
+    SecurityChecking,
+    CreateFolder,
+    WriteFile,
+    DeleteFile,
+    Publish
+}
+
 
 /**
  * 获取指定目录下的所有文件及内容
@@ -132,15 +152,4 @@ function _get_file_list(dir_path){
           .on('end', () => resolve(files))
 	  .on('error', reject)
     })
-}
-
-module.exports = {
-    GetFiles,
-    GetFile,
-    GetSectionAllFileContents,
-    root,
-    SecurityChecking,
-    CreateFolder,
-    WriteFile,
-    DeleteFile
 }

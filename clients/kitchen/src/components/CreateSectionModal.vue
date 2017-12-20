@@ -15,11 +15,6 @@
             <Form-item label="简介" prop="description">
                 <Input v-model="data.description" type="textarea" :autosize="{minRows: 3,maxRows: 6}" placeholder="请输入..."></Input>
             </Form-item>
-            <Form-item label="测试环境" prop="image">
-                <Select v-model="data.image" filterable clearable>
-                    <Option v-for="img in images" :value="img" :key="img">{{ img }}</Option>
-                </Select>
-            </Form-item>
             <Form-item label="初始代码模板" prop="template">
                 <Select v-model="data.template" filterable clearable>
                     <Option v-for="tpl in templates" :value="tpl.id" :key="tpl.id">{{ tpl.name }}</Option>
@@ -36,7 +31,7 @@
 <script>
 import course from '@/api/course'
 
-let rules = {
+const rules = {
     name: [
         { required: true, message: '小节名不可为空', trigger: 'blur' },
         { type: 'string', max: 64, message: '小节名不大于64字', trigger: 'blur' }
@@ -46,11 +41,11 @@ let rules = {
         { type: 'string', min: 10, message: '简介不少于10字', trigger: 'blur' },
         { type: 'string', max: 255, message: '简介不大于255字', trigger: 'blur' }
     ],
-    image: [
-        { required: true, message: '请选择小节的执行环境', trigger: 'change' }
-    ],
     chapter: [
         { type: 'integer', required: true, message: '所属章节必选', trigger: 'change' }
+    ],
+    template: [
+        { type:'integer', required:true, message: '请选择一个代码模板', trigger:'change'}
     ]
 }
 
@@ -70,13 +65,11 @@ export default {
     data() {
         return {
             templates: [],
-            images: [],
             data: {
                 chapter: '',
                 name: '',
                 description: '',
-                image: '',
-                template: 0
+                template: null
             },
             loading: false,
             rules
@@ -125,7 +118,6 @@ export default {
     },
     async created() {
         this.templates = await course.getTemplates()
-        this.images = await course.getImages()
     }
 }
 </script>

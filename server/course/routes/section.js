@@ -4,6 +4,7 @@ const debug = require('debug')
 
 const CourseModel = require("../model/course")
 const TemplateModel = require("../model/template")
+const CodeModel = require('../model/code')
 
 const router = express.Router()
 const _log = debug('COURSE:PROD')
@@ -71,7 +72,7 @@ router.post('/createSection', async function (req, res) {
 })
 
 /**
- * 更新章节
+ * 更新小节
  */
 router.post('/updateSection', async function (req, res) {
     const section_id = req.body.section_id
@@ -106,4 +107,32 @@ router.post('/updateSection', async function (req, res) {
     }
 })
 
+/**
+ * 发布小节
+ */
+router.post('/publishSection', async function (req, res) {
+    const section_id = req.body.section_id
+
+    try {
+        let section = await CourseModel.GetSection(section_id)
+        if (!section)
+            return res.status(422).send("Section not found")
+
+        if (section.created_by != req.uid)
+            return res.status(401).send('Permission denied')
+
+        // Update section status
+        if (section.status !== CourseModel.COURSE_PUBLISHED) {
+            const section_data = { status: CourseModel.COURSE_PUBLISHED }
+            section = await CourseModel.UpdateSection(section_id, section_data)
+        }
+
+        // Publish section code
+        await CodeModel.Publish(section_id)
+        return res.status(200).send(section)
+    } catch (err) {
+        _log('Publishing section (id:%s) caught an error: %o', section_id, err)
+        return res.status(400).send('Internal Error')
+    }
+})
 module.exports = router

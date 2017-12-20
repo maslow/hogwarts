@@ -44,6 +44,7 @@ let services = [
 
             "/createSection",
             "/updateSection",
+            "/publishSection",            
 
             "/createSectionCodeFolder",
             "/updateSectionCodeFileContent",

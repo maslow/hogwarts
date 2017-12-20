@@ -54,16 +54,18 @@ app.all('*', async function (req, res) {
         if (target) break
     }
 
-    if (!target)
+    if (!target) {
+        _log('Gateway Not Found,  [%s %s %s] request from [%s]', req.hostname, req.method, req.url, req.ip)
         return res.status(502).send('Gateway Not Found')
+    }
 
     const token = parseToken(req)
-    if (!token && auth === false){
+    if (!token && auth === false) {
         _log("Delivery [%s %s %s] to [%s] (auth: %s)", req.hostname, req.method, req.url, target, auth ? 'true' : 'false')
         return proxy.web(req, res, { target })
     }
 
-    if (!token){
+    if (!token) {
         _log('Delivery [%s %s %s] to [%s] Cancelled: Unauthroized Request - Invalid Token', req.hostname, req.method, req.url, target)
         return res.status(407).send('Unauthroized Request : Invalid Token')
     }
