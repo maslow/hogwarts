@@ -5,19 +5,23 @@
             <div style="background-color:rgb(11, 76, 97);height:600px;overflow: auto; ">
                 <div class="toolbar">
                     <ButtonGroup class="button-group">
-                        <Button type="text" size="small" class="text-white" @click="saveFiles">
-                            <Icon type="checkmark"></Icon>
-                            提交保存
-                        </Button>
                         <Button type="text" size="small" class="text-white" @click="createFileModal = true">
-                            <Icon type="ios-plus-empty"></Icon>
+                            <Icon type="plus" color="#ff9900"></Icon>
                             新建文件
                         </Button>
                         <Button type="text" size="small" class="text-white" @click="createFolderModal = true">
-                            <Icon type="folder"></Icon>
+                            <Icon type="folder" color="goldenrod"></Icon>
                             新建文件夹
                         </Button>
+                        <Button type="text" size="small" class="text-white" @click="saveFiles">
+                            <Icon type="checkmark" color="#2d8cf0"></Icon>
+                            保存
+                        </Button>
                     </ButtonGroup>
+                    <Button type="success" size="small" class="text-white" @click="evalJob">
+                        <Icon type="ios-play"></Icon>
+                        运行
+                    </Button>
                 </div>
                 <ul style="margin-left: 3px">
                     <file-tree v-for="file in files" :editing="currentSelected" :key="file.path" :model="file" v-on:select="onSelectFile" v-on:delete="onDeleteFile">
@@ -38,7 +42,7 @@
 import codemirror from "@/components/codemirror";
 import Job from "@/api/job";
 import FileTree from "@/components/FileTree";
-import CreateJobFile from '@/components/CreateJobFile'
+import CreateJobFile from "@/components/CreateJobFile";
 import md5 from "blueimp-md5";
 
 export default {
@@ -114,9 +118,16 @@ export default {
         await Job.updateFileContent(this.job.id, file.path, file.content);
         file.hash = file.hash_new;
       }
-      this.$Notice.success({
-        title: "文件提交保存成功！"
-      });
+      this.$Notice.success({title: "文件提交保存成功！"})
+    },
+    async evalJob(){
+      try{
+        await Job.evalUserJobByJobId(this.job.id)
+        this.$Notice.success({title: "测试成功，只不过这个功能还没写完..."})
+      }catch(err){
+        console.log(err)
+        this.$Notice.error({title: "请求失败, 内部错误"})
+      }
     },
     async onFolderCreated(file) {
       await Job.createFolder(this.job.id, file.path);

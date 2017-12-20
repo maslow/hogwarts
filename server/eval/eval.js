@@ -16,6 +16,7 @@ module.exports = {
 async function run(docker_image, src_path) {
     const container_name = get_container_name()
     const cmd = get_command(container_name, docker_image, src_path) 
+    _log('Docker Command: %s', cmd)
 
     try {
         const [stdout, stderr] = await exec_async(cmd)
@@ -35,5 +36,6 @@ function get_container_name(){
 }
 
 function get_command(container_name, docker_image, src_path){
-    return `docker run --rm -v ${src_path}:/app ${docker_image} mocha -t 10000 /app/tests -R json`
+    //return `docker run --rm -v ${src_path}:/app ${docker_image} mocha -t 10000 /app/tests -R json`
+    return `docker run --rm -v ${src_path}:/app ${docker_image} sh run.sh`
 }

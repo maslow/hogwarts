@@ -15,7 +15,8 @@ const courseAddr = "http://course.hogwarts:80"
 module.exports = {
     GetFiles,
     GetFile,
-    GetSource
+    GetSource,
+    GetSectionById
 }
 
 async function GetFiles(sectionId, file) {
@@ -53,6 +54,16 @@ async function GetSource(section_id) {
         .type('json')
         .query({ section_id })
 
-    _debug("Get source from course service , response body: %o", res.body)
+    _debug("Get section (id:%s) source from course service , response body: %o", section_id, res.body)
+    return res.body
+}
+
+async function GetSectionById(section_id) {
+    const res = await request
+        .get(`${courseAddr}/getSectionDetail`)
+        .type('json')
+        .query({ id: section_id })
+
+    _debug("Get section (id:%s) from course service , response body: %o", section_id, res.body)
     return res.body
 }

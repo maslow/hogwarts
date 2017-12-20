@@ -2,8 +2,10 @@ const express = require("express")
 const debug = require('debug')
 const JobModel = require("../model/job")
 const CodeModel = require("../model/code")
+const SectionModel = require("../model/section")
 
 const router = express.Router()
+const _log = debug('JOB:PROD')
 const _debug = debug('JOB:DEV')
 
 /**
@@ -21,29 +23,31 @@ router.get('/getUserJobBySectionId', async function (req, res) {
             job = await JobModel.CreateUserJob(user_id, section_id)
         return res.status(200).send(job)
     } catch (err) {
-        _debug('Retrieve user job by section id %s caught an error: %o', section_id, err)
+        _log('Retrieve user job by section id %s caught an error: %o', section_id, err)
+        return res.status(400).send('Internal Error')
     }
 })
 
 router.post('/evalUserJobByJobId', async function (req, res) {
-    const jobId = req.body.jid || 0
-    if (!jobId)
+    const job_id = req.body.job_id || 0
+    if (!job_id)
         return res.status(422).send('Job Id can not be empty')
 
-    const user_id = req.uid
-
     try {
-        const job = await JobModel.GetJobById(jobId)
+        const job = await JobModel.GetJobById(job_id)
         if (!job)
             return res.status(404).send("Job not exists")
 
-        const source = await CodeModel.GetSource(jobId, job.sectionId)
-        _debug("source %O", source)
-        // 请求eval
-        // return result
-        return res.status(200).send('To be done...')
+        const section = await SectionModel.GetSectionById(job.sectionId)
+        const docker_image = `job_eval_${section.template_id}`
+        const source = await CodeModel.GetSource(job_id, job.sectionId)
+
+        const results = await JobModel.EvalRequest(job_id, docker_image, source)
+
+        return res.status(200).send(results)
     } catch (err) {
-        _debug('Evaluate job by job id %s caught an error: %o', jobId, err)
+        _log('Evaluate job by job id %s caught an error: %o', job_id, err)
+        return res.status(400).send('Internal Error')
     }
 })
 

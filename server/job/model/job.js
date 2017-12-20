@@ -1,4 +1,9 @@
 const db = require('../mysql')
+const request = require('superagent')
+const debug = require('debug')
+
+const _debug = debug('JOB:DEV')
+const evalAddr = "http://eval.hogwarts:80"
 
 const CREATED = 0
 const FAILED = 1
@@ -10,7 +15,8 @@ module.exports = {
     PASSED,
     GetUserJobBySectionId,
     CreateUserJob,
-    GetJobById
+    GetJobById,
+    EvalRequest
 }
 
 async function GetUserJobBySectionId(userId, sectionId) {
@@ -47,6 +53,16 @@ async function CreateUserJob(userId, sectionId) {
     const [rets] = await db.Query(sql, params)
     const [rets0] = await db.Query("select * from job where id = ?", [rets.insertId])
     return rets0[0]
+}
+
+async function EvalRequest(job_id, job_image, job_source) {
+    const res = await request
+        .post(`${evalAddr}/eval`)
+        .send({ job_id, job_source, job_image })
+        .type('json')
+
+    _debug("Eval job (id:%s), image_name:%s , response body: %o", job_id, job_image, res.body)
+    return res.body
 }
 
 function time() {

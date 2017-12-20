@@ -4,6 +4,7 @@ const JobModel = require("../model/job")
 const CodeModel = require("../model/code")
 
 const router = express.Router()
+const _log = debug('JOB:PROD')
 const _debug = debug('JOB:DEV')
 
 /**
@@ -34,9 +35,9 @@ router.get('/getJobFiles', async function (req, res) {
         return res.status(200).send(files)
 
     } catch (err) {
-        _debug('Retrieve job files by job id %s caught an error: %o', jobId, err)
+        _log('Retrieve job files by job id %s caught an error: %o', jobId, err)
+        return res.status(400).send('Internal Error')
     }
-
 })
 
 router.get('/getJobFileContent', async function (req, res) {
@@ -69,9 +70,9 @@ router.get('/getJobFileContent', async function (req, res) {
         })
 
     } catch (err) {
-        _debug('Retrieve job file contents by job id %s caught an error: %o', jobId, err)
+        _log('Retrieve job file contents by job id %s caught an error: %o', jobId, err)
+        return res.status(400).send('Internal Error')
     }
-
 })
 
 router.post("/updateJobFileContent", async function (req, res) {
@@ -98,7 +99,7 @@ router.post("/updateJobFileContent", async function (req, res) {
         else
             return res.status(400).send(err)
     } catch (err) {
-        _debug('Updata job file contents by job id %s caught an error: %o', jobId, err)
+        _log('Updata job file contents by job id %s caught an error: %o', jobId, err)
     }
 
 })
@@ -126,7 +127,8 @@ router.post("/createJobFolder", async function (req, res) {
         else
             return res.status(200).send('exist')
     } catch (err) {
-        _debug('Create job folder by job id %s caught an error: %o', jobId, err)
+        _log('Create job folder by job id %s caught an error: %o', jobId, err)
+        return res.status(400).send('Internal Error')
     }
 })
 
@@ -154,7 +156,8 @@ router.post("/deleteJobFile", async function (req, res) {
         else
             return res.status(400).send(err)
     } catch (err) {
-        _debug('Delete job file by job id %s caught an error: %o', jobId, err)
+        _log('Delete job file by job id %s caught an error: %o', jobId, err)
+        return res.status(400).send('Internal Error')
     }
 })
 
