@@ -59,10 +59,10 @@ if (cmd === 'restart') {
 }
 
 if (cmd === 'remove') {
-    cp.execSync(`docker rm gateway.hogwarts`)
-    cp.execSync(`docker rm job.hogwarts`)   
-    cp.execSync(`docker rm course.hogwarts`)    
-    cp.execSync(`docker rm auth.hogwarts`)
-    cp.execSync(`docker rm eval.hogwarts`)
-    cp.execSync(`docker rm mysql.hogwarts`)
+    cp.execSync(`docker rm -f gateway.hogwarts`)
+    cp.execSync(`docker rm -f job.hogwarts`)   
+    cp.execSync(`docker rm -f course.hogwarts`)    
+    cp.execSync(`docker rm -f auth.hogwarts`)
+    cp.execSync(`docker rm -f eval.hogwarts`)
+    cp.execSync(`docker rm -f mysql.hogwarts`)
 }
