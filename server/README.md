@@ -50,6 +50,12 @@
 > 启动服务端服务组
 ```shell
     node server.js init     # 创建并启动服务组, 首次运行一次
+```
+
+> 其它服务组操作命令
+```shell
+    node server.js migrate  # 初始化各个服务的数据库
+    
     node server.js stop     #or 停止正在运行的服务组
     node server.js start    #or 启动已停止的服务组
     node server.js restart  #or 重启服务组
