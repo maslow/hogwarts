@@ -83,6 +83,7 @@ async function Publish(section_id){
     const dev_code_path = path.join(root(true), section_id)
     const pub_code_path = path.join(root(false), section_id)
     await fs.ensureDir(pub_code_path)
+    await fs.ensureDir(dev_code_path)
     await fs.copy(dev_code_path, pub_code_path)
 }
 
