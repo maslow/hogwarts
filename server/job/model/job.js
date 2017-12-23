@@ -3,7 +3,9 @@ const request = require('superagent')
 const debug = require('debug')
 
 const _debug = debug('JOB:DEV')
-const evalAddr = "http://eval.hogwarts:80"
+
+const SERVER_EVAL = process.env['SERVER_EVAL']
+const evalAddr = `http://${SERVER_EVAL}`
 
 const CREATED = 0
 const FAILED = 1

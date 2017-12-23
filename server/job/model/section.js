@@ -10,7 +10,8 @@ async function () {
     console.log(file)
 }
  */
-const courseAddr = "http://course.hogwarts:80"
+const SERVER_COURSE = process.env['SERVER_COURSE']
+const courseAddr = `http://${SERVER_COURSE}`
 
 module.exports = {
     GetFiles,

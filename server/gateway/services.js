@@ -1,10 +1,17 @@
+const auth_server = process.env['SERVER_AUTH']
+const course_server = process.env['SERVER_COURSE']
+const job_server = process.env['SERVER_JOB']
+
+if(!auth_server || !course_server || !job_server)
+    throw new Error('one or more of environment variables missing : `SERVER_AUTH` `SERVER_COURSE` `SERVER_JOB`')
+
 const servers = {
-    AUTH: 'http://auth.hogwarts:80',
-    COURSE: 'http://course.hogwarts:80',
-    JOB: 'http://job.hogwarts:80'
+    AUTH: `http://${auth_server}`,
+    COURSE: `http://${course_server}`,
+    JOB: `http://${job_server}`
 }
 
-let services = [
+const services = [
     {
         routes: [
             "/tokens", "/users"

@@ -4,7 +4,7 @@
 
 const httpProxy = require('http-proxy')
 const url = require('url')
-const request = require('request')
+const request = require('superagent')
 const fs = require('fs-extra')
 const path = require('path')
 const express = require('express')
@@ -23,7 +23,7 @@ proxy.on('error', (err, req, res) => {
     _debug('Proxy request [%s %s, headers:%o] got an error: %o, ', req.method, req.url, req.headers, err)
 
     res.writeHead(502)
-    res.end('Something went wrong')
+    res.end('Server Internal Error')
 })
 
 app.all('*', function (req, res, next) {
@@ -59,7 +59,7 @@ app.all('*', async function (req, res) {
         return res.status(502).send('Gateway Not Found')
     }
 
-    const token = parseToken(req)
+    const token = parse_token(req)
     if (!token && auth === false) {
         _log("Delivery [%s %s %s] to [%s] (auth: %s)", req.hostname, req.method, req.url, target, auth ? 'true' : 'false')
         return proxy.web(req, res, { target })
@@ -71,7 +71,7 @@ app.all('*', async function (req, res) {
     }
 
     try {
-        const payload = await validateToken(token)
+        const payload = await validate_token(token)
         req.headers['x-uid'] = payload.uid
         req.headers['x-token-expire'] = payload.expire
         _log("Delivery [%s %s %s] to [%s] (auth: %s)", req.hostname, req.method, req.url, target, auth ? 'true' : 'false')
@@ -90,24 +90,25 @@ const server = app.listen(port, (err) => {
 })
 
 
-function parseToken(req) {
+function parse_token(req) {
     if (!('authorization' in req.headers)) return false
     let token = req.headers['authorization'].split('Bearer ').slice(1).join().trim()
     if (!token || !token.length) return false
     return token
 }
 
-function validateToken(token) {
-    return new Promise((resolve, reject) => {
-        let _url = servers.AUTH + `/tokens?token=${token}`
-        request(_url, (err, response, body) => {
-            if (err) return reject(err)
-            if (response.statusCode === 200) {
-                let payload = JSON.parse(body)
-                resolve(payload)
-            } else {
-                reject(response)
-            }
-        })
-    })
+async function validate_token(token) {
+    try {
+        const _url = `${servers.AUTH}/tokens`
+        const res = await request
+            .get(_url)
+            .type('json')
+            .query({ token })
+
+        _debug("Request [%s] for Validating token (%s)  , response body: %o", _url, token, res.body)            
+        return res.body
+    } catch (err) {
+        _debug("Validating token (%s) caught an error: %o  , response body: %o", _url, token, err)                    
+        return err
+    }
 }
