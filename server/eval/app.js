@@ -34,10 +34,10 @@ app.post('/eval', async function (req, res) {
         if(!result)
            throw new Error('EMPTY RESULT')
 
-        //await fs.remove(tmp_src_folder_path)                
+        await fs.remove(tmp_src_folder_path)                
         return res.status(200).send(result)
     } catch (err) {
-        //await fs.remove(tmp_src_folder_path)                
+        await fs.remove(tmp_src_folder_path)                
         _log("Evaluating job caught an error:%o", err)
         return res.status(404).send('Internal Error')
     }
