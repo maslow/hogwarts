@@ -18,7 +18,6 @@
 
 ### 服务默认端口分配：
     - gateway: 8888
-    - web:     80/443
 
 ### 部署说明
 > 安装node(version >= 8.x)
@@ -43,5 +42,6 @@
     node server.js init     #创建并启动服务组
     node server.js stop     #or 停止正在运行的服务组
     node server.js start    #or 启动已停止的服务组
+    node server.js restart  #or 重启服务组
     node server.js remove   #or 删除已停止的服务组
 ```
