@@ -19,9 +19,9 @@ async function run(docker_image, src_path) {
     _log('Docker Command: %s', cmd)
 
     try {
-        const [stdout, stderr] = await exec_async(cmd)
-        _debug('Docker-run results, stdout: %O, stderr: %O', stdout, stderr)
-        const ret = resolve_report_result(stdout)
+        const result = await exec_async(cmd)
+        _debug('Docker-run results, stdout: %O, stderr: %O', result.stdout, result.stderr)
+        const ret = resolve_report_result(result.stdout)
         return ret
     } catch (err) {
         _log("Docker-run caught an error: %o", err)
@@ -32,9 +32,9 @@ async function run(docker_image, src_path) {
 function get_container_name(){
     const time = (new Date()).getMilliseconds()
     const random_number = Math.random() * 10000 * 10000 | 0
-    return `job-testing-container.${time}.${random_number}`
+    return `eval-task-container.${time}.${random_number}`
 }
 
 function get_command(container_name, docker_image, src_path){
-    return `docker run --rm --mount type=volume,source=eval.data,target=/tmp/eval_data,readonly -e SRC_PATH=${src_path} ${docker_image} sh run.sh`
+    return `docker run --name ${container_name} --mount type=volume,source=eval.data,target=/tmp/eval_data,readonly -e SRC_PATH=/tmp/eval_data/${src_path} -w /tmp/eval_data/${src_path} ${docker_image} sh run.sh`
 }

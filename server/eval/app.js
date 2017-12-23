@@ -34,10 +34,10 @@ app.post('/eval', async function (req, res) {
         if(!result)
            throw new Error('EMPTY RESULT')
 
-        await fs.remove(tmp_src_folder_path)                
+        //await fs.remove(tmp_src_folder_path)                
         return res.status(200).send(result)
     } catch (err) {
-        await fs.remove(tmp_src_folder_path)                
+        //await fs.remove(tmp_src_folder_path)                
         _log("Evaluating job caught an error:%o", err)
         return res.status(404).send('Internal Error')
     }
@@ -50,7 +50,7 @@ app.listen(port, (err) => {
 })
 
 function get_tmp_src_folder_name(job_id) {
-    const time = (new Date()).getMilliseconds()
+    const time = (new Date()).getTime()
     const number = Math.random() * 10000 * 10000 | 0
     const tmp_path = `tmp-${job_id}.${time}.${number}`
     return tmp_path
@@ -78,4 +78,13 @@ async function extract_source(job_source, tmp_src_path) {
         await fs.ensureDir(path.dirname(file_path))
         await fs.writeFile(file_path, file.data)
     }
+
+    // Extract run.sh
+    const shell_file_path = path.join(tmp_src_path, 'run.sh')
+    const shell_script = `
+        cp -rf  $SRC_PATH/* /app/
+        cd /app
+        mocha -t 10000 /app/tests -R json
+    `
+    await fs.writeFile(shell_file_path, shell_script)
 }
