@@ -18,9 +18,7 @@ async function getTemplates() {
 async function getTemplateById(template_id) {
     const sql = "select * from template where id = ?"
     let [rets] = await mysql.Query(sql, [template_id])
-    if (rets.length === 0)
-        return false
-    return rets[0]
+    return rets.length === 0 ? null : rets[0]
 }
 
 /**

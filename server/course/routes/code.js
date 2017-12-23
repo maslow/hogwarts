@@ -4,7 +4,7 @@ const debug = require('debug')
 
 const CodeModel = require('../model/code')
 const CourseModel = require('../model/course')
-const util = require('../util')
+const Helper = require('../util')
 
 const router = express.Router()
 const _log = debug('COURSE:PROD')
@@ -78,7 +78,7 @@ router.get("/getSectionCodeFileContent", async function (req, res) {
         const code_file_data = code_file.toString('utf-8')
         return res.status(200).send({
             name: req.query.path,
-            hash: util.md5(code_file_data),
+            hash: Helper.md5(code_file_data),
             content: code_file_data
         })
     } catch (err) {
@@ -153,21 +153,12 @@ router.post("/deleteCodeFile", async function (req, res) {
         if (req.uid != section.created_by)
             return res.status(401).send('Permission denied')
 
-        let err = await CodeModel.DeleteFile(section_id, code_path)
+        await CodeModel.DeleteFile(section_id, code_path)
         return res.status(200).send('deleted')
     } catch (err) {
         _log('Deleting section (id: %s) code file (code_path: %s) caught an error: %o', section_id, code_path, err)        
         return res.status(400).send('Internal Error')
     }
-})
-
-router.post("/renameSectionCodeFileName", async function (req, res) {
-    let section = await CourseModel.GetSection(req.query.sid)
-    if (!section)
-        return res.status(404).send('Section not found')
-
-    //TODO 
-    return res.status(200).send('API TBD')
 })
 
 module.exports = router
