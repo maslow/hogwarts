@@ -36,5 +36,5 @@ function get_container_name(){
 }
 
 function get_command(container_name, docker_image, src_path){
-    return `docker run --rm --mount type=volume,source=eval.data,target=/tmp/eval_data -e SRC_PATH=${src_path} ${docker_image} sh run.sh`
+    return `docker run --rm --mount type=volume,source=eval.data,target=/tmp/eval_data,readonly -e SRC_PATH=${src_path} ${docker_image} sh run.sh`
 }
