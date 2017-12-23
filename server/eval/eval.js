@@ -36,6 +36,5 @@ function get_container_name(){
 }
 
 function get_command(container_name, docker_image, src_path){
-    //return `docker run --rm -v ${src_path}:/app ${docker_image} mocha -t 10000 /app/tests -R json`
-    return `docker run --rm -v ${src_path}:/app ${docker_image} sh run.sh`
+    return `docker run --rm --mount type=volume,source=eval.data,target=/tmp/eval_data -e SRC_PATH=${src_path} ${docker_image} sh run.sh`
 }

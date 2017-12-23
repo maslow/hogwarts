@@ -9,8 +9,8 @@ const eval = require('./eval')
 const app = express()
 const _log = debug('EVAL:PROD')
 
-const DATA_TMP_SRC_PATH = path.resolve('./data')
-fs.ensureDirSync(DATA_TMP_SRC_PATH)
+const DATA_PATH = path.resolve(process.env['DATA_PATH'])
+fs.ensureDirSync(DATA_PATH)
 
 app.use(body_parser.json())
 app.use(function (req, res, next) {
@@ -24,19 +24,20 @@ app.post('/eval', async function (req, res) {
     const job_source = req.body.job_source
     const job_image = req.body.job_image
 
-    const tmp_src_path = get_tmp_src_path(job_id)
+    const tmp_src_folder = get_tmp_src_folder_name(job_id)
+    const tmp_src_folder_path = path.join(DATA_PATH, tmp_src_folder)
 
     try {
-        await extract_source(job_source, tmp_src_path)  // TODO: imp extract_codes()
+        await extract_source(job_source, tmp_src_folder_path)
 
-        const result = await eval.run(job_image, tmp_src_path)
+        const result = await eval.run(job_image, tmp_src_folder)
         if(!result)
            throw new Error('EMPTY RESULT')
 
-        await fs.remove(tmp_src_path)                
+        await fs.remove(tmp_src_folder_path)                
         return res.status(200).send(result)
     } catch (err) {
-        await fs.remove(tmp_src_path)                
+        await fs.remove(tmp_src_folder_path)                
         _log("Evaluating job caught an error:%o", err)
         return res.status(404).send('Internal Error')
     }
@@ -48,10 +49,10 @@ app.listen(port, (err) => {
     _log(`listening on port %s`, port)
 })
 
-function get_tmp_src_path(job_id) {
+function get_tmp_src_folder_name(job_id) {
     const time = (new Date()).getMilliseconds()
     const number = Math.random() * 10000 * 10000 | 0
-    const tmp_path = path.join(DATA_TMP_SRC_PATH, `tmp-${job_id}.${time}.${number}`)
+    const tmp_path = `tmp-${job_id}.${time}.${number}`
     return tmp_path
 }
 

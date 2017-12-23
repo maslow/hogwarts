@@ -37,9 +37,19 @@
     systemctl start docker
 ```
 
+> 构建必要的Docker Images
+```shell
+    docker build -t hogwarts/eval:1 ./eval
+```
+
+> 创建一个Docker Network
+```shell
+    docker network create hogwarts
+```
+
 > 启动服务端服务组
 ```shell
-    node server.js init     #创建并启动服务组
+    node server.js init     # 创建并启动服务组, 首次运行一次
     node server.js stop     #or 停止正在运行的服务组
     node server.js start    #or 启动已停止的服务组
     node server.js restart  #or 重启服务组
