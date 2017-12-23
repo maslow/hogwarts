@@ -74,10 +74,10 @@ let createSql3 = `
 CREATE TABLE template (
     id int NOT NULL AUTO_INCREMENT,
     name varchar(64) NOT NULL,
-    type int NOT NULL,
+    type int DEFAULT 0,
     description varchar(255),
-    created_by int NOT NULL,
-    created_at int NOT NULL,
+    created_by int DEFAULT 0,
+    created_at int DEFAULT 0,
     PRIMARY KEY (id)
 )
 `

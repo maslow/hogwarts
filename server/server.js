@@ -23,7 +23,7 @@ if (cmd === 'init') {
     cp.execSync(`docker run -d --network hogwarts --name mysql.hogwarts --mount type=volume,source=mysql.data,target=/var/lib/mysql -e MYSQL_ROOT_PASSWORD=kissme mysql:5.7`)
 
     cp.execSync(`docker run -d --network hogwarts -v ${auth_path}:/app --name ${server_auth} -e DEBUG=AUTH:* -w /app -e SERVER_MYSQL=mysql.hogwarts node node app.js`)
-    cp.execSync(`docker run -d --network hogwarts -v ${eval_path}:/app --mount type=volume,source=eval.data,target=/data -e DATA_PATH=/data -v /var/run/docker.sock:/var/run/docker.sock --name ${server_eval} -e DEBUG=EVAL:* -w /app hogwarts/eval:1 node app.js`)
+    cp.execSync(`docker run -d --network hogwarts -v ${eval_path}:/app --mount type=volume,source=eval.data,target=/data -e DATA_PATH=/data -v /var/run/docker.sock:/var/run/docker.sock --name ${server_eval} -e DEBUG=EVAL:* -w /app hogwarts.eval node app.js`)
     cp.execSync(`docker run -d --network hogwarts -v ${course_path}:/app --name ${server_course} -w /app -e DEBUG=COURSE:* -e SERVER_MYSQL=mysql.hogwarts node node app.js`)
     cp.execSync(`docker run -d --network hogwarts -v ${job_path}:/app --name ${server_job} -w /app -e DEBUG=JOB:* -e SERVER_MYSQL=mysql.hogwarts -e SERVER_COURSE=${server_course} -e SERVER_EVAL=${server_eval} node node app.js`)
     cp.execSync(`docker run -d --network hogwarts -v ${gateway_path}:/app --name ${server_gateway}  -p 8888:80 -w /app -e DEBUG=GATEWAY:* -e SERVER_AUTH=${server_auth} -e SERVER_COURSE=${server_course} -e SERVER_JOB=${server_job} node node app.js`)

@@ -39,7 +39,7 @@
 
 > 构建必要的Docker Images
 ```shell
-    docker build -t hogwarts/eval:1 ./eval
+    docker build -t hogwarts.eval ./eval
 ```
 
 > 创建一个Docker Network
@@ -60,4 +60,12 @@
     node server.js start    #or 启动已停止的服务组
     node server.js restart  #or 重启服务组
     node server.js remove   #or 删除已停止的服务组
+```
+
+> 其它, 逐一构建已存在的Course Template Dockerfiles (course/data/templates)
+
+```shell
+    docker build -t template:1 ./course/data/templates/1
+    # docker build -t template:2 ./course/data/templates/2
+    # and so on
 ```
