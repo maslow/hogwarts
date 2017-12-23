@@ -4,7 +4,7 @@
             <small>{{section.description}}</small>
         </h2>
         <Button class="save-btn" :loading="loading" type="primary" @click="save">提交保存</Button>
-        <codemirror v-model="code" :options="options" width="600px" height="600px">
+        <codemirror v-model="code" :options="options" width="100%" height="600px">
         </codemirror>
     </div>
 </template>
