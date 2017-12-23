@@ -1,8 +1,8 @@
 const fs = require("fs-extra")
 const path = require("path")
 const klaw = require('klaw')
-const tpl = require("./template")
-const course = require("./course")
+const TemplateModel = require("./template")
+const CourseModel = require("./course")
 const _ = require("lodash")
 
 /**
@@ -15,7 +15,7 @@ async function GetFiles(sectionId, templateId, file, dev = false) {
     const codesPath = path.join(root(dev), `${sectionId}/codes`)
     const p = path.join(codesPath, file)
 
-    const tplFiles = await tpl.getFiles(templateId.toString(), file) || []
+    const tplFiles = await TemplateModel.getFiles(templateId, file) || []
     if (!await fs.pathExists(p))
         return tplFiles
 
@@ -41,7 +41,7 @@ async function GetFile(sectionId, templateId, file, dev = false) {
     const p = path.join(root(dev), `${sectionId}/codes`, file)
 
     if (!await fs.pathExists(p))
-        return await tpl.getFile(templateId.toString(), file)
+        return await TemplateModel.getFile(templateId.toString(), file)
 
     return await fs.readFile(p)
 }

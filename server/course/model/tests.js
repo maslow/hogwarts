@@ -1,5 +1,5 @@
 const fs = require('fs-extra')
-const code = require('./code')
+const CodeModel = require('./code')
 const path = require('path')
 
 module.exports = {
@@ -9,7 +9,7 @@ module.exports = {
 
 async function updateCode(section_id, tests) {
     try {
-        let testsPath = path.join(code.root(true), section_id, 'tests')
+        let testsPath = path.join(CodeModel.root(true), section_id, 'tests')
         await fs.ensureDir(testsPath)
 
         let file = path.join(testsPath, 'tests.js')
@@ -22,7 +22,7 @@ async function updateCode(section_id, tests) {
 }
 
 async function getCode(section_id) {
-    let testsPath = path.join(code.root(true), section_id, 'tests')
+    let testsPath = path.join(CodeModel.root(true), section_id, 'tests')
     await fs.ensureDir(testsPath)
 
     let p = path.join(testsPath, 'tests.js')

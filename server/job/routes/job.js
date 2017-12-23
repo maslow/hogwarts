@@ -39,7 +39,7 @@ router.post('/evalUserJobByJobId', async function (req, res) {
             return res.status(404).send("Job not exists")
 
         const section = await SectionModel.GetSectionById(job.sectionId)
-        const docker_image = `job_eval_${section.template_id}`
+        const docker_image = `template:${section.template_id}`
         const source = await CodeModel.GetSource(job_id, job.sectionId)
 
         const results = await JobModel.EvalRequest(job_id, docker_image, source)
