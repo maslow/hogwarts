@@ -1,6 +1,5 @@
 const express = require("express")
 const body_parser = require('body-parser')
-const expressValidator = require('express-validator')
 const debug = require('debug')
 
 const app = express()
@@ -15,8 +14,6 @@ app.use(function (req, res, next) {
     req.uid = req.get('x-uid')
     next()
 })
-
-app.use(expressValidator())
 
 /**
  * Routes

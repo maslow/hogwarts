@@ -8,12 +8,12 @@ module.exports = {
 }
 
 async function write(section_id, doc_data) {
-    const doc_file_path = _get_doc_file_path(section_id)
+    const doc_file_path = await _get_doc_file_path(section_id)
     await fs.writeFile(doc_file_path, doc_data)
 }
 
 async function read(section_id) {
-    const doc_file_path = _get_doc_file_path(section_id)
+    const doc_file_path = await _get_doc_file_path(section_id)
     let data = ""
     if (await fs.pathExists(doc_file_path))
         data = await fs.readFile(doc_file_path)

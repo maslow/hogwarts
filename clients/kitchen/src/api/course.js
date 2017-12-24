@@ -229,7 +229,7 @@ function updateSectionTests(section_id, codes) {
 
 function getSectionTests(section_id) {
   return $.ajax({
-    url: G_API + '/getSectionTests?section_id=' + section_id,
+    url: G_API + `/getSectionTests?section_id=${section_id}&dev=1`,
     method: 'get',
     headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })

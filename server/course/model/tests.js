@@ -9,12 +9,12 @@ module.exports = {
 }
 
 async function write(section_id, tests_file_data) {
-    const tests_file_path = _get_tests_file_path(section_id)
+    const tests_file_path = await _get_tests_file_path(section_id, true)
     await fs.writeFile(tests_file_path, tests_file_data)
 }
 
-async function read(section_id) {
-    const tests_file_path = _get_tests_file_path(section_id)
+async function read(section_id, fromDev = false) {
+    const tests_file_path = await _get_tests_file_path(section_id, fromDev)
     let data = ""
     if (await fs.pathExists(tests_file_path))
         data = await fs.readFile(tests_file_path)
@@ -24,8 +24,8 @@ async function read(section_id) {
 
 /** private functions */
 
-async function _get_tests_file_path(section_id) {
-    const tests_folder_path = path.join(CodeModel.root(true), section_id, 'tests')
+async function _get_tests_file_path(section_id, fromDev = false) {
+    const tests_folder_path = path.join(CodeModel.root(fromDev), section_id.toString(), 'tests')
     await fs.ensureDir(tests_folder_path)
     return path.join(tests_folder_path, 'tests.js')
 }
