@@ -27,6 +27,7 @@ app.use(require("./routes/section"))
 app.use(require('./routes/code'))
 app.use(require('./routes/template'))
 app.use(require('./routes/tests'))
+app.use(require('./routes/document'))
 
 const port = process.argv[2] || 80
 app.listen(port,  () => _log(`listening on ${port}`))

@@ -58,7 +58,10 @@ const services = [
             "/deleteCodeFile",
 
             "/updateSectionTests",
-            "/getSectionTests"
+            "/getSectionTests",
+
+            "/updateSectionDocument",
+            "/getSectionDocument"
         ],
         target: servers.COURSE,
         auth: true

@@ -23,7 +23,7 @@ async function run(docker_image, src_path) {
                 const ret = resolve_report_result(stdout)
                 resolve(ret)
             } else if (error) {
-                _log("Docker-run caught an error: %o", err)
+                _log("Docker-run caught an error: %o", error)
                 reject(error)
             }
         })

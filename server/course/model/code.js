@@ -5,6 +5,18 @@ const TemplateModel = require("./template")
 const CourseModel = require("./course")
 const _ = require("lodash")
 
+module.exports = {
+    GetFiles,
+    GetFile,
+    GetSectionAllCodesContents,
+    root,
+    SecurityChecking,
+    CreateFolder,
+    WriteFile,
+    DeleteFile,
+    Publish
+}
+
 /**
  * TODO 检查文件是否可读（非文件夹）；
  * @param {int} sectionId 
@@ -46,7 +58,7 @@ async function GetFile(sectionId, templateId, file, dev = false) {
     return await fs.readFile(p)
 }
 
-async function GetSectionAllFileContents(sectionId){
+async function GetSectionAllCodesContents(sectionId){
     const  p = path.join(root(false), `${sectionId}/codes`)
     return _get_files_and_content(p)
 }
@@ -97,19 +109,6 @@ function SecurityChecking(sectionId, file, dev = false) {
 
     return true
 }
-
-module.exports = {
-    GetFiles,
-    GetFile,
-    GetSectionAllFileContents,
-    root,
-    SecurityChecking,
-    CreateFolder,
-    WriteFile,
-    DeleteFile,
-    Publish
-}
-
 
 /**
  * 获取指定目录下的所有文件及内容

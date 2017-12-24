@@ -1,6 +1,7 @@
 const express = require("express")
 const debug = require('debug')
 const validator = require('validator')
+
 const CourseModel = require("../model/course")
 
 const router = express.Router()

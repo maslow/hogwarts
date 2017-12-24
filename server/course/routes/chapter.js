@@ -1,6 +1,7 @@
 const express = require("express")
 const debug = require('debug')
 const validator = require('validator')
+
 const CourseModel = require("../model/course")
 
 const router = express.Router()
@@ -17,20 +18,15 @@ router.post('/createChapter', async function (req, res) {
     if (!course_id || !validator.isInt(course_id))
         return res.status(422).send('Invalid course id')
 
-    if (!validator.isLength(chapter_name, {
-            min: 1,
-            max: 64
-        }))
+    if (!validator.isLength(chapter_name, { min: 1, max: 64 }))
         return res.status(422).send('Invalid chapter name')
 
-    if (!validator.isLength(chapter_description, {
-            min: 1,
-            max: 255
-        }))
+    if (!validator.isLength(chapter_description, { min: 1, max: 255 }))
         return res.status(422).send('INvalid chapter description')
 
-    const seq = req.body.seq || 50
-
+    // default is 50 the middle value of [0,100]
+    const seq = req.body.seq || 50 
+    
     try {
         const course = await CourseModel.GetCourseById(course_id)
         if (!course)

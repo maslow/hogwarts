@@ -16,7 +16,8 @@ const courseAddr = `http://${SERVER_COURSE}`
 module.exports = {
     GetFiles,
     GetFile,
-    GetSource,
+    GetCodesWithoutTemplate,
+    GetTests,
     GetSectionById
 }
 
@@ -49,14 +50,24 @@ async function GetFile(sectionId, file) {
  * }
  * @param {*} section_id 
  */
-async function GetSource(section_id) {
+async function GetCodesWithoutTemplate(section_id) {
     const res = await request
-        .get(`${courseAddr}/get_section_sources`)
+        .get(`${courseAddr}/get-section-codes-without-template`)
         .type('json')
         .query({ section_id })
 
     _debug("Get section (id:%s) source from course service , response body: %o", section_id, res.body)
     return res.body
+}
+
+async function GetTests(section_id){
+    const res = await request
+        .get(`${courseAddr}/getSectionTests`)
+        .set({'x-uid': -1 })
+        .query({ section_id })
+
+    _debug("Get section (id:%s) tests from course service , response body: %o", section_id, res.text)
+    return res.text
 }
 
 async function GetSectionById(section_id) {

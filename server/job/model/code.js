@@ -2,7 +2,18 @@ const fs = require('fs-extra')
 const path = require('path')
 const _ = require('lodash')
 const klaw = require('klaw')
-const SectionModal = require('./section')
+const SectionModel = require('./section')
+
+module.exports = {
+    GetJobCodes,
+    GetFiles,
+    GetFile,
+    root,
+    SecurityChecking,
+    CreateFolder,
+    WriteFile,
+    DeleteFile
+}
 
 /**
  * 获取作业代码中的指定目录的文件列表
@@ -14,7 +25,7 @@ async function GetFiles(jobId, file, sectionId) {
     const codePath = path.join(root(), jobId, 'codes')
     const filePath = path.join(codePath, file)
 
-    const sectionFiles = await SectionModal.GetFiles(sectionId, file)
+    const sectionFiles = await SectionModel.GetFiles(sectionId, file)
     if (!await fs.pathExists(filePath))
         return sectionFiles
 
@@ -48,7 +59,7 @@ async function GetFile(jobId, file, sectionId) {
     const filePath = path.join(root(), jobId, 'codes', file)
 
     if (!await fs.pathExists(filePath)) {
-        let f = await SectionModal.GetFile(sectionId, file)
+        let f = await SectionModel.GetFile(sectionId, file)
         return f.content
     }
 
@@ -110,31 +121,18 @@ function SecurityChecking(jobId, file) {
 
 /**
  * 获取job code的所有文件及内容，包括所属section code的所有文件和内容 和 section tests的文件内容
- * @param {*} job_id 
- * @param {*} section_id 
+ * @param {integer} job_id 
  */
-async function GetSource(job_id, section_id) {
+async function GetJobCodes(job_id) {
     const code_path = path.join(root(), job_id, 'codes')
     await fs.ensureDir(code_path)
-
-    const job_codes = await _get_files_and_content(code_path)
-
-    const section_source = await SectionModal.GetSource(section_id)
-    const section_codes = section_source.codes
-    const tests = section_source.tests
-
-    // 合并去重job_codes 与 section_codes
-    let codes = job_codes.concat(section_codes)
-    codes = _.uniqBy(codes, 'name')
-    return {
-        codes,
-        tests
-    }
+    const codes = await _get_files_and_content(code_path)
+    return codes
 }
 
 
 /**
- * 获取指定目录下的所有文件及内容
+ * Private function , 获取指定目录下的所有文件及内容
  * @param {*} code_path 
  */
 async function _get_files_and_content(code_path) {
@@ -163,7 +161,7 @@ async function _get_files_and_content(code_path) {
 }
 
 /**
- * 获取指定目录下的所有文件列表,包括子目录中的文件
+ * Private function, 获取指定目录下的所有文件列表,包括子目录中的文件
  * @param {*} dir_path 
  */
 function _get_file_list(dir_path) {
@@ -174,15 +172,4 @@ function _get_file_list(dir_path) {
             .on('end', () => resolve(files))
             .on('error', reject)
     })
-}
-
-module.exports = {
-    GetSource,
-    GetFiles,
-    GetFile,
-    root,
-    SecurityChecking,
-    CreateFolder,
-    WriteFile,
-    DeleteFile
 }

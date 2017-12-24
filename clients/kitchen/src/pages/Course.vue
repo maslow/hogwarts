@@ -56,7 +56,7 @@
             <div class="layout-section">
                 <Card class="layout-section-item" v-for="s in ch.sections" :key="s.id">
                     {{s.name}}
-                    <Tooltip placement="right" content="已发布" v-show="s.status === 1">
+                    <Tooltip placement="top" content="已发布" v-show="s.status === 1">
                         <Icon type="checkmark-circled" color="green" v-if="s.status === 1"></Icon>
                     </Tooltip>
                     <RenameSection :section="s" @ok="getCourse">

@@ -161,4 +161,21 @@ router.post("/deleteCodeFile", async function (req, res) {
     }
 })
 
+/**
+ * This API is only requested internally by internal service
+ */
+router.get('/get-section-codes-without-template', async function(req, res){
+    const section_id = req.query.section_id
+    try{
+        const section = await CourseModel.GetSection(section_id)
+        if(!section)
+            return res.status(422).send('Invalid section id')
+            
+        const result = await CodeModel.GetSectionAllCodesContents(section_id)
+        return res.status(200).send(result)
+    }catch(err){
+        _log("get_section_sources (section id: %s) caught an error: %o", section_id, err)
+        return res.status(400).send('Internal Error')
+    }
+})
 module.exports = router

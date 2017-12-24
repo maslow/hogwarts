@@ -1,34 +1,31 @@
 const fs = require('fs-extra')
-const CodeModel = require('./code')
 const path = require('path')
 
+const CodeModel = require('./code')
+
 module.exports = {
-    updateCode,
-    getCode
+    write,
+    read
 }
 
-async function updateCode(section_id, tests) {
-    try {
-        let testsPath = path.join(CodeModel.root(true), section_id, 'tests')
-        await fs.ensureDir(testsPath)
-
-        let file = path.join(testsPath, 'tests.js')
-        await fs.writeFile(file, tests)
-        return true
-    } catch (err) {
-        console.error(err)
-        return false
-    }
+async function write(section_id, tests_file_data) {
+    const tests_file_path = _get_tests_file_path(section_id)
+    await fs.writeFile(tests_file_path, tests_file_data)
 }
 
-async function getCode(section_id) {
-    let testsPath = path.join(CodeModel.root(true), section_id, 'tests')
-    await fs.ensureDir(testsPath)
-
-    let p = path.join(testsPath, 'tests.js')
+async function read(section_id) {
+    const tests_file_path = _get_tests_file_path(section_id)
     let data = ""
-    if (await fs.pathExists(p))
-        data = await fs.readFile(p)
+    if (await fs.pathExists(tests_file_path))
+        data = await fs.readFile(tests_file_path)
 
     return data.toString()
+}
+
+/** private functions */
+
+async function _get_tests_file_path(section_id) {
+    const tests_folder_path = path.join(CodeModel.root(true), section_id, 'tests')
+    await fs.ensureDir(tests_folder_path)
+    return path.join(tests_folder_path, 'tests.js')
 }

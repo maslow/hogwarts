@@ -62,11 +62,12 @@ app.all('*', async function (req, res) {
     const token = parse_token(req)
     if (!token && auth === false) {
         _log("Delivery [%s %s %s] to [%s] (auth: %s)", req.hostname, req.method, req.url, target, auth ? 'true' : 'false')
+        req.headers['x-uid'] = null
         return proxy.web(req, res, { target })
     }
 
     if (!token) {
-        _log('Delivery [%s %s %s] to [%s] Cancelled: Unauthroized Request - Invalid Token', req.hostname, req.method, req.url, target)
+        _log('Delivery [%s %s %s] to [%s] cancelled: Unauthroized Request - Invalid Token', req.hostname, req.method, req.url, target)
         return res.status(407).send('Unauthroized Request : Invalid Token')
     }
 
