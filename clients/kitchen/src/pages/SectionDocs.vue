@@ -22,7 +22,6 @@ import codemirror from '@/components/codemirror'
 import course from '@/api/course'
 import markdown from 'markdown-it'
 const md = new markdown()
-//require('@/../node_modules/bootstrap/dist/css/bootstrap.css')
 
 export default {
     name: 'section-docs',
@@ -50,7 +49,7 @@ export default {
         async save() {
             this.loading = true
             try {
-                await course.updateSectionDocs(this.section.id, this.code)
+                await course.updateSectionDocument(this.section.id, this.code)
                 this.$Notice.success({
                     title: '保存成功！'
                 })
@@ -68,7 +67,7 @@ export default {
     },
     async created() {
         this.section = await course.getSection(this.$route.params.sid)
-        this.code = await course.getSectionDocs(this.$route.params.sid)
+        this.code = await course.getSectionDocument(this.$route.params.sid)
     }
 }
 </script>

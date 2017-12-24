@@ -31,6 +31,10 @@ router.post('/updateSectionDocument', async function (req, res) {
 
 router.get('/getSectionDocument', async function (req, res) {
     const section_id = req.query.section_id
+    let dev = req.query.dev || false
+    if (dev == 'false' || dev == '0')
+        dev = false
+
     try {
         const section = await CourseModel.GetSection(section_id)
         if (!section)
@@ -39,7 +43,7 @@ router.get('/getSectionDocument', async function (req, res) {
         if (section.created_by != req.uid)
             return res.status(401).send('Permission denied')
 
-        const document = await DocumentModel.read(section_id)
+        const document = await DocumentModel.read(section_id, dev)
         return res.status(200).send(document)
     } catch (err) {
         _log("Updating section (id:%s) document caught an error: %o", section_id, err)

@@ -125,13 +125,13 @@ export default {
         let result = await Job.evalUserJobByJobId(this.job.id);
         console.log(result);
         if (result.ok == true) {
-          this.$Notice.success({ title: "成功通过!" })
+          this.$Notice.success({ title: "成功通过!" });
         } else {
-          let msg = result.tests[0].err.message
+          let msg = result.tests[0].err.message;
           this.$Notice.error({
             title: "傻逼，你看看你输出的是啥!",
             desc: msg.replace("\n", "<br/>")
-          })
+          });
         }
       } catch (err) {
         this.$Notice.error({ title: "请求失败, 内部错误" });

@@ -34,8 +34,8 @@ export default {
 
   getSectionTests,
   updateSectionTests,
-  getSectionDocs,
-  updateSectionDocs
+  getSectionDocument,
+  updateSectionDocument
 }
 
 function getTemplates() {
@@ -235,6 +235,24 @@ function getSectionTests(section_id) {
   })
 }
 
+/****************** Section Document ***************** */
+function updateSectionDocument(section_id, document_data) {
+  return $.ajax({
+    url: G_API + '/updateSectionDocument',
+    data: { section_id, document_data },
+    method: 'post',
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
+  })
+}
+
+function getSectionDocument(section_id) {
+  return $.ajax({
+    url: G_API + `/getSectionDocument?section_id=${section_id}&dev=1`,
+    method: 'get',
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
+  })
+}
+
 /************ Privates  *************/
 function _updateCourse(data) {
   return $.ajax({
@@ -276,18 +294,5 @@ function _updateSection(data) {
     },
     method: 'post',
     headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
-  })
-}
-
-function getSectionDocs(sid) {
-  return new Promise(function (resolve, reject) {
-    let data = `> 编写一个程序，使用**异步**方法，读取一个文件，计算该文件内容的行数，并在终端输出行数。`
-    resolve(data)
-  })
-}
-
-function updateSectionDocs(sid, data) {
-  return new Promise(function (resolve, reject) {
-    setTimeout(resolve, 1000)
   })
 }
