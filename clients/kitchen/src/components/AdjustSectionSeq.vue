@@ -22,13 +22,13 @@ export default {
     data() {
         return {
             show: false,
-            value: this.section.seq,
+            value: this.section.sequence,
             loading: false
         }
     },
     methods: {
         async ok() {
-            if (this.value === this.section.seq) {
+            if (this.value === this.section.sequence) {
                 this.$Notice.info({
                     title: '数据无变更',
                     desc: '章节次序未改变，或新旧次序相同'

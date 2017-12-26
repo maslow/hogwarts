@@ -2,10 +2,10 @@
     <Modal v-model="_show" title="更新课程简介" @on-cancel="cancel">
         <Form :label-width="80">
             <Form-item label="原简介">
-                <Input readonly type="textarea" :value="course.description" :autosize="{minRows: 4,maxRows: 6}"></Input>
+                <Input readonly type="textarea" :value="course.desc" :autosize="{minRows: 4,maxRows: 6}"></Input>
             </Form-item>
             <Form-item label="新简介">
-                <Input v-model="value" type="textarea" :placeholder="course.description" :autosize="{minRows: 4,maxRows: 6}" @on-focus="copyTo"></Input>
+                <Input v-model="value" type="textarea" :placeholder="course.desc" :autosize="{minRows: 4,maxRows: 6}" @on-focus="copyTo"></Input>
             </Form-item>
         </Form>
         <div slot="footer">
@@ -40,7 +40,7 @@ export default {
                     desc: "课程简介不可为空"
                 })
 
-            if (this.value === this.course.description) {
+            if (this.value === this.course.desc) {
                 this.$Notice.info({
                     title: '数据无更变',
                     desc: '你没有更改课程简介内容，或新旧内容相同'
@@ -73,7 +73,7 @@ export default {
         },
         copyTo() {
             if (!this.value)
-                this.value = this.course.description
+                this.value = this.course.desc
         }
     },
     computed: {
