@@ -181,6 +181,7 @@ router.post("/deleteCodeFile", async function (req, res) {
 })
 
 /**
+ * TODO rebuild it
  * This API is only requested internally by internal service
  */
 router.get('/get-section-codes-without-template', async function(req, res){

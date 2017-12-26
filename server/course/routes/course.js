@@ -5,13 +5,11 @@ const validator = require('validator')
 const CourseMetaModel = require('../model/CourseMeta')
 const CourseChapterModel = require('../model/CourseChapter')
 const CourseSectionModel = require('../model/CourseSection')
-
-//const CourseModel = require("../model/course")
 const router = express.Router()
 const _log = debug('COURSE:PROD')
 
 /**
- * 获取所有已发布的课程列表
+ * Get published courses
  */
 router.get('/getPublishedCourses', async function (req, res) {
     try {
@@ -26,7 +24,7 @@ router.get('/getPublishedCourses', async function (req, res) {
 })
 
 /**
- * 获取一个用户创建的课程
+ * Get user courses
  */
 router.get('/getUserCourses', async function (req, res) {
     const user_id = req.query.uid
@@ -55,7 +53,7 @@ router.get('/getUserCourses', async function (req, res) {
 })
 
 /**
- * 获取课程详情
+ * Get course detail
  */
 router.get('/getCourseDetail', async function (req, res) {
     const course_id = req.query.id
@@ -91,18 +89,13 @@ router.get('/getCourseDetail', async function (req, res) {
 })
 
 /**
- * 创建课程
+ * Create course
  */
 router.post('/createCourse', async function (req, res) {
     const course_name = req.body.name
     const course_description = req.body.description
 
     try {
-        // if (await CourseModel.GetCourseByName(course_name))
-        //     return res.status(422).send({ name: "Chapter name exists" })
-
-        // const course = await CourseModel.CreateCourse(course_name, course_description, req.uid)
-
         const course = new CourseMetaModel({name: course_name, desc: course_description, created_by: req.uid})
         const created_course = await course.save()
         res.status(201).send(created_course)
@@ -113,7 +106,7 @@ router.post('/createCourse', async function (req, res) {
 })
 
 /**
- * 更新课程
+ * Update course
  */
 router.post('/updateCourse', async function (req, res) {
     const course_id = req.body.course_id
@@ -155,7 +148,7 @@ router.post('/updateCourse', async function (req, res) {
 })
 
 /**
- * 发布课程
+ * Publish course
  */
 router.post('/publishCourse', async function (req, res) {
     const course_id = req.body.id

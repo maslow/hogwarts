@@ -6,13 +6,12 @@ const CourseMetaModel = require('../model/CourseMeta')
 const CourseChapterModel = require('../model/CourseChapter')
 const CourseSectionModel = require('../model/CourseSection')
 
-//const CourseModel = require("../model/course")
 
 const router = express.Router()
 const _log = debug('COURSE:PROD')
 
 /**
- * Create Chapter
+ * Create chapter
  */
 router.post('/createChapter', async function (req, res) {
     const course_id = req.body.course_id
@@ -20,15 +19,6 @@ router.post('/createChapter', async function (req, res) {
     const chapter_description = req.body.description
         
     try {
-        // const course = await CourseModel.GetCourseById(course_id)
-        // if (!course)
-        //     return res.status(422).send("Course Id is invalid")
-
-        // if (course.created_by != req.uid)
-        //     return res.status(401).send('Permission denied')
-
-        // const chapter = await CourseModel.CreateChapter(course_id, chapter_name, chapter_description, seq)
-
         const course = await CourseMetaModel.findById(course_id)
         if(!course)
             return res.status(404).send('Object not found')
@@ -46,7 +36,7 @@ router.post('/createChapter', async function (req, res) {
 })
 
 /**
- * Update Chapter
+ * Update chapter
  */
 router.post('/updateChapter', async function (req, res) {
     const chapter_id = req.body.chapter_id
@@ -55,24 +45,6 @@ router.post('/updateChapter', async function (req, res) {
     const seq = req.body.seq
 
     try {
-        // const chapter = await CourseModel.GetChapterById(chapter_id)
-        // if (!chapter)
-        //     return res.status(404).send("Chapter not found")
-
-        // const course = await CourseModel.GetCourseById(chapter.course_id)
-        // if (!course)
-        //     return res.status(404).send("Course not found")
-
-        // if (course.created_by != req.uid)
-        //     return res.status(401).send('Permission denied')
-
-        // const chapter_data = {};
-        // !chapter_name || (chapter_data.name = chapter_name);
-        // !chapter_description || (chapter_data.description = chapter_description);
-        // !seq || (chapter_data.seq = seq);
-
-        // const updated_chapter = await CourseModel.UpdateChapter(chapter_id, chapter_data)
-
         const chapter = await CourseChapterModel.findById(chapter_id)
         if(!chapter)
             return res.status(404).send('Object not found')
@@ -97,30 +69,12 @@ router.post('/updateChapter', async function (req, res) {
 })
 
 /**
- * 删除章节
+ * Delete chapter
  */
 router.post('/deleteChapter', async function (req, res) {
     const chapter_id = req.body.id
 
     try {
-        // const chapter = await CourseModel.GetChapterById(chapter_id)
-        // if (!chapter)
-        //     return res.status(404).send("Chapter not found")
-
-        // const course = await CourseModel.GetCourseById(chapter.course_id)
-        // if (!course)
-        //     return res.status(404).send("Course not found")
-
-        // if (course.created_by != req.uid)
-        //     return res.status(401).send('Permission denied')
-
-        // const sections = await CourseModel.GetSections(chapter.course_id)
-        // sections = sections.filter(s => s.chapter_id === chapter.id)
-        // if (sections.length)
-        //     return res.status(422).send('The chapter cannot be deleted util no sections in it.')
-
-        // const ret = await CourseModel.DeleteChapter(chapter_id)
-
         const chapter = await CourseChapterModel.findById(chapter_id)
         if(!chapter)
             return res.status(404).send('Object not found')
