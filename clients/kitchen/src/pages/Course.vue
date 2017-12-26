@@ -5,10 +5,10 @@
             <Tooltip placement="top" content="修改名称">
                 <Button type="text" shape="circle" size="small" icon="compose" @click="renameCourseModal = true"></Button>
             </Tooltip>
-            <Tooltip placement="top" content="发布该课程" v-if="course.status === 0">
+            <Tooltip placement="top" content="发布该课程" v-if="course.status === 'unpublished'">
                 <Button type="text" shape="circle" size="small" icon="information-circled" @click="publishCourse"></Button>
             </Tooltip>
-            <Tooltip placement="top" content="已发布" v-show="course.status == 1">
+            <Tooltip placement="top" content="已发布" v-show="course.status == 'published'">
                 <Button type="text" shape="circle" size="small">
                     <Icon type="checkmark-circled" color="green"></Icon>
                 </Button>
@@ -55,10 +55,13 @@
             </h2>
             <div class="layout-section">
                 <Card class="layout-section-item" v-for="s in ch.sections" :key="s._id">
-                    {{s.name}}
-                    <Tooltip placement="top" content="已发布" v-show="s.status === 1">
-                        <Icon type="checkmark-circled" color="green" v-if="s.status === 1"></Icon>
+                    <Tooltip placement="top" content="已发布" v-show="s.status === 'published'">
+                        <Icon type="checkmark-circled" color="green"></Icon>
                     </Tooltip>
+                    <Tooltip placement="top" content="锁定中" v-show="s.status === 'locked'">
+                        <Icon type="locked" color="#bc0808"></Icon>&nbsp;
+                    </Tooltip>
+                    {{s.name}}
                     <RenameSection :section="s" @ok="getCourse">
                         <Tooltip placement="top" content="修改名称">
                             <Button type="text" shape="circle" size="small">

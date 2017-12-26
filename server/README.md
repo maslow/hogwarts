@@ -1,8 +1,8 @@
 ### 服务端共5个服务：
     - auth:    提供用户认证服务；   (Nodejs)
-    - course:  提供课程服务；     (Nodejs & MySQL)
+    - course:  提供课程服务；     (Nodejs & Mongodb)
     - job:     提供用户作业服务；     (Nodejs & MySQL)
-    - eval:    提供用户作业的评测服务； (Nodejs & docker)
+    - eval:    提供用户作业的评测服务； (Nodejs & Docker)
     - gateway: 提供代理服务，以上所有服务均通过该网关对外提供；  (Nodejs)
 
 ### 请求过程说明：

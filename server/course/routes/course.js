@@ -14,7 +14,7 @@ const _log = debug('COURSE:PROD')
  */
 router.get('/getPublishedCourses', async function (req, res) {
     try {
-        const courses = await CourseMetaModel.find({status: 1})
+        const courses = await CourseMetaModel.find({status: 'published'})
         res.status(200).send(courses)
     } catch (err) {
         _log('Retrieve published courses caught an error: %o', err)
@@ -31,7 +31,7 @@ router.get('/getUserCourses', async function (req, res) {
     try {
         const query = CourseMetaModel.find({ created_by: user_id })
         if (req.uid != user_id)
-            query.where({ status: 1 })
+            query.where({ status: 'published' })
         
         res.status(200).send(await query)
     } catch (err) {
@@ -51,7 +51,7 @@ router.get('/getCourseDetail', async function (req, res) {
         if(!course)
             return res.status(404).send("Course not found")
 
-        if (course.created_by != req.uid && course.status === 0)
+        if (course.created_by != req.uid && course.status === 'unpublished')
             return res.status(403).send("Permission denied")
 
         const chapters = await CourseChapterModel.find({course_id: course._id})
@@ -122,10 +122,10 @@ router.post('/publishCourse', async function (req, res) {
         if(course.created_by != req.uid)
             return res.status(401).send('Permission denied')
 
-        if(course.status !== 0)
-            return res.status(422).send('Course was already published or deleted')
+        if(course.status !== 'unpublished')
+            return res.status(422).send('Course was already published')
 
-        course.status = 1
+        course.status = 'published'
         await course.save()
         return res.status(201).send(course)
     } catch (err) {

@@ -12,9 +12,9 @@
       <br/>
       <Card>
         <div slot="title">
-          <Tooltip placement="top" :content="c.status === 1 ? '已发布' : '未发布'">
-            <Icon type="checkmark-circled" color="green" v-if="c.status === 1"></Icon>
-            <Icon type="information-circled" color="#ff9900" v-if="c.status === 0"></Icon>
+          <Tooltip placement="top" :content="c.status === 'published' ? '已发布' : '未发布'">
+            <Icon type="checkmark-circled" color="green" v-if="c.status === 'published'"></Icon>
+            <Icon type="information-circled" color="#ff9900" v-if="c.status === 'unpublished'"></Icon>
           </Tooltip>
           <router-link :to="'/course/' + c._id">{{c.name}}</router-link>
           <Tooltip placement="top" content="修改名称">

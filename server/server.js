@@ -23,11 +23,12 @@ if (cmd === 'init') {
     cp.execSync(`docker run -d --network hogwarts --name mysql.hogwarts --mount type=volume,source=mysql.data,target=/var/lib/mysql -e MYSQL_ROOT_PASSWORD=kissme mysql:5.7`)
     cp.execSync(`docker run -d --network hogwarts --name mongo.hogwarts --mount type=volume,source=mongo.data,target=/data/db mongo`)
     
-    cp.execSync(`docker run -d --network hogwarts -v ${auth_path}:/app --name ${server_auth} -e DEBUG=AUTH:* -w /app -e SERVER_MYSQL=mysql.hogwarts node node app.js`)
+    cp.execSync(`docker run -d --network hogwarts -v ${auth_path}:/app --name ${server_auth} -e DEBUG=AUTH:* -w /app  node node app.js`)
     cp.execSync(`docker run -d --network hogwarts -v ${eval_path}:/app --mount type=volume,source=eval.data,target=/data -e DATA_PATH=/data -v /var/run/docker.sock:/var/run/docker.sock --name ${server_eval} -e DEBUG=EVAL:* -w /app hogwarts.eval node app.js`)
-    cp.execSync(`docker run -d --network hogwarts -v ${course_path}:/app --name ${server_course} -w /app -e DEBUG=COURSE:* -e SERVER_MYSQL=mysql.hogwarts node node app.js`)
-    cp.execSync(`docker run -d --network hogwarts -v ${job_path}:/app --name ${server_job} -w /app -e DEBUG=JOB:* -e SERVER_MYSQL=mysql.hogwarts -e SERVER_COURSE=${server_course} -e SERVER_EVAL=${server_eval} node node app.js`)
+    cp.execSync(`docker run -d --network hogwarts -v ${course_path}:/app --name ${server_course} -w /app -e DEBUG=COURSE:* node node app.js`)
+    cp.execSync(`docker run -d --network hogwarts -v ${job_path}:/app --name ${server_job} -w /app -e DEBUG=JOB:* -e SERVER_COURSE=${server_course} -e SERVER_EVAL=${server_eval} node node app.js`)
     cp.execSync(`docker run -d --network hogwarts -v ${gateway_path}:/app --name ${server_gateway}  -p 8888:80 -w /app -e DEBUG=GATEWAY:* -e SERVER_AUTH=${server_auth} -e SERVER_COURSE=${server_course} -e SERVER_JOB=${server_job} node node app.js`)
+    
     console.log("OK!")
     console.log("Note: If it is your first time init services, you should run `node server.js migrate` to init databases.")
     console.log("      Otherwise if you have init databases before and have NOT removed relevant volumes, you SHOULD NOT run it again.")
@@ -38,7 +39,6 @@ if (cmd === 'migrate') {
     console.log('DATABASE MIGRATION...')
 
     cp.execSync(`docker exec ${server_auth} node migrate.js`)
-    cp.execSync(`docker exec ${server_course} node migrate.js`)
     cp.execSync(`docker exec ${server_job} node migrate.js`)
 
     cp.execSync(`curl -d "email=test@step8step.com&password=kissme" http://localhost:8888/users`)

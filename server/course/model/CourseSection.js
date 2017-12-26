@@ -26,8 +26,9 @@ const CourseSectionSchema = new mongoose.Schema({
         maxlength: 255
     },
     status: {
-        type: Number,
-        default: 0
+        type: String,
+        enum: ['unpublished', 'published', 'locked'],
+        default: 'unpublished'
     },
     testcase: {
         type: String,

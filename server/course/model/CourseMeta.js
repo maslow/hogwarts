@@ -17,8 +17,9 @@ const CourseMetaSchema = new mongoose.Schema({
         type:[String]
     },
     status: {
-        type:Number,
-        default: 0
+        type: String,
+        enum: ['unpublished', 'published'],
+        default: 'unpublished'
     },
     created_by: Number
 },{

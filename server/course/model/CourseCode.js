@@ -24,7 +24,9 @@ const CourseCodeSchema = new mongoose.Schema({
         maxlength: 1024 * 32
     },
     status: {
-        type: Number,
+        type: String,
+        enum: ['normal', 'deleted'],
+        default: 'normal',
         required: true
     },
 }, {

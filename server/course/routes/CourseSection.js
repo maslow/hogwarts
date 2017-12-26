@@ -17,17 +17,17 @@ router.get('/getSectionDetail', async function (req, res) {
     const section_id = req.query.id
 
     try {
+        // find section
         const section = await CourseSectionModel.findById(section_id)
         if(!section)
             return res.status(422).send("Section not found")
         
+        // find course for permission checking
         const course = await CourseMetaModel.findById(section.course_id)
-        if(!course)
-            return res.status(422).send("Course not found")
-
-        if(req.uid != course.created_by & section.status !== 1)
+        if(req.uid != course.created_by & section.status !== 'published')
             return res.status(422).send("Permisson denied")
 
+        // return
         return res.status(200).send(section)
     } catch (err) {
         _log('Retrieve section (id:%s) detail caught an error: %o', section_id, err)
@@ -46,21 +46,26 @@ router.post('/createSection', async function (req, res) {
     const section_description = req.body.description
 
     try {
+        // find course for validating course_id
         const course = await CourseMetaModel.findById(course_id)
         if(!course)
             return res.status(422).send('Course not found')
 
+        // perform permission checking
         if(course.created_by != req.uid)
             return res.status(401).send('Permission denied')
 
+        // find chapter for validating chapter_id
         const chapter = await CourseChapterModel.findById(chapter_id)
         if(!chapter || chapter.course_id != course_id)
             return res.status(422).send('Invalid chapter id')
 
+        // find template for validating template
         const template = await TemplateMetaModel.findById(template_id)
         if(!template)
             return res.status(422).send('Invalid template id')
 
+        // create a new section and fill it with fileds given
         const section = new CourseSectionModel()
         section.name = section_name
         section.desc = section_description
@@ -68,6 +73,7 @@ router.post('/createSection', async function (req, res) {
         section.course_id = course_id
         section.template_id = template_id
 
+        // save it and return
         await section.save()
         return res.status(200).send(section)
     } catch (err) {
@@ -90,17 +96,27 @@ router.post('/updateSection', async function (req, res) {
     const testcase = req.body.testcase
 
     try {
+        // find section for updating
         const section = await CourseSectionModel.findById(section_id)
         if(!section)
             return res.status(404).send('Section not found')
 
+         // lock the section if published
+         if(section.status === 'published'){
+            section.status = 'locked'
+            await section.save()
+        }
+
+        // find course for validating course_id
         const course = await CourseMetaModel.findById(section.course_id)
         if(!course)
             return res.status(422).send('Course not found')
 
+        // perform permission checking
         if(course.created_by != req.uid)
             return res.status(401).send('Permission denied')
 
+        // update fileds which given valid-value
         if(section_name) section.name = section_name
         if(section_description) section.desc = section_description
         if(section_seq) section.sequence = section_seq
@@ -109,6 +125,7 @@ router.post('/updateSection', async function (req, res) {
         if(document) section.document = document
         if(testcase) section.testcase = testcase
 
+        // save it and return
         await section.save()
         return res.status(200).send(section)
     } catch (err) {
@@ -124,17 +141,19 @@ router.post('/publishSection', async function (req, res) {
     const section_id = req.body.section_id
 
     try {
+        // find section
         const section = await CourseSectionModel.findById(section_id)
         if(!section)
             return res.status(404).send('Section not found')
 
+        // find course for permission checking
         const course = await CourseMetaModel.findById(section.course_id)
         if(course.created_by != req.uid)
             return res.status(401).send('Permission denied')
 
-        // Update section status, 0 means unpublished, 1 means published
-        if(section.status === 0){
-            section.status = 1
+        // publish section if it's not published
+        if(section.status !== 'published'){
+            section.status = 'published'
             await section.save()
         }
 
