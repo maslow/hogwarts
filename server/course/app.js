@@ -24,11 +24,11 @@ app.use(function (req, res, next) {
 /**
  * Routes
  */
-app.use(require("./routes/course"))
-app.use(require("./routes/chapter"))
-app.use(require("./routes/section"))
-app.use(require('./routes/code'))
-app.use(require('./routes/template'))
+app.use(require("./routes/Course"))
+app.use(require("./routes/CourseChapter"))
+app.use(require("./routes/CourseSection"))
+app.use(require('./routes/CourseCode'))
+app.use(require('./routes/Template'))
 
 const port = process.argv[2] || 80
 app.listen(port,  () => _log(`listening on ${port}`))

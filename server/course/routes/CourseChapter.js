@@ -6,7 +6,6 @@ const CourseMetaModel = require('../model/CourseMeta')
 const CourseChapterModel = require('../model/CourseChapter')
 const CourseSectionModel = require('../model/CourseSection')
 
-
 const router = express.Router()
 const _log = debug('COURSE:PROD')
 

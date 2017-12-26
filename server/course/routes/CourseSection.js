@@ -118,7 +118,6 @@ router.post('/updateSection', async function (req, res) {
 })
 
 /**
- * TODO rebuild code.publish()
  * Publish section
  */
 router.post('/publishSection', async function (req, res) {
