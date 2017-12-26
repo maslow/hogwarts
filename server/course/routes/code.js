@@ -1,162 +1,181 @@
 const express = require('express')
 const path = require('path')
 const debug = require('debug')
+const _ = require('lodash')
 
-const CodeModel = require('../model/code')
-const CourseModel = require('../model/course')
+const CourseCodeModel = require('../model/CourseCode')
+const CourseSectionModel = require('../model/CourseSection')
+const CourseMetaModel = require('../model/CourseMeta')
+const TemplateCodeModel = require('../model/TemplateCode')
+
 const Helper = require('../util')
-
 const router = express.Router()
 const _log = debug('COURSE:PROD')
 
 /**
- * url: /getSectionCodeFiles
- * query:
- *  - sid required
- *  - path optional default /
- *  - dev optional default false
+ * Get section code list in specified path
  */
 router.get("/getSectionCodeFiles", async function (req, res) {
-    const code_path = req.query.path || "/"
-    let dev = req.query.dev || false
-    if (dev == 'false' || dev == '0')
-        dev = false
-
+    const parent = req.query.path || "/"
     const section_id = req.query.sid
 
     try {
-        if (!CodeModel.SecurityChecking(section_id, code_path, dev))
-            return res.status(422).send('File Path invalid')
-
-        const section = await CourseModel.GetSection(section_id)
+        const section = await CourseSectionModel.findById(section_id)
         if (!section)
             return res.status(404).send('Section not found')
+        
+        let codes = await CourseCodeModel.find({section_id, parent, status: 0})
+        const codes_from_templates = await TemplateCodeModel.find({template_id: section.template_id, parent})
 
-        // Only author can access developing-version codes
-        if (dev && req.uid != section.created_by)
-            return res.status(401).send('Permission denied')
-
-        const code_files = await CodeModel.GetFiles(section_id, section.template_id, code_path, dev)
-        return res.status(200).send(code_files)
+        codes = codes.concat(codes_from_templates)
+        codes = _.uniqBy(codes, 'name')
+        codes = codes.filter(code => code.status === 0)
+        return res.status(200).send(codes)
     } catch (err) {
-        _log('Retrieve section (id: %s) code files (code_path: %s) caught an error: %o', section_id, code_path, err)
+        _log('Retrieve section (id: %s) code list (path: %s) caught an error: %o', section_id, req.query.path, err)
         return res.status(400).send('Internal Error')
     }
 })
 
 /**
- * url: /getSectionCodeFileContent
- * query:
- *  - sid required
- *  - path optional default /
- *  - dev optional default false
+ * Get section code file by specified filename
  */
 router.get("/getSectionCodeFileContent", async function (req, res) {
-    const code_path = req.query.path
-    let dev = req.query.dev || false
-    if (dev == 'false' || dev == '0')
-        dev = false
+    const section_id = req.query.sid
 
-    const section_id = req.query.sid || 0
+    const parent = path.dirname(req.query.path)
+    const filename = path.basename(req.query.path)
 
     try {
-        if (!CodeModel.SecurityChecking(section_id, code_path, dev))
-            return res.status(422).send('File Path invalid')
-
-        const section = await CourseModel.GetSection(section_id)
+        const section = await CourseSectionModel.findById(section_id)
         if (!section)
             return res.status(404).send('Section not found')
 
-        // Only the author have access to developing-version codes
-        if (dev && req.uid != section.created_by)
-            return res.status(401).send('Permission denied')
+        let code = await CourseCodeModel.findOne({section_id, type: 'file', name: filename, parent, status: 0})            
+        if(!code)
+            code = await TemplateCodeModel.findOne({template_id: section.template_id, type:'file', name: filename, parent})
 
-        const code_file = await CodeModel.GetFile(section.id, section.template_id, code_path, dev)
-        if (code_file === null)
+        if (!code)
             return res.status(404).send('Section code file not found')
-
-        const code_file_data = code_file.toString('utf-8')
+        
         return res.status(200).send({
             name: req.query.path,
-            hash: Helper.md5(code_file_data),
-            content: code_file_data
+            hash: Helper.md5(code.data),
+            content: code.data
         })
     } catch (err) {
-        _log('Retrieve section (id: %s) code file content (code_path: %s) caught an error: %o', section_id, code_path, err)
+        _log('Retrieve section (id: %s) code file content (path: %s) caught an error: %o', section_id, req.query.path, err)
         return res.status(400).send('Internal Error')
     }
 })
 
+/**
+ * Create section code folder
+ */
 router.post("/createSectionCodeFolder", async function (req, res) {
-    const folder_path = req.body.path
-    const section_id = req.body.sid || 0
+    const section_id = req.body.sid
+    const parent = path.dirname(req.body.path)
+    const foldername = path.basename(req.body.path)
 
     try {
-        if (!CodeModel.SecurityChecking(section_id, folder_path, true))
-            return res.status(422).send('File Path invalid')
-
-        const section = await CourseModel.GetSection(section_id)
+        const section = await CourseSectionModel.findById(section_id)
         if (!section)
             return res.status(404).send('Section not found')
 
-        if (req.uid != section.created_by)
+        const course = await CourseMetaModel.findById(section.course_id)
+        if (req.uid != course.created_by)
             return res.status(401).send('Permission denied')
 
-        await CodeModel.CreateFolder(section_id, folder_path)
+        let code = await CourseCodeModel.findOne({section_id, name: foldername, type: 'dir', parent})
+
+        if(code && code.status === 0){
+            return res.status(422).send('Section code foler already existed')
+        }else if(code){
+            // This folder had been deleted so recover it now
+            code.status = 0
+        }else{
+            code = new CourseCodeModel()
+            code.section_id = section_id
+            code.name = foldername
+            code.type = 'dir'
+            code.parent = parent
+            code.status = 0
+        }
+
+        await code.save()
         return res.status(200).send('ok')
     } catch (err) {
-        _log('Creating section (id: %s) code folder (folder_path: %s) caught an error: %o', section_id, folder_path, err)
+        _log('Creating section (id: %s) code folder (path: %s) caught an error: %o', section_id, req.body.path, err)
         return res.status(400).send('Internal Error')
     }
 })
 
+/**
+ * Update section code file
+ */
 router.post("/updateSectionCodeFileContent", async function (req, res) {
-    const code_path = req.body.path || null
-    const section_id = req.body.sid || 0
-    const content = req.body.content || ''
-
-    if (!code_path || !code_path.length)
-        return res.status(422).send('File Path invalid')
+    const section_id = req.body.sid 
+    const parent = path.dirname(req.body.path)
+    const filename = path.basename(req.body.path)
+    const filedata = req.body.content || ''
 
     try {
-
-        if (!CodeModel.SecurityChecking(section_id, code_path, true))
-            return res.status(422).send('File Path invalid # from security checking')
-
-        const section = await CourseModel.GetSection(section_id)
+        const section = await CourseSectionModel.findById(section_id)
         if (!section)
             return res.status(404).send('Section not found')
 
-        if (req.uid != section.created_by)
+        const course = await CourseMetaModel.findById(section.course_id)
+        if (req.uid != course.created_by)
             return res.status(401).send('Permission denied')
 
-        await CodeModel.WriteFile(section_id, code_path, content)
+        let code = await CourseCodeModel.findOne({section_id, name:filename, type: 'file', parent})
+        if(!code)
+            code = new CourseCodeModel({section_id, name: filename, type: 'file', parent, status: 0})
+        
+        if(code.status === -1)
+            code.status = 0
+
+        code.data = filedata
+        await code.save()
         return res.status(200).send('ok')
     } catch (err) {
-        _log('Updating section (id: %s) code file content (code_path: %s) caught an error: %o', section_id, code_path, err)
+        _log('Updating section (id: %s) code file content (path: %s) caught an error: %o', section_id, req.body.path, err)
         return res.status(400).send('Internal Error')
     }
 })
 
+/**
+ * Delete code file
+ * TODO: Recursively delete the directory
+ */
 router.post("/deleteCodeFile", async function (req, res) {
-    const code_path = req.body.path
-    const section_id = req.body.sid || 0
+    const section_id = req.body.sid
+    const parent = path.dirname(req.body.path)
+    const filename = path.basename(req.body.path)
 
     try {
-        if (!CodeModel.SecurityChecking(section_id, code_path, true))
-            return res.status(422).send('File Path invalid')
-
-        const section = await CourseModel.GetSection(section_id)
+        const section = await CourseSectionModel.findById(section_id)
         if (!section)
             return res.status(404).send('Section not found')
 
-        if (req.uid != section.created_by)
+        const course = await CourseMetaModel.findById(section.course_id)
+        if (req.uid != course.created_by)
             return res.status(401).send('Permission denied')
 
-        await CodeModel.DeleteFile(section_id, code_path)
+        const code = await CourseCodeModel.findOne({section_id, name:filename, status: 0, parent})
+        const exists_in_template = await TemplateCodeModel.findOne({template_id: section.template_id, name: filename, parent})            
+        if(!code && !exists_in_template)
+            return res.status(404).send('Section code not found')
+
+        if(exists_in_template){
+            code.status = -1  // mark deleted
+            await code.save()
+        }else{
+            await code.remove()
+        }
         return res.status(200).send('deleted')
     } catch (err) {
-        _log('Deleting section (id: %s) code file (code_path: %s) caught an error: %o', section_id, code_path, err)        
+        _log('Deleting section (id: %s) code file (path: %s) caught an error: %o', section_id, req.body.path, err)        
         return res.status(400).send('Internal Error')
     }
 })

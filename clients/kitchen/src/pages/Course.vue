@@ -16,12 +16,12 @@
     
         </h1>
         <div id="course-description">
-            <i>{{course.description}}</i>
+            <i>{{course.desc}}</i>
             <Tooltip placement="top" content="修改名称">
                 <Button type="text" shape="circle" size="small" icon="compose" @click="updateCourseDescriptionModal = true"></Button>
             </Tooltip>
         </div>
-        <div class="layout-chapter" v-for="(ch, index) in chapters" :key="ch.id">
+        <div class="layout-chapter" v-for="ch in chapters" :key="ch._id">
             <h2>
                 {{ch.name}}
                 <RenameChapter :chapter="ch" @ok="getCourse">
@@ -54,7 +54,7 @@
                 </DeleteChapter>
             </h2>
             <div class="layout-section">
-                <Card class="layout-section-item" v-for="s in ch.sections" :key="s.id">
+                <Card class="layout-section-item" v-for="s in ch.sections" :key="s._id">
                     {{s.name}}
                     <Tooltip placement="top" content="已发布" v-show="s.status === 1">
                         <Icon type="checkmark-circled" color="green" v-if="s.status === 1"></Icon>
@@ -81,21 +81,21 @@
                         </Tooltip>
                     </AdjustSectionSeq>
                     <Tooltip placement="top" content="初始代码">
-                        <router-link :to="'/section-codes/' + s.id">
+                        <router-link :to="'/section-codes/' + s._id">
                             <Button type="text" shape="circle" size="small">
                                 <Icon type="code" color="#ff9900"></Icon>
                             </Button>
                         </router-link>
                     </Tooltip>
                     <Tooltip placement="top" content="测试用例">
-                        <router-link :to="'/section-tests/' + s.id">
+                        <router-link :to="'/section-tests/' + s._id">
                             <Button type="text" shape="circle" size="small">
                                 <Icon type="bug" color="#19be6b"></Icon>
                             </Button>
                         </router-link>
                     </Tooltip>
                     <Tooltip placement="top" content="任务文档">
-                        <router-link :to="'/section-docs/' + s.id">
+                        <router-link :to="'/section-docs/' + s._id">
                             <Button type="text" shape="circle" size="small">
                                 <Icon type="flag" color="#ed3f14"></Icon>
                             </Button>
@@ -159,7 +159,7 @@ export default {
       this.course = data.course;
       data.chapters = _.sortBy(data.chapters, ["seq", "created_at"]);
       this.chapters = data.chapters.map(ch => {
-        let ss = data.sections.filter(s => s.chapter_id === ch.id);
+        let ss = data.sections.filter(s => s.chapter_id === ch._id);
         ch["sections"] = _.sortBy(ss, ["seq", "created_at"]);
         return ch;
       });
@@ -171,7 +171,7 @@ export default {
           .name} } </span>？</p>`,
         loading: true,
         onOk: async () => {
-          let ret = await course.publishCourse(this.course.id)
+          let ret = await course.publishCourse(this.course._id)
           await this.getCourse()
           this.$Modal.remove()
         }
@@ -184,7 +184,7 @@ export default {
           .name} } </span>？</p>`,
         loading: true,
         onOk: async () => {
-          await course.publishSection(section.id)
+          await course.publishSection(section._id)
           await this.getCourse()
           this.$Modal.remove()
         }

@@ -21,7 +21,8 @@ const server_gateway = 'gateway.hogwarts'
 
 if (cmd === 'init') {
     cp.execSync(`docker run -d --network hogwarts --name mysql.hogwarts --mount type=volume,source=mysql.data,target=/var/lib/mysql -e MYSQL_ROOT_PASSWORD=kissme mysql:5.7`)
-
+    cp.execSync(`docker run -d --network hogwarts --name mongo.hogwarts --mount type=volume,source=mongo.data,target=/data/db mongo`)
+    
     cp.execSync(`docker run -d --network hogwarts -v ${auth_path}:/app --name ${server_auth} -e DEBUG=AUTH:* -w /app -e SERVER_MYSQL=mysql.hogwarts node node app.js`)
     cp.execSync(`docker run -d --network hogwarts -v ${eval_path}:/app --mount type=volume,source=eval.data,target=/data -e DATA_PATH=/data -v /var/run/docker.sock:/var/run/docker.sock --name ${server_eval} -e DEBUG=EVAL:* -w /app hogwarts.eval node app.js`)
     cp.execSync(`docker run -d --network hogwarts -v ${course_path}:/app --name ${server_course} -w /app -e DEBUG=COURSE:* -e SERVER_MYSQL=mysql.hogwarts node node app.js`)
@@ -45,6 +46,7 @@ if (cmd === 'migrate') {
 }
 
 if (cmd === 'start') {
+    cp.execSync(`docker start mongo.hogwarts`)
     cp.execSync(`docker start mysql.hogwarts`)
     cp.execSync(`docker start ${server_eval}`)
     cp.execSync(`docker start ${server_auth}`)
@@ -60,6 +62,7 @@ if (cmd === 'stop') {
     cp.execSync(`docker stop ${server_course}`)
     cp.execSync(`docker stop ${server_eval}`)
     cp.execSync(`docker stop mysql.hogwarts`)
+    cp.execSync(`docker stop mongo.hogwarts`)
 }
 
 if (cmd === 'restart') {
@@ -77,4 +80,5 @@ if (cmd === 'remove') {
     cp.execSync(`docker rm -f ${server_auth}`)
     cp.execSync(`docker rm -f ${server_eval}`)
     cp.execSync(`docker rm -f mysql.hogwarts`)
+    cp.execSync(`docker rm -f mongo.hogwarts`)
 }

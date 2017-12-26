@@ -28,3 +28,5 @@
 
 ### core modules
 
+
+db.templatemetas.insert({name:'Node.js v8.9', desc:'Node.js 8.9', docker_image:'template:1', Dockerfile:"FROM node:8.9 \n RUN npm install -g mocha \n RUN mkdir /app"})

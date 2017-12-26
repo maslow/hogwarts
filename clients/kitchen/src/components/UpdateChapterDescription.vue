@@ -36,7 +36,7 @@ export default {
         async ok() {
             this.loading = true
             try {
-                let data = await course.updateChapterDescription(this.chapter.id, this.value)
+                let data = await course.updateChapterDescription(this.chapter._id, this.value)
                 this.$emit('ok', data)
                 this.$Notice.success({
                     title: '修改章节简介成功'

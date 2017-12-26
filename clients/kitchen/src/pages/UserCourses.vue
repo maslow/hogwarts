@@ -7,7 +7,7 @@
       新建课程
     </Button>
   
-    <Row v-for="c in courses" :key="c.id">
+    <Row v-for="c in courses" :key="c._id">
       <Col span="12">
       <br/>
       <Card>
@@ -16,14 +16,14 @@
             <Icon type="checkmark-circled" color="green" v-if="c.status === 1"></Icon>
             <Icon type="information-circled" color="#ff9900" v-if="c.status === 0"></Icon>
           </Tooltip>
-          <router-link :to="'/course/' + c.id">{{c.name}}</router-link>
+          <router-link :to="'/course/' + c._id">{{c.name}}</router-link>
           <Tooltip placement="top" content="修改名称">
             <Button type="text" shape="circle" size="small" icon="edit" @click="rename(c)"></Button>
           </Tooltip>
         </div>
         <div>
           <p>
-            {{c.description}}
+            {{c.desc}}
             <Tooltip placement="top" content="编辑简介">
               <Button type="text" shape="circle" size="small" icon="edit" @click="updateDescription(c)"></Button>
             </Tooltip>

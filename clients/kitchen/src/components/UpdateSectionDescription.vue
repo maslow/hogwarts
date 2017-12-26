@@ -2,10 +2,10 @@
     <Poptip v-model="show" placement="right" width="450" @on-popper-hide="close">
         <slot></slot>
         <div slot="content">
-            <Input v-model="value" type="textarea" style="width:400px;" :placeholder="section.description" :autosize="{minRows: 4,maxRows: 6}" @on-focus="copyTo">
+            <Input v-model="value" type="textarea" style="width:400px;" :placeholder="section.desc" :autosize="{minRows: 4,maxRows: 6}" @on-focus="copyTo">
             </Input>
             <div class="layout-button-save">
-                <Button type="ghost" icon="checkmark-round" :disabled="!value || value === section.description" :loading="loading" @click="ok">保存</Button>
+                <Button type="ghost" icon="checkmark-round" :disabled="!value || value === section.desc" :loading="loading" @click="ok">保存</Button>
             </div>
         </div>
     </Poptip>
@@ -31,12 +31,12 @@ export default {
     methods: {
         copyTo() {
             if (!this.value)
-                this.value = this.section.description
+                this.value = this.section.desc
         },
         async ok() {
             this.loading = true
             try {
-                let data = await course.updateSectionDescription(this.section.id, this.value)
+                let data = await course.updateSectionDescription(this.section._id, this.value)
                 this.$emit('ok', data)
                 this.$Notice.success({
                     title: '修改小节简介成功'

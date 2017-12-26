@@ -92,12 +92,12 @@ export default {
         async onSelectFile(file) {
             if (file.type === 'dir') {
                 if (!file.children) {
-                    let files = await course.getSectionCodeFiles(this.section.id, file.path, true)
+                    let files = await course.getSectionCodeFiles(this.section._id, file.path, true)
                     file.children = files.map(f => transferFileFormat(f, file))
                 }
             } else {
                 if (file.content === null) {
-                    let data = await course.getSectionCodeFileContent(this.section.id, file.path, true)
+                    let data = await course.getSectionCodeFileContent(this.section._id, file.path, true)
                     file.content = data.content
                     file.hash = data.hash
                     file.hash_new = data.hash
@@ -114,7 +114,7 @@ export default {
             let files = getChangedFiles(this.files)
             for (let i = 0; i < files.length; i++) {
                 let file = files[i]
-                await course.updateSectionCodeFileContent(this.section.id, file.path, file.content)
+                await course.updateSectionCodeFileContent(this.section._id, file.path, file.content)
                 file.hash = file.hash_new
             }
             this.$Notice.success({
@@ -122,7 +122,7 @@ export default {
             })
         },
         async onFolderCreated(file) {
-            await course.createSectionCodeFolder(this.section.id, file.path)
+            await course.createSectionCodeFolder(this.section._id, file.path)
             this.$Notice.success({
                 title: '创建文件夹成功'
             })
@@ -135,7 +135,7 @@ export default {
                 loading: true,
                 onOk: async () => {
                     //let file = this.currentSelected
-                    await course.deleteCodeFile(this.section.id, file.path)
+                    await course.deleteCodeFile(this.section._id, file.path)
                     this.$Notice.success({
                         title: '文件已删除！'
                     })

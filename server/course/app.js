@@ -1,6 +1,12 @@
 const express = require("express")
 const body_parser = require('body-parser')
 const debug = require('debug')
+const mongoose = require('mongoose')
+
+mongoose.Promise = Promise
+
+const uri = `mongodb://mongo.hogwarts/tech_course`
+mongoose.connect(uri, { useMongoClient:true })
 
 const app = express()
 const _log = debug('COURSE:PROD')
@@ -23,8 +29,6 @@ app.use(require("./routes/chapter"))
 app.use(require("./routes/section"))
 app.use(require('./routes/code'))
 app.use(require('./routes/template'))
-app.use(require('./routes/tests'))
-app.use(require('./routes/document'))
 
 const port = process.argv[2] || 80
 app.listen(port,  () => _log(`listening on ${port}`))

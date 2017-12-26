@@ -6,7 +6,7 @@
             </Form-item>
             <Form-item label="所属章" prop="chapter">
                 <Select v-model="data.chapter" filterable>
-                    <Option v-for="ch in chapters" :value="ch.id" :key="ch.id">{{ ch.name }}</Option>
+                    <Option v-for="ch in chapters" :value="ch._id" :key="ch._id">{{ ch.name }}</Option>
                 </Select>
             </Form-item>
             <Form-item label="名称" prop="name">
@@ -17,7 +17,7 @@
             </Form-item>
             <Form-item label="初始代码模板" prop="template">
                 <Select v-model="data.template" filterable clearable>
-                    <Option v-for="tpl in templates" :value="tpl.id" :key="tpl.id">{{ tpl.name }}</Option>
+                    <Option v-for="tpl in templates" :value="tpl._id" :key="tpl._id">{{ tpl.name }}</Option>
                 </Select>
             </Form-item>
         </Form>
@@ -42,10 +42,10 @@ const rules = {
         { type: 'string', max: 255, message: '简介不大于255字', trigger: 'blur' }
     ],
     chapter: [
-        { type: 'integer', required: true, message: '所属章节必选', trigger: 'change' }
+        { type: 'string', required: true, message: '所属章节必选', trigger: 'change' }
     ],
     template: [
-        { type:'integer', required:true, message: '请选择一个代码模板', trigger:'change'}
+        { type:'string', required:true, message: '请选择一个代码模板', trigger:'change'}
     ]
 }
 
@@ -81,7 +81,7 @@ export default {
                 if (!valid) return;
                 this.loading = true
                 try {
-                    let ch = await course.createSection(this.course.id, this.data.chapter, this.data.template, this.data.name, this.data.description, this.data.image)
+                    let ch = await course.createSection(this.course._id, this.data.chapter, this.data.template, this.data.name, this.data.description, this.data.image)
                     this.$Notice.success({
                         title: '创建小节成功'
                     })

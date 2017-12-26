@@ -47,7 +47,7 @@ export default {
             }
             this.loading = true
             try {
-                await course.renameCourse(this.course.id, this.value)
+                await course.renameCourse(this.course._id, this.value)
                 this.$Notice.success({
                     title: '重命名课程成功'
                 })

@@ -54,7 +54,7 @@ export default {
                 if (!valid) return;
                 this.loading = true
                 try {
-                    let ch = await course.createChapter(this.course.id, this.data.name, this.data.description)
+                    let ch = await course.createChapter(this.course._id, this.data.name, this.data.description)
                     this.$Notice.success({
                         title: '创建章节成功'
                     })

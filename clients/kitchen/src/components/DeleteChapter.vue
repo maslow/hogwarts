@@ -37,7 +37,7 @@ export default {
             }
             this.loading = true
             try {
-                let data = await course.deleteChapter(this.chapter.id)
+                let data = await course.deleteChapter(this.chapter._id)
                 this.$emit('ok', data)
                 this.show = false
                 this.$Notice.success({

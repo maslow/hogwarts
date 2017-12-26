@@ -31,19 +31,19 @@ export default new Router({
     },
     {
       path: '/section-codes/:sid',
-      component: () => import('@/pages/SectionCodes')
+      component: () => import('@/pages/SectionCode')
     },
     {
       path: '/section-tests/:sid',
-      component: () => import('@/pages/SectionTestCodes')
+      component: () => import('@/pages/SectionTestcase')
     },
-    {
-      path: '/section-tests-blockly/:sid',
-      component: () => import('@/pages/SectionTestBlockly')
-    },
+    // {
+    //   path: '/section-tests-blockly/:sid',
+    //   component: () => import('@/pages/SectionTestBlockly')
+    // },
     {
       path: '/section-docs/:sid',
-      component: () => import('@/pages/SectionDocs')
+      component: () => import('@/pages/SectionDocument')
     }
   ]
 })

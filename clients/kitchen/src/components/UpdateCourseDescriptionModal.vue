@@ -49,7 +49,7 @@ export default {
             }
             this.loading = true
             try {
-                await course.updateCourseDescription(this.course.id, this.value)
+                await course.updateCourseDescription(this.course._id, this.value)
                 this.$Notice.success({
                     title: '更新课程简介成功'
                 })

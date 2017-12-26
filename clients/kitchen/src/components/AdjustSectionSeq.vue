@@ -37,7 +37,7 @@ export default {
             }
             this.loading = true
             try {
-                let data = await course.adjustSectionSeq(this.section.id, this.value)
+                let data = await course.adjustSectionSeq(this.section._id, this.value)
                 this.$emit('ok', data)
                 this.show = false
                 this.$Notice.success({

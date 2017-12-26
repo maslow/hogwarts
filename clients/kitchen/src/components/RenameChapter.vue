@@ -47,7 +47,7 @@ export default {
             this.loading = true
 
             try {
-                let data = await course.renameChapter(this.chapter.id, this.value)
+                let data = await course.renameChapter(this.chapter._id, this.value)
                 this.$Notice.success({
                     title: '重命名章节成功'
                 })

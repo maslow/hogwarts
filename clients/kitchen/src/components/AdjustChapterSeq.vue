@@ -37,7 +37,7 @@ export default {
             }
             this.loading = true
             try {
-                let data = await course.adjustChapterSeq(this.chapter.id, this.value)
+                let data = await course.adjustChapterSeq(this.chapter._id, this.value)
                 this.$emit('ok', data)
                 this.show = false
                 this.$Notice.success({
