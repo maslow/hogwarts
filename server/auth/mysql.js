@@ -6,7 +6,7 @@ const mysql = require('mysql')
 const path = require('path')
 
 let config = fs.readJsonSync(path.join(__dirname, 'db.json'))
-let host = process.env['SERVER_MYSQL'] || config.host
+let host = process.env['SERVER_MYSQL'] || config.host || "localhost"
 let user = config.user
 let passwd = config.passwd
 let db = config.db

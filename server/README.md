@@ -16,56 +16,32 @@
             -> eval
                 -> dbm
 
-### 服务默认端口分配：
+### 服务对外端口默认分配：
     - gateway: 8888
 
 ### 部署说明
-> 安装node(version >= 8.x)
-```shell
-    curl --silent --location https://rpm.nodesource.com/setup_8.x | sudo bash -
-    sudo yum -y install nodejs gcc-c++ make
-```
-
-> 安装所有服务的依赖, 见npm.sh
-```shell
-    sh npm.sh
-```
-
-> 安装并启动docker
+> Centos安装并启动docker, 其它系统参考[Docker官网](https://www.docker.com))
 ```shell
     yum install docker -y
     systemctl start docker
 ```
 
-> 构建必要的Docker Images
-```shell
-    docker build -t hogwarts.eval ./eval
-```
-
-> 创建一个Docker Network
-```shell
-    docker network create hogwarts
-```
-
 > 启动服务端服务组
 ```shell
-    node server.js init     # 创建并启动服务组, 首次运行一次
+    docker-compose up
 ```
 
-> 其它服务组操作命令
+> 初始化测试数据
+```sh
+docker exec server_auth_1 node migrate.js
+curl -d "email=test@step8step.com&password=kissme" http://localhost:8888/users
 
-```shell
-    node server.js migrate  # 初始化各个服务的数据库
-    node server.js stop     #or 停止正在运行的服务组
-    node server.js start    #or 启动已停止的服务组
-    node server.js restart  #or 重启服务组
-    node server.js remove   #or 删除已停止的服务组
-```
+docker exec -it server_mongo_1 mongo
 
-> 其它, 逐一构建已存在的Course Template Dockerfiles (course/data/templates)
+    use tech_course
+    db.templatemetas.insert({name:'Node.js v8.9', desc:'Node.js 8.9', docker_image:'template:node-v8.9-mocha', Dockerfile:"FROM node:8.9 \n RUN npm install -g mocha \n RUN mkdir /app"})
 
-```shell
-    docker build -t template:1 ./course/data/templates/1
-    # docker build -t template:2 ./course/data/templates/2
-    # and so on
+    exit
+
+docker build -t template:node-v8.9-mocha ./course/data/templates/1
 ```

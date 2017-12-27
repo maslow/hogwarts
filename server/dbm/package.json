@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "dbm",
   "main": "app.js",
+  "private": true,
   "scripts": {
-    "start": "node app.js"
+    "start": "npm i && node app.js"
   },
   "author": "maslow",
   "license": "ISC",

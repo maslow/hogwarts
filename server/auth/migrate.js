@@ -7,7 +7,7 @@ let fs = require("fs-extra")
 let config = fs.readJsonSync(path.join(__dirname, 'db.json'))
 
 let connection = mysql.createConnection({
-    host: config.host || "localhost",
+    host: process.env['SERVER_MYSQL'] || config.host || "localhost",
     port: config.port || 3306,
     user: config.user,
     password: config.passwd

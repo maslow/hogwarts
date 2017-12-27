@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "description": "Authorization Service",
   "main": "app.js",
+  "private": true,
   "scripts": {
-    "start": "node app.js",
-    "up": "node migrate.js",
-    "down": "node migrate.js clear"
+    "start": "npm i && node app.js"
   },
   "author": "maslow",
   "license": "ISC",

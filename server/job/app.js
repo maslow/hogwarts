@@ -9,7 +9,9 @@ const _debug = debug('JOB:DEV')
 
 // init database connection
 mongoose.Promise = Promise
-const uri = `mongodb://mongo.hogwarts/tech_job`
+
+const SERVER_MONGO = process.env['SERVER_MONGO'] || 'localhost'
+const uri = `mongodb://${SERVER_MONGO}/tech_job`
 mongoose.connect(uri, { useMongoClient:true })
 
 app.use(body_parser.json())

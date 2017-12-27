@@ -2,9 +2,10 @@
   "name": "job",
   "version": "1.0.0",
   "description": "The Job Service of Hogwarts.",
-  "main": "index.js",
+  "main": "app.js",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npm i && node app.js"
   },
   "author": "maslow",
   "license": "ISC",

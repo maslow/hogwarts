@@ -18,9 +18,9 @@ services:
 
   eval:
     build: ./eval
-    image: hogwarts.eval:latest
     environment:
       DEBUG: EVAL:*
+    command: npm start
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./eval:/app
@@ -29,53 +29,50 @@ services:
       - backend
       
   auth:
-    image: node:latest
-    working_dir: /app    
+    build: ./auth
     environment:
       DEBUG: AUTH:*
       SERVER_MYSQL: mysql
+    command: npm start
     volumes:
       - ./auth:/app
-    command: node app.js
     networks:
       - backend
     
   course:
-    image: node:latest
-    working_dir: /app    
+    build: ./course
     environment:
       DEBUG: COURSE:*
       SERVER_MONGO: mongo
+    command: npm start
     volumes:
       - ./course:/app
-    command: node app.js
     networks:
       - backend
   
   job:
-    image: node:latest
-    working_dir: /app    
+    build: ./job    
     environment:
       DEBUG: JOB:*
+      SERVER_MONGO: mongo
       SERVER_COURSE: course
       SERVER_EVAL: eval
+    command: npm start
     volumes:
       - ./job:/app
-    command: node app.js
     networks:
       - backend
     
   gateway:
-    image: node:latest
-    working_dir: /app    
+    build: ./gateway 
     environment:
       DEBUG: GATEWAY:*
       SERVER_AUTH: auth
       SERVER_COURSE: course
       SERVER_JOB: job
+    command: npm start
     volumes:
       - ./gateway:/app
-    command: node app.js
     ports:
       - "8888:80"
     networks:
@@ -83,7 +80,6 @@ services:
   
 networks:
   backend:
-  web:
 
 volumes:
   eval-data:
