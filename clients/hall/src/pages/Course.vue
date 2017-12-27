@@ -4,15 +4,15 @@
             {{course.name}}    
         </h1>
         <div id="course-description">
-            <i>{{course.description}}</i>
+            <i>{{course.desc}}</i>
         </div>
-        <div class="layout-chapter" v-for="(ch, index) in chapters" :key="ch.id">
+        <div class="layout-chapter" v-for="ch in chapters" :key="ch._id">
             <h2>
                 {{ch.name}}
             </h2>
             <div class="layout-section">
-                <Card class="layout-section-item" v-for="s in ch.sections" :key="s.id">
-                    <router-link :to="'/job/' + s.id">{{s.name}}</router-link>
+                <Card class="layout-section-item" v-for="s in ch.sections" :key="s._id">
+                    <router-link :to="'/job/' + s._id">{{s.name}}</router-link>
                 </Card>
             </div>
         </div>
@@ -41,7 +41,7 @@ export default {
             this.course = data.course
             data.chapters = _.sortBy(data.chapters, ['seq', 'created_at'])
             this.chapters = data.chapters.map(ch => {
-                let ss = data.sections.filter(s => s.chapter_id === ch.id)
+                let ss = data.sections.filter(s => s.chapter_id === ch._id)
                 ch['sections'] = _.sortBy(ss, ['seq', 'created_at'])
                 return ch
             })

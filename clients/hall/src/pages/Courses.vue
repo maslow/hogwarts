@@ -3,16 +3,16 @@
     <h1>课程列表</h1>
     <br/>
   
-    <Row v-for="c in courses" :key="c.id">
+    <Row v-for="c in courses" :key="c._id">
       <Col span="12">
       <br/>
       <Card>
         <div slot="title">
-          <router-link :to="'/course/' + c.id">{{c.name}}</router-link>
+          <router-link :to="'/course/' + c._id">{{c.name}}</router-link>
         </div>
         <div>
           <p>
-            {{c.description}}
+            {{c.desc}}
           </p>
         </div>
       </Card>

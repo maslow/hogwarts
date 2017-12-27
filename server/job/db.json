@@ -1,8 +1,0 @@
-{
-  "host": "mysql.hogwarts",
-  "port": 3306,
-  "database": "tech_job",
-  "user": "root",
-  "passwd": "kissme",
-  "connectionLimit": 100
-}

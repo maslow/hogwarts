@@ -2,9 +2,8 @@ const express = require("express")
 const debug = require('debug')
 const _ = require('lodash')
 
-const JobModel = require("../model/job")
-const CodeModel = require("../model/code")
-const SectionModel = require("../model/section")
+const JobMetaModel = require('../model/JobMeta')
+const JobCodeModel = require('../model/JobCode')
 
 const router = express.Router()
 const _log = debug('JOB:PROD')
@@ -14,15 +13,17 @@ const _debug = debug('JOB:DEV')
  * 获取一个用户作业详情
  */
 router.get('/getUserJobBySectionId', async function (req, res) {
-    const section_id = req.query.sid || 0
-    if (!section_id)
-        return res.status(422).send('Section Id can not be empty')
-
+    const section_id = req.query.sid 
     const user_id = req.uid
+    
     try {
-        let job = await JobModel.GetUserJobBySectionId(user_id, section_id)
-        if (!job)
-            job = await JobModel.CreateUserJob(user_id, section_id)
+        let job = await JobMetaModel.findOne({section_id, created_by:user_id})
+        
+        if(!job){
+            job = new JobMetaModel({section_id, created_by:user_id})
+            await job.save()
+        }
+            
         return res.status(200).send(job)
     } catch (err) {
         _log('Retrieve user job by section id %s caught an error: %o', section_id, err)

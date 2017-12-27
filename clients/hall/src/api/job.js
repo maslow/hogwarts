@@ -35,7 +35,7 @@ function evalUserJobByJobId(job_id) {
 /**************** Job Codes ***************/
 function getFiles(jobId, path) {
   return $.ajax({
-    url: G_API + `/getJobFiles?jid=${jobId}&path=${path}`,
+    url: G_API + `/getJobCodeFiles?jid=${jobId}&path=${path}`,
     method: 'get',
     headers: {'Authorization': 'Bearer ' + Identity.getAccessToken()}
   })
