@@ -5,7 +5,8 @@ const mongoose = require('mongoose')
 
 mongoose.Promise = Promise
 
-const uri = `mongodb://mongo.hogwarts/tech_course`
+const MONGO_SERVER = process.env['SERVER_MONGO']
+const uri = `mongodb://${MONGO_SERVER}/tech_course`
 mongoose.connect(uri, { useMongoClient:true })
 
 const app = express()

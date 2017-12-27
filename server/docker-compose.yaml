@@ -1,0 +1,91 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: kissme
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - backend
+
+  mongo:
+    image: mongo:latest
+    volumes:
+      - mongo-data:/data/db
+    networks: 
+      - backend
+
+  eval:
+    build: ./eval
+    image: hogwarts.eval:latest
+    environment:
+      DEBUG: EVAL:*
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./eval:/app
+      - eval-data:/data
+    networks:
+      - backend
+      
+  auth:
+    image: node:latest
+    working_dir: /app    
+    environment:
+      DEBUG: AUTH:*
+      SERVER_MYSQL: mysql
+    volumes:
+      - ./auth:/app
+    command: node app.js
+    networks:
+      - backend
+    
+  course:
+    image: node:latest
+    working_dir: /app    
+    environment:
+      DEBUG: COURSE:*
+      SERVER_MONGO: mongo
+    volumes:
+      - ./course:/app
+    command: node app.js
+    networks:
+      - backend
+  
+  job:
+    image: node:latest
+    working_dir: /app    
+    environment:
+      DEBUG: JOB:*
+      SERVER_COURSE: course
+      SERVER_EVAL: eval
+    volumes:
+      - ./job:/app
+    command: node app.js
+    networks:
+      - backend
+    
+  gateway:
+    image: node:latest
+    working_dir: /app    
+    environment:
+      DEBUG: GATEWAY:*
+      SERVER_AUTH: auth
+      SERVER_COURSE: course
+      SERVER_JOB: job
+    volumes:
+      - ./gateway:/app
+    command: node app.js
+    ports:
+      - "8888:80"
+    networks:
+      - backend
+  
+networks:
+  backend:
+  web:
+
+volumes:
+  eval-data:
+  mongo-data:
+  mysql-data:

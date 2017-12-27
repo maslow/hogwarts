@@ -9,7 +9,7 @@ const eval = require('./eval')
 const app = express()
 const _log = debug('EVAL:PROD')
 
-const DATA_PATH = path.resolve(process.env['DATA_PATH'])
+const DATA_PATH = path.resolve(process.env['DATA_PATH'] || '/data')
 fs.ensureDirSync(DATA_PATH)
 
 app.use(body_parser.json())

@@ -11,5 +11,11 @@ RUN yum install -y docker-ce
 
 RUN curl --silent --location https://rpm.nodesource.com/setup_8.x | bash -
 RUN yum -y install nodejs
-RUN npm install mocha -g
+
+ADD . /app
 WORKDIR /app
+EXPOSE 80
+
+RUN npm i
+ENV DEBUG=EVAL:*
+CMD [ "node", "app.js" ]
