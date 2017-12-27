@@ -77,7 +77,7 @@ export default {
   },
   async mounted() {
     this.job = await Job.getUserJobBySectionId(this.$route.params.sid);
-    let files = await Job.getFiles(this.job.id, "/");
+    let files = await Job.getFiles(this.job._id, "/");
     let parent = {
       type: "dir",
       name: "root",
@@ -93,12 +93,12 @@ export default {
     async onSelectFile(file) {
       if (file.type === "dir") {
         if (!file.children) {
-          let files = await Job.getFiles(this.job.id, file.path);
+          let files = await Job.getFiles(this.job._id, file.path);
           file.children = files.map(f => transferFileFormat(f, file));
         }
       } else {
         if (file.content === null) {
-          let data = await Job.getFileContent(this.job.id, file.path, true);
+          let data = await Job.getFileContent(this.job._id, file.path, true);
           file.content = data.content;
           file.hash = data.hash;
           file.hash_new = data.hash;
@@ -115,14 +115,14 @@ export default {
       let files = getChangedFiles(this.files);
       for (let i = 0; i < files.length; i++) {
         let file = files[i];
-        await Job.updateFileContent(this.job.id, file.path, file.content);
+        await Job.updateFileContent(this.job._id, file.path, file.content);
         file.hash = file.hash_new;
       }
       this.$Notice.success({ title: "文件提交保存成功！" });
     },
     async evalJob() {
       try {
-        let result = await Job.evalUserJobByJobId(this.job.id);
+        let result = await Job.evalUserJobByJobId(this.job._id);
         console.log(result);
         if (result.ok == true) {
           this.$Notice.success({ title: "成功通过!" });
@@ -138,20 +138,21 @@ export default {
       }
     },
     async onFolderCreated(file) {
-      await Job.createFolder(this.job.id, file.path);
+      await Job.createFolder(this.job._id, file.path);
       this.$Notice.success({
         title: "创建文件夹成功"
       });
       this.onSelectFile(file);
     },
     async onDeleteFile(file) {
+      console.log(file)
       this.$Modal.confirm({
         title: "删除确定",
         content: `<p>删除<span style="color:red"> { ${file.path} } </span>？</p>`,
         loading: true,
         onOk: async () => {
           //let file = this.currentSelected
-          await Job.deleteFile(this.job.id, file.path);
+          await Job.deleteFile(this.job._id, file.path);
           this.$Notice.success({
             title: "文件已删除！"
           });

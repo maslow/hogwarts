@@ -39,7 +39,6 @@ if (cmd === 'migrate') {
     console.log('DATABASE MIGRATION...')
 
     cp.execSync(`docker exec ${server_auth} node migrate.js`)
-    cp.execSync(`docker exec ${server_job} node migrate.js`)
 
     cp.execSync(`curl -d "email=test@step8step.com&password=kissme" http://localhost:8888/users`)
     console.log('DONE!')

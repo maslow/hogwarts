@@ -69,7 +69,7 @@ const services = [
     {
         routes: [
             "/getUserJobBySectionId",
-            "/getJobFiles",
+            "/getJobCodeFiles",
             "/getJobFileContent",
             "/updateJobFileContent",
             "/createJobFolder",
