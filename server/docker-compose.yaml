@@ -1,14 +1,5 @@
 version: '3'
 services:
-  mysql:
-    image: mysql:5.7
-    environment:
-      MYSQL_ROOT_PASSWORD: kissme
-    volumes:
-      - mysql-data:/var/lib/mysql
-    networks:
-      - backend
-
   mongo:
     image: mongo:latest
     volumes:
