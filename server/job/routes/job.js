@@ -10,7 +10,7 @@ const _log = debug('JOB:PROD')
 const _debug = debug('JOB:DEV')
 
 /**
- * 获取一个用户作业详情
+ * Get a user job by section id
  */
 router.get('/getUserJobBySectionId', async function (req, res) {
     const section_id = req.query.sid 
@@ -32,37 +32,48 @@ router.get('/getUserJobBySectionId', async function (req, res) {
 })
 
 /**
- * 测试用户作业
+ * TODO reimplement it
+ * Eval a user job by job id
  */
 router.post('/evalUserJobByJobId', async function (req, res) {
-    const job_id = req.body.job_id || 0
-    if (!job_id)
-        return res.status(422).send('Job Id can not be empty')
+    const job_id = req.body.job_id
 
     try {
-        const job = await JobModel.GetJobById(job_id)
+        // find job
+        const job = await JobMetaModel.findById(job_id)
         if (!job)
-            return res.status(404).send("Job not exists")
+            return res.status(404).send("Job not found")
 
-        const section_id = job.sectionId
+        // get section for retrieving template and section testcase
+        const section = await job.getSection()
+        if(!section) 
+            throw new Error(`Section not found: ${job.section_id}`)
 
-        const section = await SectionModel.GetSectionById(section_id)
-        const docker_image = `template:${section.template_id}`
+        // get template for retrieving docker image name
+        const template_id = section.template_id
+        const template = await JobMetaModel.getTemplate(template_id)
+        if(!template)
+            throw new Error(`Template not found: ${template_Id}`)
 
-        const job_codes = await CodeModel.GetJobCodes(job_id)
-        const section_codes = await SectionModel.GetCodesWithoutTemplate(section_id)
+        const docker_image = template.docker_image
 
-        // Merge job codes and section codes
-        let codes = job_codes.concat(section_codes)
-        codes = _.uniqBy(codes, 'name')
+        // get job codes
+        const job_codes = await JobCodeModel.find({job_id, status: 'normal'})
+
+        // get section codes
+        const section_codes = await job.getSectionCodesWithoutTemplate()
     
-        const tests = await SectionModel.GetTests(section_id)
-        const source = {
-            codes,
-            tests
-        }
-        const results = await JobModel.EvalRequest(job_id, docker_image, source)
+        // tests
+        const testcase = section.testcase
 
+        // perform eval request
+        const eval_data = {
+            docker_image,
+            job_codes,
+            section_codes,
+            testcase
+        }
+        const results = await JobMetaModel.eval(job_id, eval_data)
         return res.status(200).send(results)
     } catch (err) {
         _log('Evaluate job by job id %s caught an error: %o', job_id, err)

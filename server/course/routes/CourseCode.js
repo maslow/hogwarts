@@ -244,7 +244,7 @@ router.get('/get-section-codes-without-template', async function(req, res){
             return res.status(422).send('Section not found')
         
         // get section codes without template codes
-        const result = await CourseCodeModel.find({section_id}).select('name type parent data status')
+        const result = await CourseCodeModel.find({section_id, status: 'normal'})
         return res.status(200).send(result)
     }catch(err){
         _log("get_section_sources (section id: %s) caught an error: %o", section_id, err)

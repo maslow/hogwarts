@@ -109,6 +109,7 @@ router.post("/updateJobFileContent", async function (req, res) {
         return res.status(200).send('ok')
     } catch (err) {
         _log('Updata job file contents by job id %s caught an error: %o', job_id, err)
+        return res.status(400).send('Internal Error')
     }
 
 })

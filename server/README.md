@@ -20,8 +20,9 @@
     - gateway: 8888
 
 ### 部署说明
-> Centos安装并启动docker, 其它系统参考[Docker官网](https://www.docker.com))
+> 安装docker, 其它系统[参考](https://www.docker-cn.com/community-edition))
 ```shell
+    # centos 7.x
     yum install docker -y
     systemctl start docker
 ```
