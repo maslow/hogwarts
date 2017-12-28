@@ -1,125 +1,137 @@
 /**
- * Created by wangfugen on 7/25/16.
  * @api GET  /tokens?token      # 获取token payload
  * @api POST /tokens            # 获取token
  * @api POST /users             # 创建用户
- * @api GET  /users/:id         # 获取用户
+ * @api GET  /getUser           # 获取用户
  */
 
 const crypto = require('crypto')
 const express = require('express')
-const bodyParser = require('body-parser')
-const expressValidator = require('express-validator')
+const body_parser = require('body-parser')
+const $ = require('validator')
+const mongoose = require('mongoose')
 const debug = require('debug')
-const mysql = require('./mysql')
 
-const secret = "adf344t9fdslf4i3qjf"
+const UserModel = require('./model/User')
+
+// mongoose connection
+mongoose.Promise = Promise
+const SERVER_MONGO = process.env['SERVER_MONGO'] || 'localhost'
+const uri = `mongodb://${SERVER_MONGO}/tech_auth`
+mongoose.connect(uri, { useMongoClient:true })
+
 const app = express()
 const _log = debug('AUTH:PROD')
 const _debug = debug('AUTH:DEV')
 
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(expressValidator())
+const secret = process.env['AUTH_SECRET'] || "abcdefg1234567!@#$%^&"
 
+app.use(body_parser.json())
+app.use(body_parser.urlencoded({ extended: false }))
 
-app.get('/getUser', (req, res) => {
-    _log('Accept [GET /getuser] request')
-    req.checkQuery('id').notEmpty().isInt()
-    const errors = req.validationErrors()
-    if (errors)
-        return res.status(422).send(errors)
-
-    const conn = mysql()
-    conn
-        .query("select id,email from users where id = ?", [req.query.id])
-        .then(rows => {
-            if (!rows.length)
-                return res.status(404).send('Not exist')
-
-            return res.status(200).send(rows[0])
-        })
-        .catch(err => res.status(500).send('Server Exception'))
-        .then(() => conn.close())
+app.use(function (req, res, next) {
+    _log('Accept [%s %s %s] request from [%s]', req.hostname, req.method, req.url, req.ip)    
+    next()
 })
 
-app.post('/users', (req, res) => {
-    _log('Accept [POST /users] request, email: %s', req.body.email)
-    req.checkBody('email', 'Email is incorrect').notEmpty().isEmail()
-    req.checkBody('password', 'Password is incorrect').notEmpty().isLength({ min: 6, max: 16 })
+/**
+ * Get user by id
+ */
+app.get('/getUser', async (req, res) => {
+    const user_id = req.query.id
+
+    try {
+        const user = await UserModel.findById(user_id).select({password_hash: 0})
+        if(!user)
+            return res.status(404).send('User not found')
     
-    const errors = req.validationErrors()
-    if (errors)
-        return res.status(422).send(errors)
-
-    const conn = mysql()
-    conn
-        .query('SELECT email from users where email = ?', [req.body.email])
-        .then(rows => {
-            if (rows.length)
-                return res.status(422).send({ param: 'email', msg: 'Already existed' })
-            let password_hash = hash(req.body.password)
-            return conn
-                .query('INSERT INTO users(email, password_hash) VALUES(?, ?)', [req.body.email, password_hash])
-                .then(result => res.status(201).send(result))
-        })
-        .catch(err => res.status(500).send({ msg: err }))
-        .then(() => conn.close())
+        return res.status(200).send(user)
+    } catch (err) {
+        _log('Get user (id:%s) detail caught an error: %o', user_id, err)
+        return res.status(400).send('Internal Error')
+    }
 })
 
-app.post('/tokens', (req, res) => {
-    req
-        .checkBody('email')
-        .notEmpty()
-        .isEmail()
-    req
-        .checkBody('password')
-        .notEmpty()
-        .isLength({ min: 6, max: 16 })
-    let errors = req.validationErrors()
-    if (errors)
-        return res.status(422).send(errors)
-    let conn = mysql()
-    conn
-        .query('SELECT id, email, password_hash from users where email = ?', [req.body.email])
-        .then(rows => {
-            if (!rows.length)
-                return res.status(404).send({ param: 'email', msg: 'Not Found' })
-            let user = rows[0];
-            if (user.password_hash !== hash(req.body.password))
-                return res.status(401).send({ msg: "Invalid Params" })
-            let expire = new Date().getTime() + 60 * 60 * 24 * 7 * 1000
-            let result = {
-                uid: user.id,
-                expire: expire,
-                access_token: getToken(user.id, expire)
-            }
-            return res
-                .status(200)
-                .send(result)
-        })
-        .catch(err => {
-            res
-                .status(500)
-                .send({ msg: 'Server Exception' })
-            console.log(err)
-        })
-        .then(() => conn.close())
+/**
+ * Create a user
+ */
+app.post('/users', async (req, res) => {
+    _log('Accept [POST /users] request, email: %s', req.body.email)
+
+    const email = req.body.email
+    const username = req.body.email  // TODO
+    const password = req.body.password
+
+    try{
+        // validations
+        if(!$.isEmail(email) || !$.isLength(email, { min: 6, max: 64 }))
+            return res.status(422).send('Invalid email')
+        
+        if(!$.isLength(username, { min: 2, max: 32}))
+            return res.status(422).send('Invalid username')
+
+        if(!$.isLength(password, { min: 5, max: 16}))
+            return res.status(422).send('Invalid password')
+        
+        let user = await UserModel.find({username})
+        if(!user)
+            return res.status(422).send('Username already existed')
+        
+        user = await UserModel.find({email})
+        if(!user)
+            return res.status(422).send('Email already existed')
+
+        // create new user
+        const new_user = new UserModel({username, email})
+        new_user.password_hash = hash(password)
+        new_user.roles = ['user']
+        
+        // save & return
+        await new_user.save()
+        return res.status(201).send('ok')
+    } catch (err) {
+        _log('Create user detail caught an error: %o', err)
+        return res.status(400).send('Internal Error')
+    }
 })
 
-app.get('/tokens', (req, res) => {
-    req
-        .checkQuery('token')
-        .notEmpty()
-    let errors = req.validationErrors()
-    if (errors)
-        return res.status(422).send(errors)
-    let payload = fromToken(req.query.token)
+/**
+ * Login, get token
+ */
+app.post('/tokens', async (req, res) => {
+    const email = req.body.email
+    const password = req.body.password
+    const password_hash = hash(password)
+
+    try {
+        // find user
+        const user = await UserModel.findOne({email, password_hash})
+        if(!user)
+            return res.status(422).send('Username or password is invalid')
+        
+        // get token
+        const expire = new Date().getTime() + 60 * 60 * 1000
+        const result = {
+            uid: user._id,
+            expire,
+            access_token: getToken(user._id, expire)
+        }
+        return res.status(200).send(result)
+    } catch (err) {
+        _log('Retrieve token caught an error: %o', err)
+        return res.status(400).send('Internal Error')
+    }
+})
+
+/**
+ * Validate token
+ */
+app.get('/tokens', async (req, res) => {
+    const payload = fromToken(req.query.token)
     if (!payload)
-        return res.status(401).send({ msg: 'Invalid Token' })
-    return res
-        .status(200)
-        .send(payload)
+        return res.status(401).send('Invalid Token')
+
+    return res.status(200).send(payload)
 })
 
 function getToken(user_id, expire) {

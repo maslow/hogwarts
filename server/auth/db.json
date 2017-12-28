@@ -1,6 +1,0 @@
-{
-  "host": "mysql.hogwarts",
-  "db": "tech_auth",
-  "user": "root",
-  "passwd": "kissme"
-}

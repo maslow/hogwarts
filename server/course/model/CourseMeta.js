@@ -21,7 +21,10 @@ const CourseMetaSchema = new mongoose.Schema({
         enum: ['unpublished', 'published'],
         default: 'unpublished'
     },
-    created_by: Number
+    created_by: {
+        type: String,
+        required: true
+    }
 },{
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 })

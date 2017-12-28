@@ -22,7 +22,10 @@ const JobMetaSchema = new mongoose.Schema({
         type : Number,
         default:0
     },
-    created_by :Number
+    created_by : {
+        type: String,
+        required: true
+    }
 },{
     timestamps: {
         createdAt: 'created_at',

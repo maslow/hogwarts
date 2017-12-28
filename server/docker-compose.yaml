@@ -33,7 +33,7 @@ services:
     build: ./auth
     environment:
       DEBUG: AUTH:*
-      SERVER_MYSQL: mysql
+      SERVER_MONGO: mongo
     command: npm start
     volumes:
       - ./auth:/app

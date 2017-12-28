@@ -34,7 +34,6 @@
 
 > 初始化测试数据
 ```sh
-docker exec server_auth_1 node migrate.js
 curl -d "email=test@step8step.com&password=kissme" http://localhost:8888/users
 
 docker exec -it server_mongo_1 mongo
