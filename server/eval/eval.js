@@ -6,6 +6,7 @@ const _log = debug('EVAL:PROD')
 const _debug = debug('EVAL:DEV')
 
 const resolve_report_result = require('./reporter/mocha')
+const DATA_VOLUME_NAME = process.env['DATA_VOLUME_NAME'] || 'eval-data'
 
 module.exports = {
     run
@@ -37,5 +38,5 @@ function get_container_name() {
 }
 
 function get_command(container_name, docker_image, src_path) {
-    return `docker run --rm --name ${container_name} --mount type=volume,source=server_eval-data,target=/data,readonly -e SRC_PATH=/data/${src_path} -w /data/${src_path} ${docker_image} sh run.sh`
+    return `docker run --rm --name ${container_name} --mount type=volume,source=${DATA_VOLUME_NAME},target=/data,readonly -e SRC_PATH=/data/${src_path} -w /data/${src_path} ${docker_image} sh run.sh`
 }

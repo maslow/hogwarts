@@ -20,6 +20,7 @@ services:
     build: ./eval
     environment:
       DEBUG: EVAL:*
+      DATA_VOLUME_NAME: server_eval-data
     command: npm start
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
