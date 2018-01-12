@@ -1,0 +1,87 @@
+version: '3'
+services:
+  mongo:
+    image: mongo:latest
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+    volumes:
+      - mongo-data:/data/db
+    networks: 
+      - backend
+
+  eval:
+    image: registry.cn-beijing.aliyuncs.com/hogwarts/eval:latest
+    deploy:
+      replicas: 1
+    environment:
+      DEBUG: EVAL:*
+      DATA_VOLUME_NAME: hogwarts_eval-data
+    command: npm start
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - eval-data:/data
+    networks:
+      - backend
+      
+  auth:
+    image: registry.cn-beijing.aliyuncs.com/hogwarts/auth:latest
+    deploy:
+      replicas: 1
+    environment:
+      DEBUG: AUTH:*
+      SERVER_MONGO: mongo
+    command: npm start
+    volumes:
+      - ./auth:/app
+    networks:
+      - backend
+    
+  course:
+    image: registry.cn-beijing.aliyuncs.com/hogwarts/course:latest
+    deploy:
+      replicas: 1
+    environment:
+      DEBUG: COURSE:*
+      SERVER_MONGO: mongo
+    command: npm start
+    networks:
+      - backend
+  
+  job:
+    image: registry.cn-beijing.aliyuncs.com/hogwarts/job:latest
+    deploy:
+      replicas: 1
+    environment:
+      DEBUG: JOB:*
+      SERVER_MONGO: mongo
+      SERVER_COURSE: course
+      SERVER_EVAL: eval
+    command: npm start
+    networks:
+      - backend
+    
+  gateway:
+    image: registry.cn-beijing.aliyuncs.com/hogwarts/gateway:latest
+    deploy:
+      replicas: 1
+    environment:
+      DEBUG: GATEWAY:*
+      SERVER_AUTH: auth
+      SERVER_COURSE: course
+      SERVER_JOB: job
+    command: npm start
+    ports:
+      - "8888:80"
+    networks:
+      - backend
+  
+networks:
+  backend:
+
+volumes:
+  eval-data:
+  mongo-data:
+  mysql-data:
