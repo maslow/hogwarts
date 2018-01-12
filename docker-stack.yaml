@@ -13,7 +13,7 @@ services:
       - backend
 
   eval:
-    image: registry.cn-beijing.aliyuncs.com/hogwarts/eval:latest
+    image: registry.cn-beijing.aliyuncs.com/step8step/hogwarts:eval
     deploy:
       replicas: 1
     environment:
@@ -27,7 +27,7 @@ services:
       - backend
       
   auth:
-    image: registry.cn-beijing.aliyuncs.com/hogwarts/auth:latest
+    image: registry.cn-beijing.aliyuncs.com/step8step/hogwarts:auth
     deploy:
       replicas: 1
     environment:
@@ -40,7 +40,7 @@ services:
       - backend
     
   course:
-    image: registry.cn-beijing.aliyuncs.com/hogwarts/course:latest
+    image: registry.cn-beijing.aliyuncs.com/step8step/hogwarts:course
     deploy:
       replicas: 1
     environment:
@@ -51,7 +51,7 @@ services:
       - backend
   
   job:
-    image: registry.cn-beijing.aliyuncs.com/hogwarts/job:latest
+    image: registry.cn-beijing.aliyuncs.com/step8step/hogwarts:job
     deploy:
       replicas: 1
     environment:
@@ -64,7 +64,7 @@ services:
       - backend
     
   gateway:
-    image: registry.cn-beijing.aliyuncs.com/hogwarts/gateway:latest
+    image: registry.cn-beijing.aliyuncs.com/step8step/hogwarts:gateway
     deploy:
       replicas: 1
     environment:
