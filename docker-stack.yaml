@@ -1,5 +1,23 @@
 version: '3'
 services:
+  kitchen:
+    image: registry.cn-beijing.aliyuncs.com/step8step/hogwarts:kitchen
+    deploy:
+      replicas: 1
+    ports:
+      - "88:8080"
+    networks:
+      - frontend
+  
+  hall:
+    image: registry.cn-beijing.aliyuncs.com/step8step/hogwarts:hall
+    deploy:
+      replicas: 1
+    ports:
+      - "80:8080"
+    networks:
+      - frontend
+
   mongo:
     image: mongo:latest
     deploy:
@@ -19,7 +37,6 @@ services:
     environment:
       DEBUG: EVAL:*
       DATA_VOLUME_NAME: hogwarts_eval-data
-    command: npm start
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - eval-data:/data
@@ -33,9 +50,6 @@ services:
     environment:
       DEBUG: AUTH:*
       SERVER_MONGO: mongo
-    command: npm start
-    volumes:
-      - ./auth:/app
     networks:
       - backend
     
@@ -46,7 +60,6 @@ services:
     environment:
       DEBUG: COURSE:*
       SERVER_MONGO: mongo
-    command: npm start
     networks:
       - backend
   
@@ -59,7 +72,6 @@ services:
       SERVER_MONGO: mongo
       SERVER_COURSE: course
       SERVER_EVAL: eval
-    command: npm start
     networks:
       - backend
     
@@ -72,7 +84,6 @@ services:
       SERVER_AUTH: auth
       SERVER_COURSE: course
       SERVER_JOB: job
-    command: npm start
     ports:
       - "8888:80"
     networks:
@@ -80,8 +91,8 @@ services:
   
 networks:
   backend:
+  frontend:
 
 volumes:
   eval-data:
   mongo-data:
-  mysql-data:
