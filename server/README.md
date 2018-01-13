@@ -34,14 +34,14 @@
 
 > 初始化测试数据
 ```sh
-curl -d "email=test@step8step.com&password=kissme" http://localhost:8888/users
+    curl -d "email=test@step8step.com&password=kissme" http://localhost:8888/users
 
-docker exec -it server_mongo_1 mongo
+    docker exec -it server_mongo_1 mongo
 
     use tech_course
     db.templatemetas.insert({name:'Node.js v8.9', desc:'Node.js 8.9', docker_image:'template:node-v8.9-mocha', Dockerfile:"FROM node:8.9 \n RUN npm install -g mocha \n RUN mkdir /app"})
 
     exit
 
-docker build -t template:node-v8.9-mocha ./course/data/templates/1
+    docker build -t template:node-v8.9-mocha ./course/data/templates/1
 ```
