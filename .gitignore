@@ -11,6 +11,7 @@ nohup.out
 logs/*
 logs
 *.log
+sync-config.json
 
 # phpstorm project files
 .idea
