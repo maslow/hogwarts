@@ -1,6 +1,9 @@
 <template>
     <div>
         <Row>
+            <Col :span="8">
+            <div class="document-container" v-html="document"></div>
+            </Col>
             <Col :span="6">
             <div style="background-color:rgb(11, 76, 97);height:600px;overflow: auto; ">
                 <div class="toolbar">
@@ -29,7 +32,7 @@
                 </ul>
             </div>
             </Col>
-            <Col :span="18">
+            <Col :span="10">
             <codemirror v-model="currentFile.content" :options="options" width="100%" height="600px" @input="onFileContentChange"></codemirror>
             </Col>
         </Row>
@@ -41,9 +44,12 @@
 <script>
 import codemirror from "@/components/codemirror";
 import Job from "@/api/job";
+import Course from "@/api/course";
 import FileTree from "@/components/FileTree";
 import CreateJobFile from "@/components/CreateJobFile";
 import md5 from "blueimp-md5";
+import markdown from "markdown-it";
+const md = new markdown();
 
 export default {
   name: "job",
@@ -54,6 +60,9 @@ export default {
   },
   data() {
     return {
+      job: null,
+      section: null,
+      document: "",
       files: [],
       currentFile: {
         content: null,
@@ -76,7 +85,12 @@ export default {
     };
   },
   async mounted() {
-    this.job = await Job.getUserJobBySectionId(this.$route.params.sid);
+    const sectionId = this.$route.params.sid;
+    this.section = await Course.getSection(sectionId);
+    this.document = md.render(this.section.document);
+
+    this.job = await Job.getUserJobBySectionId(sectionId);
+
     let files = await Job.getFiles(this.job._id, "/");
     let parent = {
       type: "dir",
@@ -145,16 +159,18 @@ export default {
       this.onSelectFile(file);
     },
     async onDeleteFile(file) {
-      console.log(file)
+      console.log(file);
       this.$Modal.confirm({
         title: "删除确定",
-        content: `<p>删除<span style="color:red"> { ${file.path} } </span>？</p>`,
+        content: `<p>删除<span style="color:red"> { ${
+          file.path
+        } } </span>？</p>`,
         loading: true,
         onOk: async () => {
           await Job.deleteFile(this.job._id, file.path);
           this.$Notice.success({
             title: "文件已删除！"
-          })
+          });
           let p = file.parent;
           for (let i = 0; i < p.children.length; i++) {
             let f = p.children[i];
@@ -226,5 +242,43 @@ h2 {
   border-bottom: 1px solid rgba(211, 211, 211, 0.23);
   background-color: rgba(8, 55, 70, 0.79);
   text-align: right;
+}
+
+.document-container {
+  background-color: lightyellow;
+  padding: 15px;
+  margin-bottom: 5px;  
+  border-bottom: 1px solid rgba(211, 211, 211, 0.23);
+  box-shadow: 1px 1px 100px rgba(128, 202, 226, 0.79);
+  overflow: scroll;
+  height: 600px;
+}
+
+.document-container blockquote{
+  padding: 10px;
+}
+
+
+.document-container pre {
+    display: block;
+    padding: 9.5px;
+    margin: 0 0 10px;
+    font-size: 13px;
+    line-height: 1.42857143;
+    color: #333;
+    word-break: break-all;
+    word-wrap: break-word;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.document-container pre code {
+    padding: 0;
+    font-size: inherit;
+    color: inherit;
+    white-space: pre-wrap;
+    background-color: transparent;
+    border-radius: 0;
 }
 </style>
