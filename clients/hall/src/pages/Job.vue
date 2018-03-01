@@ -151,11 +151,10 @@ export default {
         content: `<p>删除<span style="color:red"> { ${file.path} } </span>？</p>`,
         loading: true,
         onOk: async () => {
-          //let file = this.currentSelected
           await Job.deleteFile(this.job._id, file.path);
           this.$Notice.success({
             title: "文件已删除！"
-          });
+          })
           let p = file.parent;
           for (let i = 0; i < p.children.length; i++) {
             let f = p.children[i];

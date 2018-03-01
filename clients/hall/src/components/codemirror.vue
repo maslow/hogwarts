@@ -24,9 +24,6 @@ export default {
     }
   },
   created: function() {
-    let mode = loadMode(this.options.mode);
-    if (mode) this.options.mode = mode.mime;
-
     if (!this.width) this.width = "auto";
 
     if (!this.height) this.height = "auto";
@@ -73,9 +70,10 @@ export default {
         var key;
         for (key in options) {
           if (key === "mode") {
-            let mode = loadMode(options[key]);
-            let mime = typeof mode === 'object' ? mode.mime[0] : mode.mime
-            this.editor.setOption(key, mime)
+            let mode = loadMode(options[key])
+            let mime = mode.mime || ""
+            
+            this.editor.setOption("mode", mode.mode)
             continue
           }
           
@@ -107,6 +105,7 @@ export default {
 };
 
 function loadMode(mode) {
+  console.log(mode)
   var isCustomMode = !!CodeMirror.modes[mode];
   // console.log(`Mode: ${typeof mode}`)
   // console.log(mode.toLowerCase)
