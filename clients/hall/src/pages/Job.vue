@@ -38,30 +38,35 @@
         </Row>
         <CreateJobFile v-model="createFileModal" type="file" :selected="currentSelected" @ok="onSelectFile"></CreateJobFile>
         <CreateJobFile v-model="createFolderModal" type="folder" :selected="currentSelected" @ok="onFolderCreated"></CreateJobFile>
+        <EvalReportModal v-model="evelReportModal" :reports="reports" />
     </div>
 </template>
 
 <script>
-import codemirror from "@/components/codemirror";
-import Job from "@/api/job";
-import Course from "@/api/course";
-import FileTree from "@/components/FileTree";
-import CreateJobFile from "@/components/CreateJobFile";
-import md5 from "blueimp-md5";
-import markdown from "markdown-it";
-const md = new markdown();
+import codemirror from "@/components/codemirror"
+import Job from "@/api/job"
+import Course from "@/api/course"
+import FileTree from "@/components/FileTree"
+import CreateJobFile from "@/components/CreateJobFile"
+import md5 from "blueimp-md5"
+import markdown from "markdown-it"
+import EvalReportModal from "@/components/EvalReportModal"
+
+const md = new markdown()
 
 export default {
   name: "job",
   components: {
     codemirror,
     FileTree,
-    CreateJobFile
+    CreateJobFile,
+    EvalReportModal
   },
   data() {
     return {
       job: null,
       section: null,
+      reports: null,
       document: "",
       files: [],
       currentFile: {
@@ -81,7 +86,8 @@ export default {
         lineSeparator: "\n"
       },
       createFileModal: false,
-      createFolderModal: false
+      createFolderModal: false,
+      evelReportModal: false
     };
   },
   async mounted() {
@@ -123,10 +129,10 @@ export default {
       this.currentSelected = file;
     },
     async onFileContentChange(data) {
-      this.currentFile.hash_new = md5(data);
+      this.currentFile.hash_new = md5(data)
     },
     async saveFiles() {
-      let files = getChangedFiles(this.files);
+      let files = getChangedFiles(this.files)
       for (let i = 0; i < files.length; i++) {
         let file = files[i];
         await Job.updateFileContent(this.job._id, file.path, file.content);
@@ -136,17 +142,18 @@ export default {
     },
     async evalJob() {
       try {
-        let result = await Job.evalUserJobByJobId(this.job._id);
-        console.log(result);
-        if (result.ok == true) {
-          this.$Notice.success({ title: "成功通过!" });
-        } else {
-          let msg = result.tests[0].err.message;
-          this.$Notice.error({
-            title: "傻逼，你看看你输出的是啥!",
-            desc: msg.replace("\n", "<br/>")
-          });
-        }
+        this.reports = await Job.evalUserJobByJobId(this.job._id)
+        this.evelReportModal = true
+        console.log(this.reports);
+        // if (result.ok == true) {
+        //   this.$Notice.success({ title: "成功通过!" })
+        // } else {
+        //   let msg = result.tests[0].err.message
+        //   this.$Notice.error({
+        //     title: "傻逼，你看看你输出的是啥!",
+        //     desc: msg.replace("\n", "<br/>")
+        //   });
+        // }
       } catch (err) {
         this.$Notice.error({ title: "请求失败, 内部错误" });
       }
@@ -186,7 +193,7 @@ export default {
       });
     }
   }
-};
+}
 
 function getChangedFiles(files) {
   let changedFiles = files.filter(f => f.hash !== f.hash_new);
