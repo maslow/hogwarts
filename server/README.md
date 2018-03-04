@@ -32,7 +32,7 @@
     docker-compose up
 ```
 
-> 初始化测试数据
+> 初始化测试数据[可选]
 ```sh
     curl -d "email=test@step8step.com&password=kissme" http://localhost:8888/users
 

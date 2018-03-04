@@ -18,7 +18,7 @@ const TemplateMetaSchema = new mongoose.Schema({
     },
     docker_image: {
         type: String,
-        maxlength: 64
+        maxlength: 128
     },
     Dockerfile: {
         type: String,
