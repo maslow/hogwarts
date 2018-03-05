@@ -1,7 +1,7 @@
 version: '3'
 services:
   kitchen:
-    image: registry.cn-beijing.aliyuncs.com/step8step/hogwarts:kitchen
+    image: registry.cn-hongkong.aliyuncs.com/step8step/hogwarts-kitchen:0.1
     deploy:
       replicas: 1
     ports:
@@ -10,7 +10,7 @@ services:
       - frontend
   
   hall:
-    image: registry.cn-beijing.aliyuncs.com/step8step/hogwarts:hall
+    image: registry.cn-hongkong.aliyuncs.com/step8step/hogwarts-hall:0.1
     deploy:
       replicas: 1
     ports:
@@ -31,7 +31,7 @@ services:
       - backend
 
   eval:
-    image: registry.cn-beijing.aliyuncs.com/step8step/hogwarts:eval
+    image: registry.cn-hongkong.aliyuncs.com/step8step/hogwarts-eval:0.1
     deploy:
       replicas: 1
     environment:
@@ -44,7 +44,7 @@ services:
       - backend
       
   auth:
-    image: registry.cn-beijing.aliyuncs.com/step8step/hogwarts:auth
+    image: registry.cn-hongkong.aliyuncs.com/step8step/hogwarts-auth:0.1
     deploy:
       replicas: 1
     environment:
@@ -54,7 +54,7 @@ services:
       - backend
     
   course:
-    image: registry.cn-beijing.aliyuncs.com/step8step/hogwarts:course
+    image: registry.cn-hongkong.aliyuncs.com/step8step/hogwarts-course:0.1
     deploy:
       replicas: 1
     environment:
@@ -64,7 +64,7 @@ services:
       - backend
   
   job:
-    image: registry.cn-beijing.aliyuncs.com/step8step/hogwarts:job
+    image: registry.cn-hongkong.aliyuncs.com/step8step/hogwarts-job:0.1
     deploy:
       replicas: 1
     environment:
@@ -76,7 +76,7 @@ services:
       - backend
     
   gateway:
-    image: registry.cn-beijing.aliyuncs.com/step8step/hogwarts:gateway
+    image: registry.cn-hongkong.aliyuncs.com/step8step/hogwarts-gateway:0.1
     deploy:
       replicas: 1
     environment:
