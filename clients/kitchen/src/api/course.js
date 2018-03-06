@@ -6,8 +6,8 @@ let G_API = Identity.G_API
 export default {
   getTemplates,
 
-  getUserCourses,
-  getCourse,
+  getOwnCourses,
+  getOwnCourse,
   createCourse,
   publishCourse,
   renameCourse,
@@ -46,17 +46,18 @@ function getTemplates() {
 }
 
 /**************** Courses  ****************/
-function getUserCourses() {
+function getOwnCourses() {
   return $.ajax({
-    url: G_API + '/getUserCourses?uid=' + Identity.getUserId(),
+    url: G_API + '/getOwnCourses',
     method: 'get',
     headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })
 }
 
-function getCourse(courseId) {
+
+function getOwnCourse(courseId) {
   return $.ajax({
-    url: G_API + "/getCourseDetail?id=" + courseId,
+    url: G_API + "/getOwnCourse?id=" + courseId,
     method: 'get',
     headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })

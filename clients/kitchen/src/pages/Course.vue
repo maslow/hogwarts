@@ -158,7 +158,7 @@ export default {
   },
   methods: {
     async getCourse() {
-      let data = await course.getCourse(this.courseId);
+      let data = await course.getOwnCourse(this.courseId);
       this.course = data.course;
       data.chapters = _.sortBy(data.chapters, ["sequence", "created_at"]);
       this.chapters = data.chapters.map(ch => {

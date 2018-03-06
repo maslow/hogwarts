@@ -24,7 +24,7 @@ function getPublishedCourses() {
 
 function getCourse(courseId) {
   return $.ajax({
-    url: G_API + "/getCourseDetail?id=" + courseId,
+    url: G_API + "/getCourse?id=" + courseId,
     method: 'get',
     headers: {
       'Authorization': getBearer()

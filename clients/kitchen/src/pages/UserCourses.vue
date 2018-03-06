@@ -62,8 +62,7 @@ export default {
   },
   methods: {
     async getCourses() {
-      let data = await course.getUserCourses()
-      this.courses = data
+      this.courses = await course.getOwnCourses()
     },
     rename(c) {
       this.course = c

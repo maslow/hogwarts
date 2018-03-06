@@ -12,13 +12,12 @@ const servers = {
 }
 
 const roles = {
-    admin: 'admin',
     author: 'author',
     user: 'user',
     guest: 'guest'
 }
 
-const LOGINED_ROLES = [roles.user, roles.author, roles.admin]
+const LOGINED_ROLES = [roles.user, roles.author]
 const ALL_ROLES = LOGINED_ROLES.concat(roles.guest)
 
 const services = {
@@ -46,7 +45,7 @@ const services = {
         target: servers.COURSE,
         access: ALL_ROLES
     },
-    "/getCourseDetail": {
+    "/getCourse": {
         target: servers.COURSE,
         access: ALL_ROLES
     },
@@ -64,71 +63,79 @@ const services = {
     },
     "/getTemplates": {
         target: servers.COURSE,
-        access: [roles.author, roles.admin]
+        access: ALL_ROLES
+    },
+    "/getOwnCourses": {
+        target: servers.COURSE,
+        access: [roles.author]
+    },
+    "/getOwnCourse": {
+        target: servers.COURSE,
+        access: [roles.author]
     },
     "/createCourse": {
         target: servers.COURSE,
-        access: [roles.author, roles.admin]
+        access: [roles.author]
     },
     "/updateCourse": {
         target: servers.COURSE,
-        access: [roles.author, roles.admin]
+        access: [roles.author]
     },
     "/publishCourse": {
         target: servers.COURSE,
-        access: [roles.author, roles.admin]
+        access: [roles.author]
     },
     "/createChapter": {
         target: servers.COURSE,
-        access: [roles.author, roles.admin]
+        access: [roles.author]
     },
     "/updateChapter": {
         target: servers.COURSE,
-        access: [roles.author, roles.admin]
+        access: [roles.author]
     },
     "/deleteChapter": {
         target: servers.COURSE,
-        access: [roles.author, roles.admin]
+        access: [roles.author]
     },
     "/createSection": {
         target: servers.COURSE,
-        access: [roles.author, roles.admin]
+        access: [roles.author]
     },
     "/updateSection": {
         target: servers.COURSE,
-        access: [roles.author, roles.admin]
+        access: [roles.author]
     },
     "/publishSection": {
         target: servers.COURSE,
-        access: [roles.author, roles.admin]
+        access: [roles.author]
     },
     "/createSectionCodeFolder": {
         target: servers.COURSE,
-        access: [roles.author, roles.admin]
+        access: [roles.author]
     },
     "/updateSectionCodeFileContent": {
         target: servers.COURSE,
-        access: [roles.author, roles.admin]
+        access: [roles.author]
     },
     "/deleteSectionCodeFile": {
         target: servers.COURSE,
-        access: [roles.author, roles.admin]
+        access: [roles.author]
     },
     "/updateSectionTests": {
         target: servers.COURSE,
-        access: [roles.author, roles.admin]
+        access: [roles.author]
     },
     "/getSectionTests": {
         target: servers.COURSE,
-        access: [roles.author, roles.admin]
+        access: [roles.author]
     },
     "/updateSectionDocument": {
         target: servers.COURSE,
-        access: [roles.author, roles.admin]
+        access: [roles.author]
     },
     "/getSectionDocument": {
         target: servers.COURSE,
-        access: [roles.author, roles.admin]
+        access: [roles.author]
     },
     "/getUserJobBySectionId": {
         target: servers.JOB,

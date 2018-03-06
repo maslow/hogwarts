@@ -65,6 +65,7 @@ app.all('*', async function (req, res) {
     // intersection between access and actual_roles
     const intersection = _.intersection(access, actual_roles)
     if(intersection.length === 0){
+        _log("Permission denied [%s %s %s] to [%s], access: %o, user roles: %o", req.hostname, req.method, req.url, target, access, actual_roles)
         return res.status(407).send('Unauthroized Request: Token Validation Failed')
     }
 
