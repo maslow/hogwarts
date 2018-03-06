@@ -37,7 +37,7 @@ app.use(function (req, res, next) {
 /**
  * Get user by id
  */
-app.get('/getUser', async (req, res) => {
+app.get('/getUserById', async (req, res) => {
     const user_id = req.query.id
 
     try {
@@ -55,11 +55,11 @@ app.get('/getUser', async (req, res) => {
 /**
  * Create a user
  */
-app.post('/users', async (req, res) => {
-    _log('Accept [POST /users] request, email: %s', req.body.email)
+app.post('/createUser', async (req, res) => {
+    _log('Accept [POST /createUser] request, email: %s', req.body.email)
 
     const email = req.body.email
-    const username = req.body.email  // TODO
+    const username = req.body.email
     const password = req.body.password
 
     try{
@@ -98,19 +98,19 @@ app.post('/users', async (req, res) => {
 /**
  * Login, get token
  */
-app.post('/tokens', async (req, res) => {
-    const email = req.body.email
-    const password = req.body.password
+app.post('/login', async (req, res) => {
+    const username = req.body.username || req.body.email
+    const password = req.body.password || ''
     const password_hash = hash(password)
 
     try {
         // find user
-        const user = await UserModel.findOne({email, password_hash})
+        const user = await UserModel.findOne({username, password_hash})
         if(!user)
             return res.status(422).send('Username or password is invalid')
         
         // get token
-        const expire = new Date().getTime() + 60 * 60 * 1000
+        const expire = new Date().getTime() + 7 * 24 * 60 * 60 * 1000
         const result = {
             uid: user._id,
             expire,
@@ -126,12 +126,22 @@ app.post('/tokens', async (req, res) => {
 /**
  * Validate token
  */
-app.get('/tokens', async (req, res) => {
-    const payload = fromToken(req.query.token)
+app.get('/validateToken', async (req, res) => {
+    const token = req.query.token || ''
+
+    const payload = fromToken(token)
     if (!payload)
         return res.status(401).send('Invalid Token')
 
-    return res.status(200).send(payload)
+    const user = await UserModel.findById(payload.uid)
+    if(!user)
+        return res.status(404).send('User not found')
+
+    const data = {
+        uid: payload.uid,
+        roles: user.roles
+    }
+    return res.status(200).send(data)
 })
 
 function getToken(user_id, expire) {

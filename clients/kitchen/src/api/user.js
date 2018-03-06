@@ -10,7 +10,7 @@ export default {
 
 function Login(email, password) {
   return $.ajax({
-    url: G_API + '/tokens',
+    url: G_API + '/login',
     method: 'post',
     data: {
       email,
@@ -21,7 +21,7 @@ function Login(email, password) {
 
 function Register(email, password) {
   return $.ajax({
-    url: G_API + '/users',
+    url: G_API + '/createUser',
     method: 'post',
     data: {
       email,

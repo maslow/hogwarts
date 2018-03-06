@@ -188,7 +188,7 @@ router.post("/updateSectionCodeFileContent", async function (req, res) {
  * Delete code file
  * TODO: Recursively delete the directory
  */
-router.post("/deleteCodeFile", async function (req, res) {
+router.post("/deleteSectionCodeFile", async function (req, res) {
     const section_id = req.body.sid
     const parent = path.dirname(req.body.path)
     const filename = path.basename(req.body.path)

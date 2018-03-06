@@ -9,6 +9,7 @@
     "express": "^4.14.1",
     "fs-extra": "^1.0.0",
     "http-proxy": "^1.14.0",
+    "lodash": "^4.17.5",
     "superagent": "^3.8.2"
   },
   "devDependencies": {},
