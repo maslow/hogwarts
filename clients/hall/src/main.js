@@ -14,10 +14,9 @@ async function main() {
   Vue.use(iView)
 
   router.beforeEach((to, from, next) => {
-    // if (identity.isExpired() && to.path !== '/login') {
-    //   router.push('/login')
-    // } else 
-    if (!identity.isExpired() && to.path === '/login') {
+    if (identity.isExpired() && to.path !== '/login' && to.path !== '/register') {
+      router.push('/login')
+    } else if (!identity.isExpired() && to.path === '/login') {
       router.push('/')
     } else {
       iView.LoadingBar.start()
