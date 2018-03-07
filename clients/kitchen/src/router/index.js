@@ -15,11 +15,11 @@ export default new Router({
     },
     {
       path: '/',
-      component: () => import('@/pages/UserCourses')
+      component: () => import('@/pages/MyCourses.vue')
     },
     {
       path: '/courses',
-      component: () => import('@/pages/UserCourses')
+      component: () => import('@/pages/MyCourses.vue')
     },
     {
       path: '/course/:id',

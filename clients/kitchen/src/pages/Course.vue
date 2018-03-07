@@ -1,17 +1,9 @@
 <template>
     <div id="course">
-        <h1>
-            {{course.name}}
+        <div>
+            <span class="course-name">{{course.name}}</span>
             <Tooltip placement="top" content="修改名称">
                 <Button type="text" shape="circle" size="small" icon="compose" @click="renameCourseModal = true"></Button>
-            </Tooltip>
-            <!-- <Tooltip placement="top" content="发布该课程" v-if="course.status === 'unpublished'">
-                <Button type="text" shape="circle" size="small" icon="information-circled" @click="publishCourse"></Button>
-            </Tooltip> -->
-            <Tooltip placement="top" content="已发布" v-show="course.status == 'published'">
-                <Button type="text" shape="circle" size="small">
-                    <Icon type="checkmark-circled" color="green"></Icon>
-                </Button>
             </Tooltip>
             <DeleteCourse :course="course" @ok="afterDeleteCourse">
                 <Tooltip placement="top" content="删除课程">
@@ -24,16 +16,18 @@
                 <span slot="open">发布</span>
                 <span slot="close">下架</span>
             </i-switch>
-        </h1>
+        </div>
         <div id="course-description">
             <i>{{course.desc}}</i>
             <Tooltip placement="top" content="修改名称">
                 <Button type="text" shape="circle" size="small" icon="compose" @click="updateCourseDescriptionModal = true"></Button>
             </Tooltip>
         </div>
+
+        <!-- chapters -->
         <div class="layout-chapter" v-for="ch in chapters" :key="ch._id">
             <h2>
-                {{ch.name}}
+                <span class="chapter-name">{{ch.name}}</span>
                 <RenameChapter :chapter="ch" @ok="getCourse">
                     <Tooltip placement="top" content="修改名称">
                         <Button type="text" shape="circle" size="small">
@@ -69,13 +63,14 @@
                         <Icon type="checkmark-circled" color="green"></Icon>
                     </Tooltip>
                     <Tooltip placement="top" content="锁定中" v-show="s.status === 'locked'">
-                        <Icon type="locked" color="#bc0808"></Icon>&nbsp;
+                        <Icon type="locked" color="lightgray"></Icon>&nbsp;
                     </Tooltip>
-                    {{s.name}}
+                    <span class="section-name">{{s.name}}</span>
                     <RenameSection :section="s" @ok="getCourse">
                         <Tooltip placement="top" content="修改名称">
                             <Button type="text" shape="circle" size="small">
                                 <Icon type="compose" color="#2d8cf0"></Icon>
+                                名称
                             </Button>
                         </Tooltip>
                     </RenameSection>
@@ -83,13 +78,15 @@
                         <Tooltip placement="top" content="编辑简介">
                             <Button type="text" shape="circle" size="small">
                                 <Icon type="quote" color="#5cadff"></Icon>
+                                简介
                             </Button>
                         </Tooltip>
                     </UpdateSectionDescription>
                     <AdjustSectionSeq :section="s" @ok="getCourse">
-                        <Tooltip placement="top" content="调整次序">
+                        <Tooltip placement="top" :content="`调整次序 [${s.sequence}]`">
                             <Button type="text" shape="circle" size="small">
                                 <Icon type="ios-settings-strong" color="#3091f2"></Icon>
+                                {{`次序`}}
                             </Button>
                         </Tooltip>
                     </AdjustSectionSeq>
@@ -97,6 +94,7 @@
                         <router-link :to="'/section-codes/' + s._id">
                             <Button type="text" shape="circle" size="small">
                                 <Icon type="code" color="#ff9900"></Icon>
+                                初始代码
                             </Button>
                         </router-link>
                     </Tooltip>
@@ -104,6 +102,7 @@
                         <router-link :to="'/section-tests/' + s._id">
                             <Button type="text" shape="circle" size="small">
                                 <Icon type="bug" color="#19be6b"></Icon>
+                                测试用例
                             </Button>
                         </router-link>
                     </Tooltip>
@@ -111,6 +110,7 @@
                         <router-link :to="'/section-docs/' + s._id">
                             <Button type="text" shape="circle" size="small">
                                 <Icon type="flag" color="#ed3f14"></Icon>
+                                任务文档
                             </Button>
                         </router-link>
                     </Tooltip>
@@ -118,6 +118,7 @@
                         <Tooltip placement="top" content="删除小节">
                             <Button type="text" shape="circle" size="small">
                                 <Icon type="trash-b" color="#80848f"></Icon>
+                                删除小节
                             </Button>
                         </Tooltip>
                     </DeleteSection>
@@ -127,7 +128,8 @@
                     </i-switch>
                 </Card>
             </div>
-        </div>
+        </div><!-- end of chapters -->
+        
         <div class="layout-chapter">
             <Affix :offset-bottom="20">
                 <Button type="info" size="small" icon="plus" @click="createChapterModal = true">添加新章节</Button>
@@ -270,16 +272,8 @@ h2 {
   font-weight: normal;
 }
 
-#course-description {
-  margin-left: 30px;
-  color: #666;
-  margin-top: 20px;
-  padding: 3px;
-  border-left: 4px solid lightgray;
-}
-
 .layout-chapter {
-  width: 600px;
+  width: 900px;
   margin: 25px 30px;
 }
 
@@ -289,5 +283,46 @@ h2 {
 
 .layout-section-item {
   margin-top: 5px;
+}
+#course-description {
+  margin-left: 30px;
+  color: rgb(80, 77, 77);
+  margin-top: 20px;
+  padding-left: 5px;
+  font-size: 13px;
+  border-left: 2px solid rgb(224, 222, 222);
+  font-weight: 300;
+}
+
+.course-name{
+    color: #01202b;
+    font-size: 26px;
+    font-weight: 300;
+    border: 1px solid rgb(229, 227, 227);
+    margin-left: 28px;
+    padding:1px 5px;
+    box-shadow: -2px 5px 10px rgb(216, 213, 213);
+    border-radius: 4px;
+}
+
+.chapter-name {
+    color: rgb(21, 126, 120);
+    font-weight: 300;
+    font-size: 20px;
+    border: 1px solid lightblue;
+    box-shadow: -4px -2px 1px lightblue;
+    border-radius: 3px;
+    padding: 1px;
+}
+
+.section-name {
+    color: rgb(6, 44, 6);
+    font-weight: 400;
+    font-size: 14px;
+    padding: 1px 3px; 
+    box-shadow: -1px 1px 50px rgba(215, 226, 215, 0.452);
+    border: 1px solid rgba(235, 237, 238, 0.808);
+    background: rgba(235, 237, 238, 0.808);
+    border-radius: 6px;
 }
 </style>

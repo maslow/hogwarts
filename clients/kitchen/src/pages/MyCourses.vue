@@ -18,14 +18,14 @@
           </Tooltip>
           <router-link :to="'/course/' + c._id">{{c.name}}</router-link>
           <Tooltip placement="top" content="修改名称">
-            <Button type="text" shape="circle" size="small" icon="edit" @click="rename(c)"></Button>
+            <Button type="text" shape="circle" size="small" icon="compose" @click="rename(c)"></Button>
           </Tooltip>
         </div>
         <div>
           <p>
             {{c.desc}}
             <Tooltip placement="top" content="编辑简介">
-              <Button type="text" shape="circle" size="small" icon="edit" @click="updateDescription(c)"></Button>
+              <Button type="text" shape="circle" size="small" icon="compose" @click="updateDescription(c)"></Button>
             </Tooltip>
           </p>
         </div>
