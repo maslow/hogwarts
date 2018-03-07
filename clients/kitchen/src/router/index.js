@@ -22,10 +22,6 @@ export default new Router({
       component: () => import('@/pages/UserCourses')
     },
     {
-      path: '/guide',
-      component: () => import('@/pages/Guide')
-    },
-    {
       path: '/course/:id',
       component: () => import('@/pages/Course')
     },

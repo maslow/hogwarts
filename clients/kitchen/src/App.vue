@@ -8,10 +8,6 @@
                     <Icon type="flag"></Icon>
                     我的作品
                 </Menu-item>
-                <Menu-item name="/guide">
-                    <Icon type="ios-analytics"></Icon>
-                    指南
-                </Menu-item>
                 <Menu-item name="/logout">
                     <Icon type="ios-analytics"></Icon>
                     退出登录
