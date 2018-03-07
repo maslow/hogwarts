@@ -15,7 +15,7 @@ const JobMetaSchema = new mongoose.Schema({
     },
     status : {
         type:String,
-        enum:['created', 'failed', 'sucess'],
+        enum:['created', 'failed', 'success'],
         default:'created'
     },
     try_times : {

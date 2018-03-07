@@ -29,9 +29,7 @@ export default {
     }
   },
   async created() {
-    this.$Spin.show()
     await this.getCourses()
-    this.$Spin.hide()
   },
   methods: {
     async getCourses() {

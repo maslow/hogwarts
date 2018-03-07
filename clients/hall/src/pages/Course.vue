@@ -12,6 +12,19 @@
             </h2>
             <div class="layout-section">
                 <Card class="layout-section-item" v-for="s in ch.sections" :key="s._id">
+                    <span v-if="isLogined()">
+                        <Tooltip content="已通过!" placement="top" v-if="s.job_status === 'success'">
+                          <Icon type="flag" color="green"></Icon>
+                        </Tooltip>
+                        <Tooltip content="未通过" placement="top" v-if="s.job_status === 'failed'">
+                          <Icon type="flag" color="red"></Icon>
+                        </Tooltip>
+                    </span>
+
+                    <Tooltip content="未开始" placement="top" v-if="!s.job_status || s.job_status === 'created'">
+                          <Icon type="flag" color="lightgray"></Icon>
+                    </Tooltip>
+
                     <router-link :to="'/job/' + s._id" v-if="isLogined()">{{s.name}}</router-link>
                     <a v-if="!isLogined()" class="section-name">
                         <Tooltip placement="top" content="用户登陆后进行该操作">{{s.name}}</Tooltip>
@@ -29,6 +42,7 @@
 <script>
 import _ from "lodash";
 import course from "@/api/course";
+import JobAPI from "@/api/job";
 import identity from "@/api/identity";
 
 export default {
@@ -40,19 +54,40 @@ export default {
     };
   },
   async created() {
-    this.$Spin.show();
     await this.getCourse();
-    this.$Spin.hide();
   },
   methods: {
+    async getJobState(sectionId) {
+      if(!this.isLogined())
+        return null
+      try {
+        const job = await JobAPI.getUserJobBySectionId(sectionId);
+        return job.status;
+      } catch (err) {
+        console.error(err);
+        return null;
+      }
+    },
     async getCourse() {
       let data = await course.getCourse(this.courseId);
       this.course = data.course;
       data.chapters = _.sortBy(data.chapters, ["sequence", "created_at"]);
+      
       this.chapters = data.chapters.map(ch => {
-        let ss = data.sections.filter(s => s.chapter_id === ch._id);
-        ch["sections"] = _.sortBy(ss, ["sequence", "created_at"]);
+        let sections = data.sections.filter(s => s.chapter_id === ch._id);
+        sections = sections.map(section => {
+          section["job_status"] = null
+          return section
+        });
+        ch["sections"] = _.sortBy(sections, ["sequence", "created_at"]);
         return ch;
+      });
+      // update section-job status, asychronously
+      this.chapters.forEach(ch => {
+        ch.sections.forEach(async section => {
+          const status = await this.getJobState(section._id);
+          section.job_status = status;
+        });
       });
     },
     isLogined() {
@@ -69,11 +104,11 @@ h2 {
   font-weight: normal;
 }
 
-.chapter-name{
+.chapter-name {
   color: lightseagreen;
   font-size: 20px;
 }
-.section-name{
+.section-name {
   font-size: 16px;
 }
 

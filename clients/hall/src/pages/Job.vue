@@ -92,7 +92,6 @@ export default {
     };
   },
   async mounted() {
-    this.$Spin.show();
     const sectionId = this.$route.params.sid;
     this.section = await Course.getSection(sectionId);
     this.document = md.render(this.section.document || "");
@@ -113,7 +112,6 @@ export default {
     } else {
       await this.onSelectFile(this.files[0]);
     }
-    this.$Spin.hide();
   },
   methods: {
     async onSelectFile(file) {

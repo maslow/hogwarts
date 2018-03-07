@@ -74,6 +74,18 @@ router.post('/evalUserJobByJobId', async function (req, res) {
             testcase
         }
         const results = await JobMetaModel.eval(job_id, eval_data)
+        if(!results)
+            throw new Error('Evaluate job caught an error: empty results')
+        
+        // update job
+        if(results.ok){
+            job.status = 'success'
+        }else{
+            job.status = 'failed'
+        }
+        job.try_times = job.try_times + 1
+        await job.save()
+        
         return res.status(200).send(results)
     } catch (err) {
         _log('Evaluate job by job id %s caught an error: %o', job_id, err)
