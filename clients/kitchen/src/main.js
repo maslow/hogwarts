@@ -14,6 +14,7 @@ async function main() {
   Vue.use(iView)
 
   router.beforeEach((to, from, next) => {
+    iView.Spin.show()
     if (identity.isExpired() && to.path !== '/login' && to.path !== '/register') {
       router.push('/login')
     } else if (!identity.isExpired() && to.path === '/login') {
@@ -26,6 +27,7 @@ async function main() {
 
   router.afterEach((to, from, next) => {
     iView.LoadingBar.finish()
+    iView.Spin.hide()
   })
 
   /* eslint-disable no-new */
