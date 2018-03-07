@@ -89,6 +89,10 @@ const services = {
         target: servers.COURSE,
         access: [roles.author]
     },
+    "/deleteCourse": {
+        target: servers.COURSE,
+        access: [roles.author]
+    },
     "/createChapter": {
         target: servers.COURSE,
         access: [roles.author]

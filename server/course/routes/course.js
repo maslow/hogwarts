@@ -221,4 +221,41 @@ router.post('/unpublishCourse', async function (req, res) {
     }
 })
 
+/**
+ * Delete course
+ */
+router.post('/deleteCourse', async function (req, res) {
+    const course_id = req.body.course_id
+
+    try {
+        // find course for deleting
+        const course = await CourseMetaModel.findById(course_id)
+        if (!course)
+            return res.status(404).send('Object not found')
+
+        // permission checking
+        if (course.created_by != req.uid)
+            return res.status(401).send('Permission denied')
+
+        // pre-delete checking
+        if(course.status !== 'unpublished'){
+            return res.status(422).send('Course who is not unpublished can not be deleted')
+        }
+        
+        // pre-delete checking
+        const hasChapter = await CourseChapterModel.count({course_id})
+        if(hasChapter){
+            return res.status(422).send('Course with chapters existing cannot be deleted.')
+        }
+        // delete it
+        await CourseMetaModel.remove({_id: course_id})
+        _log('Course (id:%s) has been deleted.', course_id)
+        
+        return res.status(204).send('ok')
+    } catch (err) {
+        _log('Deleting course (id:%s) caught an error: %o', course_id, err)
+        return res.status(400).send('Internal Error')
+    }
+})
+
 module.exports = router

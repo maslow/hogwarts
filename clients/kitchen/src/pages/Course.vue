@@ -13,6 +13,13 @@
                     <Icon type="checkmark-circled" color="green"></Icon>
                 </Button>
             </Tooltip>
+            <DeleteCourse :course="course" @ok="afterDeleteCourse">
+                <Tooltip placement="top" content="删除课程">
+                    <Button type="text" shape="circle" size="small">
+                        <Icon type="trash-b" color="#80848f"></Icon>
+                    </Button>
+                </Tooltip>
+            </DeleteCourse>
             <i-switch size="large" v-model="course.status" @on-change="handlePublishCourse" true-value="published" false-value="unpublished">
                 <span slot="open">发布</span>
                 <span slot="close">下架</span>
@@ -141,6 +148,7 @@
 import _ from "lodash";
 import course from "@/api/course";
 import RenameCourseModal from "@/components/RenameCourseModal";
+import DeleteCourse from "@/components/DeleteCourse";
 import UpdateCourseDescriptionModal from "@/components/UpdateCourseDescriptionModal";
 import CreateChapterModal from "@/components/CreateChapterModal";
 import RenameChapter from "@/components/RenameChapter";
@@ -227,9 +235,19 @@ export default {
         console.error(err);
       }
       this.$Spin.hide();
+    },
+    afterDeleteCourse() {
+      this.$Modal.success({
+        title: "课程已删除",
+        content: "页面即将跳转至课程列表页面",
+        onOk: () => {
+          this.$router.push('/')
+        }
+      });
     }
   },
   components: {
+    DeleteCourse,
     RenameCourseModal,
     UpdateCourseDescriptionModal,
     CreateChapterModal,

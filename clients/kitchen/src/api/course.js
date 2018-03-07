@@ -13,6 +13,7 @@ export default {
   unpublishCourse,
   renameCourse,
   updateCourseDescription,
+  deleteCourse,
 
   createChapter,
   renameChapter,
@@ -71,6 +72,15 @@ function createCourse(data) {
     url: G_API + '/createCourse',
     data: data,
     method: 'post',
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
+  })
+}
+
+function deleteCourse(courseId) {
+  return $.ajax({
+    url: G_API + '/deleteCourse',
+    method: 'post',
+    data: { course_id: courseId },
     headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
   })
 }
