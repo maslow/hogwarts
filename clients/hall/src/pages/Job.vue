@@ -16,12 +16,12 @@
                             <Icon type="folder" color="goldenrod"></Icon>
                             新建文件夹
                         </Button>
-                        <Button :disabled="!isLogined()" type="text" size="small" class="text-white" @click="saveFiles">
+                        <Button :disabled="!isLogined() || evaluating" type="text" size="small" class="text-white" @click="saveFiles">
                             <Icon type="checkmark" color="#2d8cf0"></Icon>
                             保存
                         </Button>
                     </ButtonGroup>
-                    <Button :disabled="!isLogined()" type="success" size="small" class="text-white" @click="evalJob">
+                    <Button :disabled="!isLogined()" :loading="evaluating" type="success" size="small" class="text-white" @click="evalJob">
                         <Icon type="ios-play"></Icon>
                         运行
                     </Button>
@@ -69,6 +69,7 @@ export default {
       section: null,
       reports: null,
       document: "",
+      evaluating: false,
       files: [],
       currentFile: {
         content: null,
@@ -96,12 +97,13 @@ export default {
     this.section = await Course.getSection(sectionId);
     this.document = md.render(this.section.document || "");
 
-    if(!this.isLogined()) {
+    if (!this.isLogined()) {
       return this.$Modal.warning({
         title: "请登陆后访问本页面",
-        content: "抱歉，因本页面功能是编辑和测试用户作业，所以只有登陆用户可正常使用，点击确定即跳往登陆页面。",
-        onOk: () => this.$router.push('/login')
-      })
+        content:
+          "抱歉，因本页面功能是编辑和测试用户作业，所以只有登陆用户可正常使用，点击确定即跳往登陆页面。",
+        onOk: () => this.$router.push("/login")
+      });
     }
 
     this.job = await Job.getUserJobBySectionId(sectionId);
@@ -126,7 +128,7 @@ export default {
       if (file.type === "dir") {
         if (!file.children) {
           let files = await Job.getFiles(this.job._id, file.path);
-          if(files && !files.length)
+          if (files && !files.length)
             file.children = files.map(f => transferFileFormat(f, file));
         }
       } else {
@@ -154,13 +156,16 @@ export default {
       this.$Notice.success({ title: "文件提交保存成功！" });
     },
     async evalJob() {
+      this.evaluating = true;
       try {
+        await this.saveFiles();
         this.reports = await Job.evalUserJobByJobId(this.job._id);
         this.evelReportModal = true;
         console.log(this.reports);
       } catch (err) {
         this.$Notice.error({ title: "请求失败, 内部错误" });
       }
+      this.evaluating = false;
     },
     async onFolderCreated(file) {
       await Job.createFolder(this.job._id, file.path);
