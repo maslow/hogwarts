@@ -15,15 +15,8 @@ async function main() {
 
   router.beforeEach((to, from, next) => {
     iView.Spin.show()
-    // if (identity.isExpired() && to.path !== '/login' && to.path !== '/register') {
-    //   router.push('/login')
-    // } else 
-    if (!identity.isExpired() && to.path === '/login') {
-      router.push('/')
-    } else {
-      iView.LoadingBar.start()
-      next()
-    }
+    iView.LoadingBar.start()
+    next()
   })
 
   router.afterEach((to, from, next) => {

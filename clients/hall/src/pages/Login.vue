@@ -32,6 +32,9 @@ import user from '@/api/user.js'
 import identity from '@/api/identity.js'
 import validator from 'validator'
 
+if(!identity.isExpired())
+    window.history.back()
+
 export default {
     name: 'login',
     data() {

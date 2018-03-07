@@ -126,7 +126,7 @@ h2 {
   font-weight: 300;
   font-size: 20px;
   border: 1px solid rgb(210, 230, 238);
-  box-shadow: -3px 1px 1px rgb(186, 221, 233);
+  box-shadow: -3px 0px 0px rgb(186, 221, 233);
   border-radius: 3px;
   padding: 1px;
 }
@@ -136,7 +136,7 @@ h2 {
   font-size: 15px;
   margin-left: 5px;
   padding: 1px 8px;
-  box-shadow: -3px 3px 3px rgb(215, 226, 215);
+  box-shadow: -2px 1px 1px rgb(215, 226, 215);
   border: 1px solid rgba(198, 200, 201, 0.997);
   background: rgba(235, 237, 238, 0.808);
 }
@@ -147,10 +147,10 @@ h2 {
   font-size: 15px;
   margin-left: 5px;
   padding: 1px 8px;
-  box-shadow: -3px 3px 3px rgb(215, 226, 215);
-  border: 1px solid rgb(198, 200, 201);
+  box-shadow: -2px 1px 2px rgb(215, 226, 215);
+  border: 1px solid lightblue;
   background: rgb(235, 237, 238);
-  border-radius: 10px 2px 10px 2px;
+  border-radius: 3px 3px 3px 3px;
 }
 
 #course-description {

@@ -96,6 +96,14 @@ export default {
     this.section = await Course.getSection(sectionId);
     this.document = md.render(this.section.document || "");
 
+    if(!this.isLogined()) {
+      return this.$Modal.warning({
+        title: "请登陆后访问本页面",
+        content: "抱歉，因本页面功能是编辑和测试用户作业，所以只有登陆用户可正常使用，点击确定即跳往登陆页面。",
+        onOk: () => this.$router.push('/login')
+      })
+    }
+
     this.job = await Job.getUserJobBySectionId(sectionId);
 
     let files = await Job.getFiles(this.job._id, "/");
