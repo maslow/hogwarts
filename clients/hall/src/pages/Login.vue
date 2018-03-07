@@ -54,6 +54,7 @@ export default {
                     title: msg
                 })
 
+            this.$Spin.show();
             try {
                 let ret = await user.Login(this.email, this.password)
                 identity.set(ret)
@@ -64,6 +65,7 @@ export default {
                     title: 'Failed to login'
                 })
             }
+            this.$Spin.hide()
         }
     }
 }

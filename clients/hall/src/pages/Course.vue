@@ -7,12 +7,15 @@
             <i>{{course.desc}}</i>
         </div>
         <div class="layout-chapter" v-for="ch in chapters" :key="ch._id">
-            <h2>
+            <h2 class="chapter-name">
                 {{ch.name}}
             </h2>
             <div class="layout-section">
                 <Card class="layout-section-item" v-for="s in ch.sections" :key="s._id">
-                    <router-link :to="'/job/' + s._id">{{s.name}}</router-link>
+                    <router-link :to="'/job/' + s._id" v-if="isLogined()">{{s.name}}</router-link>
+                    <a v-if="!isLogined()" class="section-name">
+                        <Tooltip placement="top" content="用户登陆后进行该操作">{{s.name}}</Tooltip>
+                    </a>
                     <div class="section-description">
                         <i>{{s.desc}}</i>
                     </div>
@@ -26,6 +29,7 @@
 <script>
 import _ from "lodash";
 import course from "@/api/course";
+import identity from "@/api/identity";
 
 export default {
   data() {
@@ -36,7 +40,9 @@ export default {
     };
   },
   async created() {
+    this.$Spin.show();
     this.getCourse();
+    this.$Spin.hide();
   },
   methods: {
     async getCourse() {
@@ -48,6 +54,9 @@ export default {
         ch["sections"] = _.sortBy(ss, ["sequence", "created_at"]);
         return ch;
       });
+    },
+    isLogined() {
+      return !identity.isExpired();
     }
   },
   components: {}
@@ -58,6 +67,14 @@ export default {
 h1,
 h2 {
   font-weight: normal;
+}
+
+.chapter-name{
+  color: lightseagreen;
+  font-size: 20px;
+}
+.section-name{
+  font-size: 16px;
 }
 
 #course-description {

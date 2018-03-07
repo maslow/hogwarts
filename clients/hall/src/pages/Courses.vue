@@ -5,7 +5,7 @@
       <br/>
       <Card>
         <div slot="title">
-          <router-link :to="'/course/' + c._id">{{c.name}}</router-link>
+          <router-link class="course-name" :to="'/course/' + c._id">{{c.name}}</router-link>
         </div>
         <div>
           <p class="course-description">
@@ -29,7 +29,9 @@ export default {
     }
   },
   created() {
+    this.$Spin.show()
     this.getCourses()
+    this.$Spin.hide()
   },
   methods: {
     async getCourses() {
@@ -47,6 +49,11 @@ export default {
 h1,
 h2 {
   font-weight: normal;
+}
+
+.course-name{
+  font-size: 18px;
+  color: lightseagreen
 }
 .course-description {
   color: #666;
