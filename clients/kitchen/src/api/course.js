@@ -23,6 +23,8 @@ export default {
   getSection,
   createSection,
   publishSection,
+  unpublishSection,
+  deleteSection,
   renameSection,
   updateSectionDescription,
   adjustSectionSeq,
@@ -162,6 +164,24 @@ function createSection(courseId, chapterId, templateId, name, description, image
 function publishSection(section_id) {
   return $.ajax({
     url: G_API + '/publishSection',
+    data: { section_id },
+    method: 'post',
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
+  })
+}
+
+function unpublishSection(section_id) {
+  return $.ajax({
+    url: G_API + '/unpublishSection',
+    data: { section_id },
+    method: 'post',
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
+  })
+}
+
+function deleteSection(section_id) {
+  return $.ajax({
+    url: G_API + '/deleteSection',
     data: { section_id },
     method: 'post',
     headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }

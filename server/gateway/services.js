@@ -113,6 +113,14 @@ const services = {
         target: servers.COURSE,
         access: [roles.author]
     },
+    "/unpublishSection": {
+        target: servers.COURSE,
+        access: [roles.author]
+    },
+    "/deleteSection": {
+        target: servers.COURSE,
+        access: [roles.author]
+    },
     "/createSectionCodeFolder": {
         target: servers.COURSE,
         access: [roles.author]

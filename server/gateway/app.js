@@ -113,3 +113,11 @@ async function validate_token(token) {
         return false
     }
 }
+
+function _sleep(duration){
+    return new Promise((r,e)=>{
+        setTimeout(function(){
+            r()
+        }, duration)
+    })
+}

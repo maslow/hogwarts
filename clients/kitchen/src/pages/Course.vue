@@ -17,7 +17,6 @@
                 <span slot="open">发布</span>
                 <span slot="close">下架</span>
             </i-switch>
-    
         </h1>
         <div id="course-description">
             <i>{{course.desc}}</i>
@@ -108,9 +107,17 @@
                             </Button>
                         </router-link>
                     </Tooltip>
-                    <Tooltip placement="top" content="发布该小节">
-                        <Button type="text" shape="circle" size="small" icon="information-circled" @click="publishSection(s)"></Button>
-                    </Tooltip>
+                    <DeleteSection :section="s" @ok="getCourse">
+                        <Tooltip placement="top" content="删除小节">
+                            <Button type="text" shape="circle" size="small">
+                                <Icon type="trash-b" color="#80848f"></Icon>
+                            </Button>
+                        </Tooltip>
+                    </DeleteSection>
+                    <i-switch size="large" v-model="s.status" @on-change="state => handlePublishSection(state,s)" true-value="published" false-value="unpublished">
+                        <span slot="open">发布</span>
+                        <span slot="close">{{s.status === 'locked'? '锁定':'下架'}}</span>
+                    </i-switch>
                 </Card>
             </div>
         </div>
@@ -142,6 +149,7 @@ import AdjustChapterSeq from "@/components/AdjustChapterSeq";
 import DeleteChapter from "@/components/DeleteChapter";
 import CreateSectionModal from "@/components/CreateSectionModal";
 import RenameSection from "@/components/RenameSection";
+import DeleteSection from "@/components/DeleteSection";
 import UpdateSectionDescription from "@/components/UpdateSectionDescription";
 import AdjustSectionSeq from "@/components/AdjustSectionSeq";
 
@@ -172,38 +180,51 @@ export default {
       });
     },
     async handlePublishCourse(state) {
-      console.log(this.course.status);
       try {
         this.$Spin.show();
         if (state === "published") {
-          await course.publishCourse(this.course._id)
-          this.$Notice.success({title: '已发布成功！'})
+          await course.publishCourse(this.course._id);
+          this.$Notice.success({
+            title: `<i>${this.course.name}</i> <b>已发布！</b>`
+          });
         } else {
-          await course.unpublishCourse(this.course._id)
-          this.$Notice.info({title: '已下架！'})
+          await course.unpublishCourse(this.course._id);
+          this.$Notice.info({
+            title: `<i>${this.course.name}</i> <b>已下架.</b>`
+          });
         }
       } catch (err) {
-        await this.getCourse()
+        await this.getCourse();
         this.$Notice.error({
           title: "操作失败!",
           desc: err.toString()
-        })
+        });
       }
-      this.$Spin.hide()
+      this.$Spin.hide();
     },
-    publishSection(section) {
-      this.$Modal.confirm({
-        title: "发布确认",
-        content: `<p>确定发布该小节<span style="color:red"> { ${
-          section.name
-        } } </span>？</p>`,
-        loading: true,
-        onOk: async () => {
+    async handlePublishSection(state, section) {
+      try {
+        this.$Spin.show();
+        if (state === "published") {
           await course.publishSection(section._id);
-          await this.getCourse();
-          this.$Modal.remove();
+          this.$Notice.success({
+            title: `<i>${section.name}</i> <b>已发布！</b>`
+          });
+        } else {
+          await course.unpublishSection(section._id);
+          this.$Notice.info({
+            title: `<i>${section.name}</i> <b>已下架！</b>`
+          });
         }
-      }); // end for this.$Modal.confirm
+      } catch (err) {
+        await this.getCourse();
+        this.$Notice.error({
+          title: "操作失败!",
+          desc: err.toString()
+        });
+        console.error(err);
+      }
+      this.$Spin.hide();
     }
   },
   components: {
@@ -216,6 +237,7 @@ export default {
     DeleteChapter,
     CreateSectionModal,
     RenameSection,
+    DeleteSection,
     UpdateSectionDescription,
     AdjustSectionSeq
   }

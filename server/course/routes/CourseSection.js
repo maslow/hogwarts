@@ -5,10 +5,12 @@ const debug = require('debug')
 const CourseMetaModel = require('../model/CourseMeta')
 const CourseChapterModel = require('../model/CourseChapter')
 const CourseSectionModel = require('../model/CourseSection')
+const CourseCodeModel = require('../model/CourseCode')
 const TemplateMetaModel = require('../model/TemplateMeta')
 
 const router = express.Router()
 const _log = debug('COURSE:PROD')
+const _debug = debug('COURSE:DEV')
 
 /**
  * Get section meta
@@ -160,6 +162,74 @@ router.post('/publishSection', async function (req, res) {
         return res.status(200).send(section)
     } catch (err) {
         _log('Publishing section (id:%s) caught an error: %o', section_id, err)
+        return res.status(400).send('Internal Error')
+    }
+})
+
+
+/**
+ * Unpublish section
+ */
+router.post('/unpublishSection', async function (req, res) {
+    const section_id = req.body.section_id
+
+    try {
+        // find section
+        const section = await CourseSectionModel.findById(section_id)
+        if(!section)
+            return res.status(404).send('Section not found')
+
+        // find course for permission checking
+        const course = await CourseMetaModel.findById(section.course_id)
+        if(course.created_by != req.uid)
+            return res.status(401).send('Permission denied')
+
+        // publish section if it's not published
+        if(section.status !== 'unpublished'){
+            section.status = 'unpublished'
+            await section.save()
+        }
+
+        return res.status(200).send(section)
+    } catch (err) {
+        _log('Publishing section (id:%s) caught an error: %o', section_id, err)
+        return res.status(400).send('Internal Error')
+    }
+})
+
+
+/**
+ * Update section meta and codes
+ */
+router.post('/deleteSection', async function (req, res) {
+    const section_id = req.body.section_id
+
+    try {
+        // find section for updating
+        const section = await CourseSectionModel.findById(section_id)
+        if(!section)
+            return res.status(404).send('Section not found')
+
+        // find course
+        const course = await CourseMetaModel.findById(section.course_id)
+        if(!course)
+            return res.status(422).send('Course not found')
+
+        // perform permission checking
+        if(course.created_by != req.uid)
+            return res.status(401).send('Permission denied')
+
+        // delete section codes
+        let ret = await CourseCodeModel.remove({section_id})
+        _debug("Delete section(%s) codes result: %o", section_id, ret)
+
+        // delete section meta
+        ret = await CourseSectionModel.remove({_id: section_id})
+        _debug("Delete section(%s) meta result: %o", section_id, ret)
+
+        return res.status(204).send('ok')
+    } catch (err) {
+        _log('Updating section (id:%s) caught an error: %o', section_id, err)
         return res.status(400).send('Internal Error')
     }
 })
