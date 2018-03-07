@@ -1,17 +1,14 @@
 <template>
-  <div class="courses">
-    <h1>课程列表</h1>
-    <br/>
-  
+  <div class="courses">  
     <Row v-for="c in courses" :key="c._id">
-      <Col span="12">
+      <Col span="6">
       <br/>
       <Card>
         <div slot="title">
           <router-link :to="'/course/' + c._id">{{c.name}}</router-link>
         </div>
         <div>
-          <p>
+          <p class="course-description">
             {{c.desc}}
           </p>
         </div>
@@ -50,5 +47,9 @@ export default {
 h1,
 h2 {
   font-weight: normal;
+}
+.course-description {
+  color: #666;
+  font-size: 14px;
 }
 </style>

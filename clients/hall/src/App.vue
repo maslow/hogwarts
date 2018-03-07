@@ -7,7 +7,7 @@
             <div class="layout-nav">
               <Menu-item name="/courses">
                 <Icon type="flag"></Icon>
-                    课程大厅
+                    训练营
               </Menu-item>
               <Menu-item name="/logout"  v-if="isLogined">
                     <Icon type="ios-analytics"></Icon>

@@ -13,6 +13,9 @@
             <div class="layout-section">
                 <Card class="layout-section-item" v-for="s in ch.sections" :key="s._id">
                     <router-link :to="'/job/' + s._id">{{s.name}}</router-link>
+                    <div class="section-description">
+                        <i>{{s.desc}}</i>
+                    </div>
                 </Card>
             </div>
         </div>
@@ -21,61 +24,67 @@
 
 
 <script>
-import _ from 'lodash'
-import course from '@/api/course'
+import _ from "lodash";
+import course from "@/api/course";
 
 export default {
-    data() {
-        return {
-            courseId: this.$route.params.id,
-            course: {},
-            chapters: [],
-        }
-    },
-    async created() {
-        this.getCourse()
-    },
-    methods: {
-        async getCourse() {
-            let data = await course.getCourse(this.courseId)
-            this.course = data.course
-            data.chapters = _.sortBy(data.chapters, ['seq', 'created_at'])
-            this.chapters = data.chapters.map(ch => {
-                let ss = data.sections.filter(s => s.chapter_id === ch._id)
-                ch['sections'] = _.sortBy(ss, ['seq', 'created_at'])
-                return ch
-            })
-        }
-    },
-    components: {
+  data() {
+    return {
+      courseId: this.$route.params.id,
+      course: {},
+      chapters: []
+    };
+  },
+  async created() {
+    this.getCourse();
+  },
+  methods: {
+    async getCourse() {
+      let data = await course.getCourse(this.courseId);
+      this.course = data.course;
+      data.chapters = _.sortBy(data.chapters, ["sequence", "created_at"]);
+      this.chapters = data.chapters.map(ch => {
+        let ss = data.sections.filter(s => s.chapter_id === ch._id);
+        ch["sections"] = _.sortBy(ss, ["sequence", "created_at"]);
+        return ch;
+      });
     }
-}
+  },
+  components: {}
+};
 </script>
     
 <style scoped>
 h1,
 h2 {
-    font-weight: normal;
+  font-weight: normal;
 }
 
 #course-description {
-    margin-left: 30px;
-    color: #666;
-    margin-top: 20px;
-    padding: 3px;
-    border-left: 4px solid lightgray;
+  margin-left: 30px;
+  color: #666;
+  margin-top: 20px;
+  padding: 3px;
+  border-left: 4px solid lightgray;
 }
 
 .layout-chapter {
-    width: 600px;
-    margin: 25px 30px;
+  width: 900px;
+  margin: 25px 30px;
 }
 
 .layout-section {
-    margin: 5px 45px;
+  margin: 5px 20px;
 }
 
 .layout-section-item {
-    margin-top: 5px;
+  margin-top: 5px;
+}
+
+.section-description {
+  /* margin-left: 10px; */
+  margin-top: 10px;
+  color: #666;
+  font-size: 12px;
 }
 </style>

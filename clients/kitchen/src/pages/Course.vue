@@ -114,7 +114,7 @@
                             </Button>
                         </Tooltip>
                     </DeleteSection>
-                    <i-switch size="large" v-model="s.status" @on-change="state => handlePublishSection(state,s)" true-value="published" false-value="unpublished">
+                    <i-switch size="large" :value="s.status === 'published'? 'published' : 'unpublished'" @on-change="state => handlePublishSection(state,s)" true-value="published" false-value="unpublished">
                         <span slot="open">发布</span>
                         <span slot="close">{{s.status === 'locked'? '锁定':'下架'}}</span>
                     </i-switch>
@@ -166,7 +166,7 @@ export default {
     };
   },
   async created() {
-    this.getCourse();
+    await this.getCourse();
   },
   methods: {
     async getCourse() {
@@ -207,10 +207,12 @@ export default {
         this.$Spin.show();
         if (state === "published") {
           await course.publishSection(section._id);
+          await this.getCourse();
           this.$Notice.success({
             title: `<i>${section.name}</i> <b>已发布！</b>`
           });
         } else {
+          await this.getCourse();
           await course.unpublishSection(section._id);
           this.$Notice.info({
             title: `<i>${section.name}</i> <b>已下架！</b>`
