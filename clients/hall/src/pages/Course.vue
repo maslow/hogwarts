@@ -41,7 +41,7 @@ export default {
   },
   async created() {
     this.$Spin.show();
-    this.getCourse();
+    await this.getCourse();
     this.$Spin.hide();
   },
   methods: {

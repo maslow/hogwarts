@@ -28,9 +28,9 @@ export default {
       courses: []
     }
   },
-  created() {
+  async created() {
     this.$Spin.show()
-    this.getCourses()
+    await this.getCourses()
     this.$Spin.hide()
   },
   methods: {
