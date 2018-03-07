@@ -212,8 +212,8 @@ export default {
             title: `<i>${section.name}</i> <b>已发布！</b>`
           });
         } else {
-          await this.getCourse();
           await course.unpublishSection(section._id);
+          await this.getCourse();
           this.$Notice.info({
             title: `<i>${section.name}</i> <b>已下架！</b>`
           });
