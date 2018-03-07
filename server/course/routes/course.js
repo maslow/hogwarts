@@ -71,7 +71,7 @@ router.get('/getCourse', async function (req, res) {
 
         // find relevant chapters & sections
         const chapters = await CourseChapterModel.find({ course_id: course._id })
-        const sections = await CourseSectionModel.find({ course_id: course._id })
+        const sections = await CourseSectionModel.find({ course_id: course._id }).where({status:'published'})
 
         // return them in a Object
         return res.status(200).send({ course, chapters, sections })

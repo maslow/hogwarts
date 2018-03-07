@@ -53,7 +53,7 @@ router.post('/evalUserJobByJobId', async function (req, res) {
         const template_id = section.template_id
         const template = await JobMetaModel.getTemplate(template_id)
         if(!template)
-            throw new Error(`Template not found: ${template_Id}`)
+            throw new Error(`Template not found: ${template_id}`)
 
         const docker_image = template.docker_image
 
