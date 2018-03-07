@@ -189,4 +189,36 @@ router.post('/publishCourse', async function (req, res) {
     }
 })
 
+/**
+ * Unpublish course
+ */
+router.post('/unpublishCourse', async function (req, res) {
+    const course_id = req.body.id
+
+    try {
+        // find course for publishing
+        const course = await CourseMetaModel.findById(course_id)
+        if (!course)
+            return res.status(404).send('Object not found')
+
+        // permission checking
+        if (course.created_by != req.uid)
+            return res.status(401).send('Permission denied')
+
+        // return if course is already published
+        if (course.status !== 'published')
+            return res.status(422).send('Course was already unpublished')
+
+        // update course status
+        course.status = 'unpublished'
+
+        // save & return it
+        await course.save()
+        return res.status(201).send(course)
+    } catch (err) {
+        _log('Unpublishing course (id:%s) detail caught an error: %o', course_id, err)
+        return res.status(400).send('Internal Error')
+    }
+})
+
 module.exports = router

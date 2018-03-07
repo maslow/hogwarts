@@ -10,6 +10,7 @@ export default {
   getOwnCourse,
   createCourse,
   publishCourse,
+  unpublishCourse,
   renameCourse,
   updateCourseDescription,
 
@@ -83,6 +84,15 @@ function renameCourse(course_id, name) {
 function publishCourse(courseId) {
   return $.ajax({
     url: G_API + '/publishCourse',
+    data: { id: courseId },
+    method: 'post',
+    headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
+  })
+}
+
+function unpublishCourse(courseId) {
+  return $.ajax({
+    url: G_API + '/unpublishCourse',
     data: { id: courseId },
     method: 'post',
     headers: { 'Authorization': 'Bearer ' + Identity.getAccessToken() }
@@ -171,11 +181,11 @@ function adjustSectionSeq(section_id, seq) {
 }
 
 function updateSectionTestcase(section_id, testcase) {
-  return _updateSection({section_id, testcase})
+  return _updateSection({ section_id, testcase })
 }
 
 function updateSectionDocument(section_id, document) {
-  return _updateSection({section_id, document})
+  return _updateSection({ section_id, document })
 }
 
 /**************** Codes ***************/

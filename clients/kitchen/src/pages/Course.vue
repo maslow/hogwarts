@@ -5,14 +5,18 @@
             <Tooltip placement="top" content="修改名称">
                 <Button type="text" shape="circle" size="small" icon="compose" @click="renameCourseModal = true"></Button>
             </Tooltip>
-            <Tooltip placement="top" content="发布该课程" v-if="course.status === 'unpublished'">
+            <!-- <Tooltip placement="top" content="发布该课程" v-if="course.status === 'unpublished'">
                 <Button type="text" shape="circle" size="small" icon="information-circled" @click="publishCourse"></Button>
-            </Tooltip>
+            </Tooltip> -->
             <Tooltip placement="top" content="已发布" v-show="course.status == 'published'">
                 <Button type="text" shape="circle" size="small">
                     <Icon type="checkmark-circled" color="green"></Icon>
                 </Button>
             </Tooltip>
+            <i-switch size="large" v-model="course.status" @on-change="handlePublishCourse" true-value="published" false-value="unpublished">
+                <span slot="open">发布</span>
+                <span slot="close">下架</span>
+            </i-switch>
     
         </h1>
         <div id="course-description">
@@ -167,31 +171,39 @@ export default {
         return ch;
       });
     },
-    publishCourse() {
-      this.$Modal.confirm({
-        title: "发布确认",
-        content: `<p>确定发布该课程<span style="color:red"> { ${this.course
-          .name} } </span>？</p>`,
-        loading: true,
-        onOk: async () => {
-          let ret = await course.publishCourse(this.course._id)
-          await this.getCourse()
-          this.$Modal.remove()
+    async handlePublishCourse(state) {
+      console.log(this.course.status);
+      try {
+        this.$Spin.show();
+        if (state === "published") {
+          await course.publishCourse(this.course._id)
+          this.$Notice.success({title: '已发布成功！'})
+        } else {
+          await course.unpublishCourse(this.course._id)
+          this.$Notice.info({title: '已下架！'})
         }
-      }) // end for this.$Modal.confirm
+      } catch (err) {
+        await this.getCourse()
+        this.$Notice.error({
+          title: "操作失败!",
+          desc: err.toString()
+        })
+      }
+      this.$Spin.hide()
     },
     publishSection(section) {
       this.$Modal.confirm({
         title: "发布确认",
-        content: `<p>确定发布该小节<span style="color:red"> { ${section
-          .name} } </span>？</p>`,
+        content: `<p>确定发布该小节<span style="color:red"> { ${
+          section.name
+        } } </span>？</p>`,
         loading: true,
         onOk: async () => {
-          await course.publishSection(section._id)
-          await this.getCourse()
-          this.$Modal.remove()
+          await course.publishSection(section._id);
+          await this.getCourse();
+          this.$Modal.remove();
         }
-      }) // end for this.$Modal.confirm
+      }); // end for this.$Modal.confirm
     }
   },
   components: {
