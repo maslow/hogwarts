@@ -104,7 +104,7 @@ router.post('/updateSection', async function (req, res) {
             return res.status(404).send('Section not found')
 
          // lock the section if published
-         if(section.status === 'published'){
+         if(testcase && section.status === 'published'){
             section.status = 'locked'
             await section.save()
         }
