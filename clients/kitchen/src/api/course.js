@@ -255,7 +255,7 @@ function updateSectionCodeFileContent(section_id, path, content) {
 
 function deleteCodeFile(section_id, path) {
   return $.ajax({
-    url: G_API + `/deleteCodeFile`,
+    url: G_API + `/deleteSectionCodeFile`,
     data: {
       sid: section_id,
       path
