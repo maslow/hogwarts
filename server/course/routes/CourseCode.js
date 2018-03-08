@@ -211,15 +211,18 @@ router.post("/deleteSectionCodeFile", async function (req, res) {
             return res.status(401).send('Permission denied')
 
         // find section code
-        const code = await CourseCodeModel.findOne({section_id, name:filename, parent})
-        const exists_in_template = await TemplateCodeModel.findOne({template_id: section.template_id, name: filename, parent})
+        let code = await CourseCodeModel.findOne({section_id, name:filename, parent})
+        const code_in_template = await TemplateCodeModel.findOne({template_id: section.template_id, name: filename, parent})
 
         // return if code not exists 
-        if(!code && !exists_in_template)
+        if(!code && !code_in_template)
             return res.status(404).send('Section code not found')
 
         // mark deleted if code exists in template , or remove it directly
-        if(exists_in_template){
+        if(code_in_template){
+            if(!code){
+                code = new CourseCodeModel({section_id, name: filename, type: code_in_template.type, parent, status: 'deleted'})
+            }
             code.status = 'deleted'
             await code.save()
         }else{
