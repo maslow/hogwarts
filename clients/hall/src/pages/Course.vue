@@ -116,7 +116,7 @@ h2 {
   width: 1200px;
   padding: 555px 35px 0px;
   text-align: left;
-  box-shadow: -300px 30px 50px rgb(204, 202, 202);
+  box-shadow: -200px 3px 30px rgb(204, 202, 202);
   border-bottom-left-radius: 0px;
   border-bottom-right-radius: 450px;
 }
