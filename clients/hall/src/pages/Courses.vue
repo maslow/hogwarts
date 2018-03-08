@@ -1,8 +1,7 @@
 <template>
   <div class="courses">  
-    <Row v-for="c in courses" :key="c._id">
-      <Col span="6">
-      <br/>
+    <Row type="flex":gutter="20" justify="start">
+      <Col class="course-col" span="8" v-for="c in courses" :key="c._id">
       <Card>
         <div slot="title">
           <router-link class="course-name" :to="'/course/' + c._id">{{c.name}}</router-link>
@@ -48,13 +47,21 @@ h1,
 h2 {
   font-weight: normal;
 }
+.courses{
+  padding: 20px;
+}
+
+.course-col{
+  margin-bottom: 20px;
+}
 
 .course-name{
   font-size: 18px;
   color: lightseagreen
 }
 .course-description {
-  color: #666;
-  font-size: 14px;
+  font-weight: 300;
+  font-size: 15px;
+  min-height: 100px;
 }
 </style>
