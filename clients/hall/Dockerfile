@@ -1,4 +1,4 @@
-FROM node
+FROM node:8
 RUN npm install http-server -g
 
 ADD . /app

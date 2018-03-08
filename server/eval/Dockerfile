@@ -1,4 +1,4 @@
-FROM centos
+FROM centos:7
 RUN yum install -y yum-utils \
   device-mapper-persistent-data \
   lvm2
