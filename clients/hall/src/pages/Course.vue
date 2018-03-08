@@ -109,12 +109,12 @@ h2 {
   color: rgb(21, 143, 137);
   font-size: 28px;
   font-weight: 300;
-  border: 1px solid rgb(153, 213, 213);
-  margin: -565px -9px;
-  margin-bottom: 0px;
+  border-bottom: 1px solid rgb(153, 213, 213);
+  margin: -560px 0px 0px ;
   height: 600px;
   width: 1200px;
-  padding: 555px 35px 0px;
+  overflow: hidden;
+  padding: 560px 30px 0;
   text-align: left;
   box-shadow: -200px 3px 30px rgb(204, 202, 202);
   border-bottom-left-radius: 0px;
@@ -128,7 +128,7 @@ h2 {
   border: 1px solid rgb(210, 230, 238);
   box-shadow: -3px 0px 0px rgb(186, 221, 233);
   border-radius: 3px;
-  padding: 1px;
+  padding: 3px;
 }
 .section-name {
   color: rgb(6, 44, 6);
@@ -138,7 +138,6 @@ h2 {
   padding: 1px 8px;
   box-shadow: -2px 1px 1px rgb(215, 226, 215);
   border: 1px solid rgba(198, 200, 201, 0.997);
-  background: rgba(235, 237, 238, 0.808);
 }
 
 .section-name:hover{
@@ -149,8 +148,6 @@ h2 {
   padding: 1px 8px;
   box-shadow: -2px 1px 2px rgb(215, 226, 215);
   border: 1px solid lightblue;
-  background: rgb(235, 237, 238);
-  border-radius: 3px 3px 3px 3px;
 }
 
 #course-description {
@@ -165,7 +162,7 @@ h2 {
 
 .layout-chapter {
   width: 900px;
-  margin: 25px 30px;
+  margin: 25px 32px;
 }
 
 .layout-section {

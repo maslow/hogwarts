@@ -84,12 +84,12 @@ export default {
 
 .layout-content {
   z-index: 999;
-  min-height: 200px;
-  margin: 12px 3px;
+  min-height: 500px;
+  margin: 0;
   overflow: hidden;
   background: #fefefe;
   border-radius: 4px;
-  padding: 8px;
+  padding: 0;
   border: 1px solid whitesmoke;
   border-radius: 0px;
   box-shadow: 0 0 15px lightblue;
