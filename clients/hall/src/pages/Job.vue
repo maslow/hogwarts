@@ -255,7 +255,7 @@ h2 {
 }
 
 .job-page {
-  padding-top: 10px;
+  padding-top: 0px;
 }
 
 .CodeMirror {
