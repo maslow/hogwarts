@@ -1,30 +1,31 @@
 <template>
-    <div>
+    <div class="job-page">
         <Row>
             <Col :span="8">
-            <div class="document-container" v-html="document"></div>
+            <div class="document-container">
+                <div class="toolbar-above-document">
+                  <span style="font-size: 20px;">{{section.name}}</span>
+                </div>
+                <div class="document-content" v-html="document"></div>
+            </div>
             </Col>
             <Col :span="6">
-            <div style="background-color:rgb(11, 76, 97);height:600px;overflow: auto; ">
+            <div class="file-tree-container">
                 <div class="toolbar">
                     <ButtonGroup class="button-group">
-                        <Button :disabled="!isLogined()" type="text" size="small" class="text-white" @click="createFileModal = true">
+                        <Button :disabled="!isLogined()" type="text" size="large" class="text-white" @click="createFileModal = true">
                             <Icon type="plus" color="#ff9900"></Icon>
                             新建文件
                         </Button>
-                        <Button :disabled="!isLogined()" type="text" size="small" class="text-white" @click="createFolderModal = true">
+                        <Button :disabled="!isLogined()" type="text" size="large" class="text-white" @click="createFolderModal = true">
                             <Icon type="folder" color="goldenrod"></Icon>
                             新建文件夹
                         </Button>
-                        <Button :disabled="!isLogined() || evaluating" type="text" size="small" class="text-white" @click="saveFiles">
+                        <Button :disabled="!isLogined() || evaluating" type="text" size="large" class="text-white" @click="saveFiles">
                             <Icon type="checkmark" color="#2d8cf0"></Icon>
                             保存
                         </Button>
                     </ButtonGroup>
-                    <Button :disabled="!isLogined()" :loading="evaluating" type="success" size="small" class="text-white" @click="evalJob">
-                        <Icon type="ios-play"></Icon>
-                        运行
-                    </Button>
                 </div>
                 <ul style="margin-left: 3px">
                     <file-tree v-for="file in files" :editing="currentSelected" :key="file.path" :model="file" v-on:select="onSelectFile" v-on:delete="onDeleteFile">
@@ -33,7 +34,13 @@
             </div>
             </Col>
             <Col :span="10">
-            <codemirror v-model="currentFile.content" :options="options" width="100%" height="600px" @input="onFileContentChange"></codemirror>
+            <div class="toolbar-above-editor">
+                    <Button :disabled="!isLogined()" :loading="evaluating" type="success"  class="text-white" @click="evalJob">
+                        <Icon type="ios-play"></Icon>
+                        运行
+                    </Button>
+                </div>
+            <codemirror v-model="currentFile.content" :options="options" width="100%" height="560px" @input="onFileContentChange"></codemirror>
             </Col>
         </Row>
         <CreateJobFile v-model="createFileModal" type="file" :selected="currentSelected" @ok="onSelectFile"></CreateJobFile>
@@ -66,7 +73,7 @@ export default {
   data() {
     return {
       job: null,
-      section: null,
+      section: {},
       reports: null,
       document: "",
       evaluating: false,
@@ -153,7 +160,7 @@ export default {
         await Job.updateFileContent(this.job._id, file.path, file.content);
         file.hash = file.hash_new;
       }
-      this.$Notice.success({ title: "文件提交保存成功！" });
+      if (files.length) this.$Notice.success({ title: "文件提交保存成功！" });
     },
     async evalJob() {
       this.evaluating = true;
@@ -247,6 +254,10 @@ h2 {
   font-weight: normal;
 }
 
+.job-page {
+  padding-top: 10px;
+}
+
 .CodeMirror {
   font-size: 15px !important;
 }
@@ -255,22 +266,50 @@ h2 {
   color: whitesmoke;
 }
 
-.toolbar {
-  padding: 3px;
+.file-tree-container {
+  background-color: rgb(11, 76, 97);
+  height: 600px;
+  overflow: auto;
+}
+
+.file-tree-container .toolbar {
+  padding: 2px 1px 1px;
   margin-bottom: 5px;
-  border-bottom: 1px solid rgba(211, 211, 211, 0.23);
-  background-color: rgba(8, 55, 70, 0.79);
+  border-bottom: 1px solid rgb(11, 61, 78);
+  box-shadow: 1px 6px 30px rgba(11, 61, 78, 0.997);
+  background-color: rgb(8, 51, 66);
   text-align: right;
+}
+
+.toolbar-above-editor {
+  padding: 3px 10px 2px 30px;
+  border-bottom: 1px solid rgb(11, 61, 78);
+  box-shadow: 1px 6px 30px rgba(11, 61, 78, 0.997);
+  background-color: rgb(8, 51, 66);
+  text-align: left;
+  border-left: 1px solid rgb(8, 51, 66);
 }
 
 .document-container {
   background-color: lightyellow;
-  padding: 15px;
-  margin-bottom: 5px;
-  border-bottom: 1px solid rgba(211, 211, 211, 0.23);
-  box-shadow: 1px 1px 100px rgba(128, 202, 226, 0.79);
-  overflow: scroll;
+  border: 0px solid rgb(211, 211, 211);
   height: 600px;
+}
+
+.document-container .document-content {
+  padding: 15px;
+  height: 560px;
+  overflow: scroll;
+}
+
+.document-container .toolbar-above-document {
+  height: 40px;
+  padding: 4px 5px 4px 12px;
+  border: 1px solid lightgray;
+  box-shadow: 0px 1px 10px rgba(211, 211, 211, 0.555);
+  /* background-color: rgb(8, 51, 66); */
+  background-color: #c6daef0d;
+  text-align: left;
 }
 
 .document-container blockquote {

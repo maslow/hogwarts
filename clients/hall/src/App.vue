@@ -1,6 +1,6 @@
 <template>
     <div class="layout">
-        <Menu mode="horizontal" theme="dark" active-name="/" @on-select="onSelect">
+        <Menu mode="horizontal" theme="light" active-name="/" @on-select="onSelect">
             <div class="layout-logo">
             </div>
             
@@ -19,6 +19,7 @@
               </Menu-item>
             </div>
         </Menu>
+        <div style="clear:both;"></div>
         <div class="layout-content">
             <transition mode="out-in">
                 <router-view></router-view>
@@ -76,6 +77,9 @@ export default {
   background-repeat: no-repeat;
   background-position: center;
 }
+.layout-logo::after{
+  clear: both;
+}
 
 .layout-nav {
   width: 420px;
@@ -86,13 +90,9 @@ export default {
   z-index: 999;
   min-height: 500px;
   margin: 0;
-  overflow: hidden;
   background: #fefefe;
   border-radius: 4px;
   padding: 0;
-  border: 1px solid whitesmoke;
-  border-radius: 0px;
-  box-shadow: 0 0 15px lightblue;
 }
 
 .layout-content-main {

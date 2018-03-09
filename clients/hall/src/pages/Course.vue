@@ -1,7 +1,7 @@
 <template>
     <div id="course">
         <div class="course-name">
-            {{course.name}}    
+          {{course.name}}
         </div>
         <div id="course-description">
             <i>{{course.desc}}</i>
@@ -110,13 +110,13 @@ h2 {
   font-size: 28px;
   font-weight: 300;
   border-bottom: 1px solid rgb(153, 213, 213);
-  margin: -560px 0px 0px ;
+  border-right: 0px solid rgb(153, 213, 213); 
+  margin: -560px 0px 0px ; 
   height: 600px;
-  width: 1200px;
-  overflow: hidden;
+  width: 1100px;
   padding: 560px 30px 0;
   text-align: left;
-  box-shadow: -200px 3px 30px rgb(204, 202, 202);
+  box-shadow: -200px 3px 30px rgb(204, 202, 202); 
   border-bottom-left-radius: 0px;
   border-bottom-right-radius: 450px;
 }
@@ -161,7 +161,7 @@ h2 {
 }
 
 .layout-chapter {
-  width: 900px;
+  width: 800px;
   margin: 25px 32px;
 }
 
