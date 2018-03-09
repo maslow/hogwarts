@@ -1,5 +1,5 @@
 <template>
-  <div class="courses">  
+  <div class="courses" v-cloak>  
     <Row type="flex":gutter="20" justify="start">
       <Col class="course-col" span="8" v-for="c in courses" :key="c._id">
       <Card>

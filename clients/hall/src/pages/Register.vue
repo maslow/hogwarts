@@ -1,8 +1,6 @@
 <template>
-    <div class="login-form">
-        <h3>
-            请登录
-        </h3>
+    <div class="login-form" v-cloak v-show="!isLogined()">
+        <p class="header-title">欢迎注册</p>
         <hr/>
         <Row>
             <Col><span class="label">邮箱</span></Col>
@@ -36,7 +34,7 @@ import identity from "@/api/identity.js";
 import validator from "validator";
 
 export default {
-  name: "login",
+  name: "signup",
   data() {
     return {
       email: "",
@@ -51,25 +49,29 @@ export default {
 
       if (this.password.length < 6 || this.password.length > 18)
         msg = "密码长度不少于6, 不大于18";
+
       if (this.password != this.password_repeat) msg = "两次密码不一致";
 
-      if (msg)
-        return this.$Notice.error({
-          title: msg
-        });
+      if (msg) return this.$Notice.error({ title: msg });
 
       try {
         await user.Register(this.email, this.password);
         let ret = await user.Login(this.email, this.password);
         identity.set(ret);
-        this.$router.push('/')
+        window.location.reload();
       } catch (err) {
         console.log(err);
         this.$Notice.error({
-          title: "Failed to register"
+          title: "Failed to register： " + err.toString()
         });
       }
+    },
+    isLogined() {
+      return !identity.isExpired();
     }
+  },
+  created() {
+    if (!identity.isExpired()) this.$router.push("/");
   }
 };
 </script>
@@ -77,14 +79,15 @@ export default {
 <style scoped>
 .login-form {
   width: 400px;
-  margin: 30px auto 100px;
+  margin: 0 auto;
+  padding-top: 80px;
 }
-.login-form h3 {
+.login-form .header-title {
   font-weight: 300;
   font-size: 18px;
 }
 .login-form hr {
-  margin-bottom: 50px;
+  margin-bottom: 20px;
   margin-left: 2px;
   width: 300px;
   background-color: lightgray;

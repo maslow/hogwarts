@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import identity from '@/api/identity'
+import '@/assets/global.css'
 
 Vue.config.productionTip = false
 
