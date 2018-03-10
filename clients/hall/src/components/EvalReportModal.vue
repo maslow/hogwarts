@@ -1,16 +1,23 @@
 <template>
-  <Modal v-model="show_internal" title="Result">
-    <div v-if="ok" style="color: green;text-align:center;font-size: 30px;">
-            恭喜通过！
+  <Modal v-model="show_internal" :width="ok?500:700" :closable="false" :mask-closable="false">
+    <div v-if="ok" class="modal-header" style="color: #19be6b">
+      恭喜通过
     </div>
-    <div v-if="!ok" style="color: #dc871d; text-align:center;font-size: 30px;">
-            FAILED
+    <div v-if="!ok" class="modal-header" style="color: rgb(144, 141, 146);">
+      未通过
     </div>
-    <br/>
-    <div v-if="!ok" style="padding-left: 30px;padding-right: 30px;">
-        <div style="font-size: 16px;" v-html="message"></div>
-        <br />
-        <p style="color: red;" v-if="show_detail" v-html="stack"></p>
+    <div class="tests-list">
+      <div class="test-item" v-for="test in tests">
+        <div class="test-title">
+          <Icon type="close-round" v-if="!test.passed" color="#ed3f14"></Icon>
+          <Icon type="checkmark-round" v-if="test.passed" color="green"></Icon>          
+          {{test.title}}   
+        </div>
+        <div class="test-err-detail" v-if="!test.passed">
+          <pre class="err-message">{{test.err.message}}</pre>
+          <pre class="err-stack" v-if="show_detail">{{test.err.stack}}</pre>
+        </div>
+      </div>
     </div>
     <div slot="footer">
         <Button type="info" @click="detail" v-if="!ok">查看详细</Button>
@@ -31,12 +38,12 @@ export default {
   },
   data() {
     return {
-        show_detail: false
-    }
+      show_detail: false
+    };
   },
   methods: {
-    detail(){
-        this.show_detail = !this.show_detail
+    detail() {
+      this.show_detail = !this.show_detail;
     },
     cancel() {
       this.show_internal = false;
@@ -51,29 +58,71 @@ export default {
         this.$emit("close", v);
       }
     },
-    message: {
-        get: function(){
-            if(this.reports && !this.reports.ok)
-                return this.reports.tests[0].err.message.replace(/\n/g, '<br/>')
-        }
+    tests: {
+      get: function() {
+        if (this.reports) return this.reports.tests;
+      }
     },
-    stack:{
-        get: function(){
-            if(this.reports && !this.reports.ok)
-                return this.reports.tests[0].err.stack.replace(/\n/g, '<br/>')
-        }
+    message: {
+      get: function() {
+        if (this.reports && !this.reports.ok)
+          return this.reports.tests[0].err.message; //.replace(/\n/g, '<br/>')
+      }
+    },
+    stack: {
+      get: function() {
+        if (this.reports && !this.reports.ok)
+          return this.reports.tests[0].err.stack; //.replace(/\n/g, '<br/>')
+      }
     },
     ok: {
-      get: function(){
-        if(this.reports)
-            return this.reports.ok
-        else return null
+      get: function() {
+        if (this.reports) return this.reports.ok;
+        else return null;
       }
     }
   }
 };
 </script>
 
-<style>
-
+<style scoped>
+.modal-header {
+  text-align: center;
+  font-size: 30px;
+  font-weight: 300;
+  margin-bottom: 20px;
+  box-shadow: 0px 0px 15px lightgray;
+}
+.tests-list {
+  padding-left: 20px;
+}
+.tests-list .test-item {
+  margin-bottom: 10px;
+}
+.tests-list .test-item .test-title{
+  font-size: 20px;
+  font-weight: 200;
+}
+.tests-list .test-err-detail{
+  margin-left: 21px;
+  margin-top: 10px;
+  padding: 5px;
+  padding-left: 10px;
+  border-left: 1px solid lightgray;
+  border-radius: 5px;
+}
+.tests-list .test-err-detail pre.err-message{
+  margin: 0;
+  font-size: 14px;
+  font-weight: 100;
+  margin-bottom: 5px;
+  color: #ed3f14;
+  font-weight: 100;
+}
+.tests-list .test-err-detail pre.err-stack{
+  margin: 0px;
+  color: gray;
+  font-weight: 100;
+  font-size: 12px;
+}
 </style>
