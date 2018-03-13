@@ -92,7 +92,6 @@ router.post('/updateSection', async function (req, res) {
     const section_name = req.body.name 
     const section_description = req.body.description
     const section_seq = req.body.seq 
-    const template_id = req.body.template_id
     const chapter_id = req.body.chapter_id
     const document = req.body.document
     const testcase = req.body.testcase
@@ -122,7 +121,6 @@ router.post('/updateSection', async function (req, res) {
         if(section_name) section.name = section_name
         if(section_description) section.desc = section_description
         if(section_seq) section.sequence = section_seq
-        if(template_id) section.template_id = template_id
         if(chapter_id) section.chapter_id = chapter_id
         if(document) section.document = document
         if(testcase) section.testcase = testcase
