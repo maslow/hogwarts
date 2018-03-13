@@ -18,7 +18,20 @@ async function run(docker_image, src_path) {
     _log('Docker Command: %s', cmd)
 
     return new Promise((resolve, reject) => {
+        let canceled = false
+        // Timeout 15s
+        const timer_id = setTimeout(() => {
+            cp.exec(`docker stop -t 0 ${container_name}`, (err, stdout, stderr) => {
+                _log("Eval job met timeout 15s")
+                canceled = true                
+                reject(new Error("Error:Eval job met timeout 15s"))
+            })
+        }, 15 * 1000)
+
+        // Docker run
         cp.exec(cmd, (error, stdout, stderr) => {
+            if(canceled) return;
+            clearTimeout(timer_id)
             _debug('Docker-run results, stdout: %O, stderr: %O', stdout, stderr)
             try {
                 if (stdout) {
@@ -26,7 +39,7 @@ async function run(docker_image, src_path) {
                     resolve(ret)
                 } else if (error) {
                     throw error
-                } else{
+                } else {
                     throw new Error("Unknow Error, cmd: %s", cmd)
                 }
             } catch (err) {
