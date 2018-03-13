@@ -135,7 +135,7 @@ export default {
       if (file.type === "dir") {
         if (!file.children) {
           let files = await Job.getFiles(this.job._id, file.path);
-          if (files && !files.length)
+          if (files && files.length)
             file.children = files.map(f => transferFileFormat(f, file));
         }
       } else {
