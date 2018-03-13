@@ -10,7 +10,7 @@ services:
       - frontend
 
   mongo:
-    image: mongo:latest
+    image: mongo:3.6.3
     deploy:
       replicas: 1
       placement:
