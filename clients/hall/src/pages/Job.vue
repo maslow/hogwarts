@@ -87,7 +87,7 @@ export default {
         tabSize: 4,
         theme: "solarized dark",
         lineNumbers: true,
-        lineWrapping: true,
+        lineWrapping: false,
         mode: "js",
         line: true,
         foldGutter: true,

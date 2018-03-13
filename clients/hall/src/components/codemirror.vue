@@ -72,8 +72,10 @@ export default {
           if (key === "mode") {
             let mode = loadMode(options[key])
             let mime = mode.mime || ""
-            
-            this.editor.setOption("mode", mode.mode)
+            if(mime instanceof Array)
+              mime = mime[0] || ""
+
+            this.editor.setOption("mode", mime)
             continue
           }
           
