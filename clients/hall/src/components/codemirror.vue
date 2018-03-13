@@ -29,6 +29,7 @@ export default {
     if (!this.height) this.height = "auto";
 
     loadTheme(this.options.theme);
+    loadMode(this.options.mode)
   },
   mounted: function() {
     var _this = this;

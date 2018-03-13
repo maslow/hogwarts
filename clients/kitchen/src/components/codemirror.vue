@@ -29,6 +29,7 @@ export default {
     if (!this.height) this.height = "auto";
 
     loadTheme(this.options.theme);
+    loadMode(this.options.mode)
   },
   mounted: function() {
     var _this = this;
@@ -107,12 +108,8 @@ export default {
 };
 
 function loadMode(mode) {
-  console.log(mode)
   var isCustomMode = !!CodeMirror.modes[mode];
-  // console.log(`Mode: ${typeof mode}`)
-  // console.log(mode.toLowerCase)
   var m = CodeMirror.findModeByFileName(mode);
-  // console.log(m)
   if (!m) m = CodeMirror.findModeByName(mode);
 
   if (!m) m = CodeMirror.findModeByExtension(mode);

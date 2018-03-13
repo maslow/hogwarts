@@ -27,10 +27,12 @@ export default {
                 tabSize: 4,
                 theme: 'solarized dark',
                 lineNumbers: true,
-                mode: 'javascript',
+                lineWrapping: false,
+                mode: 'text/javascript',
                 line: true,
                 foldGutter: true,
                 gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+                lineSeparator: "\n"
             }
 
         }
