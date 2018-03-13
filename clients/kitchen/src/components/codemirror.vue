@@ -4,144 +4,138 @@
 </template>
 
 <script>
-const CodeMirror = require('codemirror')
-require('codemirror/lib/codemirror.css')
-require('codemirror/mode/meta')
+const CodeMirror = require("codemirror");
+require("codemirror/lib/codemirror.css");
+require("codemirror/mode/meta");
 
 export default {
-  name: 'codemirror',
-  data: function () {
-    return {
-    }
+  name: "codemirror",
+  data: function() {
+    return {};
   },
   props: {
     width: String,
     height: String,
+    filename: String,
     value: String,
     options: {
       type: Object,
       required: true
-    },
+    }
   },
-  created: function () {
-    let mode = loadMode(this.options.mode)
-    if (mode)
-      this.options.mode = mode.mime
+  created: function() {
+    if (!this.width) this.width = "auto";
 
-    if (!this.width)
-      this.width = 'auto'
+    if (!this.height) this.height = "auto";
 
-    if (!this.height)
-      this.height = 'auto'
-
-    loadTheme(this.options.theme)
+    loadTheme(this.options.theme);
   },
-  mounted: function () {
-    var _this = this
-    this.editor = CodeMirror.fromTextArea(this.$el, this.options)
-    this.editor.on('change', cm => {
-      let value = cm.getValue()
-      this.$emit('input', value)
-    })
+  mounted: function() {
+    var _this = this;
+    this.editor = CodeMirror.fromTextArea(this.$el, this.options);
+    this.editor.on("change", cm => {
+      let value = cm.getValue();
+      this.$emit("input", value);
+    });
 
-    this.resize()
+    this.resize();
 
     let events = [
-      'changes',
-      'beforeChange',
-      'cursorActivity',
-      'keyHandled',
-      'inputRead',
-      'electricInput',
-      'beforeSelectionChange',
-      'viewportChange',
-      'swapDoc',
-      'gutterClick',
-      'gutterContextMenu',
-      'focus',
-      'blur',
-      'refresh',
-      'optionChange',
-      'scrollCursorIntoView',
-      'update'
-    ]
-    events.forEach(e => this.editor.on(e, (a, b, c) => this.$emit(e, a, b, c)))
+      "changes",
+      "beforeChange",
+      "cursorActivity",
+      "keyHandled",
+      "inputRead",
+      "electricInput",
+      "beforeSelectionChange",
+      "viewportChange",
+      "swapDoc",
+      "gutterClick",
+      "gutterContextMenu",
+      "focus",
+      "blur",
+      "refresh",
+      "optionChange",
+      "scrollCursorIntoView",
+      "update"
+    ];
+    events.forEach(e => this.editor.on(e, (a, b, c) => this.$emit(e, a, b, c)));
 
-    this.$emit('ready', this.editor)
+    this.$emit("ready", this.editor);
   },
   watch: {
     options: {
       deep: true,
       handler(options, oldOptions) {
-        var key
+        var key;
         for (key in options) {
-          if (key === 'mode') {
+          if (key === "mode") {
             let mode = loadMode(options[key])
-            this.options.mode = mode.mime
-          }
-          if (key === 'theme')
-            loadTheme(options[key])
+            let mime = mode.mime || ""
+            if(mime instanceof Array)
+              mime = mime[0] || ""
 
+            this.editor.setOption("mode", mime)
+            continue
+          }
+          
+          if (key === "theme") loadTheme(options[key])
           this.editor.setOption(key, options[key])
         }
       }
     },
     width() {
-      this.resize()
+      this.resize();
     },
     height() {
-      this.resize()
+      this.resize();
     },
-    value: function (newVal, oldVal) {
-      let editor_value = this.editor.getValue()
+    value: function(newVal, oldVal) {
+      let editor_value = this.editor.getValue();
       if (newVal !== editor_value) {
-        let scrollInfo = this.editor.getScrollInfo()
-        this.editor.setValue(newVal)
-        this.editor.scrollTo(scrollInfo.left, scrollInfo.top)
+        let scrollInfo = this.editor.getScrollInfo();
+        this.editor.setValue(newVal);
+        this.editor.scrollTo(scrollInfo.left, scrollInfo.top);
       }
     }
   },
   methods: {
     resize() {
-      this.editor.setSize(this.width, this.height)
+      this.editor.setSize(this.width, this.height);
     }
   }
-}
+};
 
 function loadMode(mode) {
-  var isCustomMode = !!CodeMirror.modes[mode]
+  console.log(mode)
+  var isCustomMode = !!CodeMirror.modes[mode];
+  // console.log(`Mode: ${typeof mode}`)
+  // console.log(mode.toLowerCase)
+  var m = CodeMirror.findModeByFileName(mode);
+  // console.log(m)
+  if (!m) m = CodeMirror.findModeByName(mode);
 
-  var m = CodeMirror.findModeByMIME(mode)
+  if (!m) m = CodeMirror.findModeByExtension(mode);
+
+  if (!m) m = CodeMirror.findModeByMIME(mode);
 
   if (!m)
-    m = CodeMirror.findModeByName(mode)
-
-  if (!m)
-    m = CodeMirror.findModeByExtension(mode)
-
-  if (!m)
-    m = CodeMirror.findModeByFileName(mode)
-
-  if(!m)
     return {
-      mime: ''
-    }
+      mime: ""
+    };
 
-  if (m && m !== 'null')
-    require('codemirror/mode/' + m.mode + '/' + m.mode + '.js')
+  if (m && m !== "null")
+    require("codemirror/mode/" + m.mode + "/" + m.mode + ".js");
 
-  return m
+  return m;
 }
 
 function loadTheme(theme) {
-  if (theme && theme == 'solarized light')
-    theme = 'solarized'
+  if (theme && theme == "solarized light") theme = "solarized";
 
-  if (theme && theme == 'solarized dark')
-    theme = 'solarized'
+  if (theme && theme == "solarized dark") theme = "solarized";
 
   // require theme
-  if (theme)
-    require('codemirror/theme/' + theme + '.css')
+  if (theme) require("codemirror/theme/" + theme + ".css");
 }
 </script>
