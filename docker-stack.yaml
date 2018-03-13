@@ -1,20 +1,11 @@
 version: '3'
 services:
-  kitchen:
-    image: registry.cn-hongkong.aliyuncs.com/step8step/hogwarts-kitchen:0.1
+  frontend:
+    image: registry.cn-hongkong.aliyuncs.com/step8step/hogwarts-frontend:0.1
     deploy:
       replicas: 1
     ports:
-      - "88:8080"
-    networks:
-      - frontend
-  
-  hall:
-    image: registry.cn-hongkong.aliyuncs.com/step8step/hogwarts-hall:0.1
-    deploy:
-      replicas: 1
-    ports:
-      - "80:8080"
+      - "80:80"
     networks:
       - frontend
 
