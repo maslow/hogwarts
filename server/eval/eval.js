@@ -20,10 +20,16 @@ async function run(docker_image, src_path) {
     return new Promise((resolve, reject) => {
         cp.exec(cmd, (error, stdout, stderr) => {
             _debug('Docker-run results, stdout: %O, stderr: %O', stdout, stderr)
-            if (stdout) {
-                const ret = resolve_report_result(stdout)
-                resolve(ret)
-            } else if (error) {
+            try {
+                if (stdout) {
+                    const ret = resolve_report_result(stdout)
+                    resolve(ret)
+                } else if (error) {
+                    throw error
+                } else{
+                    throw new Error("Unknow Error, cmd: %s", cmd)
+                }
+            } catch (err) {
                 _log("Docker-run caught an error: %o", error)
                 reject(error)
             }
