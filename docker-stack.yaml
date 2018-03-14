@@ -98,7 +98,7 @@ services:
     networks:
       - backend
       - frontend
-  
+
 networks:
   backend:
   frontend:
@@ -107,3 +107,7 @@ volumes:
   portainer-data:
   eval-data:
   mongo-data:
+
+secrets:
+  portainer-pass:
+    external: true
