@@ -19,7 +19,7 @@
 ### 服务对外端口默认分配：
     - gateway: 8888
 
-### 部署说明
+### 开发环境部署说明
 > 安装docker, 其它系统[参考](https://www.docker-cn.com/community-edition))
 ```shell
     # centos 7.x
