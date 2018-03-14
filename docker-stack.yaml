@@ -1,4 +1,4 @@
-version: '3'
+version: '3.1'
 services:
   frontend:
     image: registry.cn-hongkong.aliyuncs.com/step8step/hogwarts-frontend:0.1
