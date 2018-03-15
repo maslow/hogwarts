@@ -6,7 +6,8 @@ let G_API = Identity.G_API
 export default {
   Login,
   Register,
-  validateToken
+  validateToken,
+  captcha
 }
 
 function Login(email, password) {
@@ -20,13 +21,15 @@ function Login(email, password) {
   })
 }
 
-function Register(email, password) {
+function Register(email, password, captcha_text, captcha_token) {
   return $.ajax({
     url: G_API + '/createUser',
     method: 'post',
     data: {
       email,
-      password
+      password,
+      captcha_text,
+      captcha_token
     }
   })
 }
@@ -39,5 +42,12 @@ function validateToken(){
     data: {
       token
     }
+  })
+}
+
+function captcha(){
+  return $.ajax({
+    url: G_API + '/captcha',
+    method: 'get'
   })
 }

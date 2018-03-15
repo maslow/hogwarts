@@ -21,6 +21,10 @@ const LOGINED_ROLES = [roles.user, roles.author]
 const ALL_ROLES = LOGINED_ROLES.concat(roles.guest)
 
 const services = {
+    "/captcha":{
+        target: servers.AUTH,
+        access: ALL_ROLES
+    },
     "/login": {
         target: servers.AUTH,
         access: [roles.guest]

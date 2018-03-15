@@ -1,10 +1,3 @@
-/**
- * @api GET  /tokens?token      # 获取token payload
- * @api POST /tokens            # 获取token
- * @api POST /users             # 创建用户
- * @api GET  /getUser           # 获取用户
- */
-
 const crypto = require('crypto')
 const express = require('express')
 const body_parser = require('body-parser')
@@ -13,6 +6,7 @@ const mongoose = require('mongoose')
 const debug = require('debug')
 
 const UserModel = require('./model/User')
+const {verifyCaptchaToken} = require('./captcha_token')
 
 // mongoose connection
 mongoose.Promise = Promise
@@ -33,6 +27,11 @@ app.use(function (req, res, next) {
     _log('Accept [%s %s %s] request from [%s]', req.hostname, req.method, req.url, req.ip)
     next()
 })
+
+/**
+ * Routes
+ */
+app.use(require("./routes/captcha"))
 
 /**
  * Get user by id
@@ -61,9 +60,14 @@ app.post('/createUser', async (req, res) => {
     const email = req.body.email
     const username = req.body.email
     const password = req.body.password
+    const captcha_text = req.body.captcha_text
+    const captcha_token = req.body.captcha_token
 
     try {
         // validations
+        if(!verifyCaptchaToken(captcha_text, captcha_token))
+            return res.status(422).send('Invalid Captcha')
+            
         if (!$.isEmail(email) || !$.isLength(email, { min: 6, max: 64 }))
             return res.status(422).send('Invalid email')
 
