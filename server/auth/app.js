@@ -18,7 +18,7 @@ const UserModel = require('./model/User')
 mongoose.Promise = Promise
 const SERVER_MONGO = process.env['SERVER_MONGO'] || 'localhost'
 const uri = `mongodb://${SERVER_MONGO}/tech_auth`
-mongoose.connect(uri, { useMongoClient:true })
+mongoose.connect(uri, { useMongoClient: true })
 
 const app = express()
 const _log = debug('AUTH:PROD')
@@ -30,7 +30,7 @@ app.use(body_parser.json())
 app.use(body_parser.urlencoded({ extended: false }))
 
 app.use(function (req, res, next) {
-    _log('Accept [%s %s %s] request from [%s]', req.hostname, req.method, req.url, req.ip)    
+    _log('Accept [%s %s %s] request from [%s]', req.hostname, req.method, req.url, req.ip)
     next()
 })
 
@@ -41,10 +41,10 @@ app.get('/getUserById', async (req, res) => {
     const user_id = req.query.id
 
     try {
-        const user = await UserModel.findById(user_id).select({password_hash: 0})
-        if(!user)
+        const user = await UserModel.findById(user_id).select({ password_hash: 0 })
+        if (!user)
             return res.status(404).send('User not found')
-    
+
         return res.status(200).send(user)
     } catch (err) {
         _log('Get user (id:%s) detail caught an error: %o', user_id, err)
@@ -62,30 +62,30 @@ app.post('/createUser', async (req, res) => {
     const username = req.body.email
     const password = req.body.password
 
-    try{
+    try {
         // validations
-        if(!$.isEmail(email) || !$.isLength(email, { min: 6, max: 64 }))
+        if (!$.isEmail(email) || !$.isLength(email, { min: 6, max: 64 }))
             return res.status(422).send('Invalid email')
-        
-        if(!$.isLength(username, { min: 2, max: 32}))
+
+        if (!$.isLength(username, { min: 2, max: 32 }))
             return res.status(422).send('Invalid username')
 
-        if(!$.isLength(password, { min: 5, max: 16}))
+        if (!$.isLength(password, { min: 5, max: 16 }))
             return res.status(422).send('Invalid password')
-        
-        let user = await UserModel.find({email})
-        if(!user)
+
+        let user = await UserModel.find({ email })
+        if (!user)
             return res.status(422).send('Email already existed')
-        
-        user = await UserModel.find({email})
-        if(!user)
+
+        user = await UserModel.find({ email })
+        if (!user)
             return res.status(422).send('Email already existed')
 
         // create new user
-        const new_user = new UserModel({username, email})
+        const new_user = new UserModel({ username, email })
         new_user.password_hash = hash(password)
         new_user.roles = ['user']
-        
+
         // save & return
         await new_user.save()
         return res.status(201).send('ok')
@@ -105,10 +105,10 @@ app.post('/login', async (req, res) => {
 
     try {
         // find user
-        const user = await UserModel.findOne({username, password_hash})
-        if(!user)
+        const user = await UserModel.findOne({ username, password_hash })
+        if (!user)
             return res.status(422).send('Username or password is invalid')
-        
+
         // get token
         const expire = new Date().getTime() + 7 * 24 * 60 * 60 * 1000
         const result = {
@@ -129,19 +129,24 @@ app.post('/login', async (req, res) => {
 app.post('/validateToken', async (req, res) => {
     const token = req.body.token || ''
 
-    const payload = fromToken(token)
-    if (!payload)
-        return res.status(401).send('Invalid Token')
+    try {
+        const payload = fromToken(token)
+        if (!payload)
+            return res.status(401).send('Invalid Token')
 
-    const user = await UserModel.findById(payload.uid)
-    if(!user)
-        return res.status(404).send('User not found')
+        const user = await UserModel.findById(payload.uid)
+        if (!user)
+            return res.status(404).send('User not found')
 
-    const data = {
-        uid: payload.uid,
-        roles: user.roles
+        const data = {
+            uid: payload.uid,
+            roles: user.roles
+        }
+        return res.status(200).send(data)
+    } catch (err) {
+        _log('Validate token caught an error: %o', err)
+        return res.status(400).send('Internal Error')
     }
-    return res.status(200).send(data)
 })
 
 function getToken(user_id, expire) {
