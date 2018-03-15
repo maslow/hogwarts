@@ -32,7 +32,6 @@ router.get('/getUserJobBySectionId', async function (req, res) {
 })
 
 /**
- * TODO reimplement it
  * Eval a user job by job id
  */
 router.post('/evalUserJobByJobId', async function (req, res) {

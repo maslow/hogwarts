@@ -1,11 +1,12 @@
 import $ from 'jquery'
-import Identity from '@/api/identity'
+import Identity from './identity'
 
 let G_API = Identity.G_API
 
 export default {
   Login,
-  Register
+  Register,
+  validateToken
 }
 
 function Login(email, password) {
@@ -26,6 +27,17 @@ function Register(email, password) {
     data: {
       email,
       password
+    }
+  })
+}
+
+function validateToken(){
+  const token = Identity.getAccessToken()
+  return $.ajax({
+    url: G_API + '/validateToken',
+    method: 'post',
+    data: {
+      token
     }
   })
 }

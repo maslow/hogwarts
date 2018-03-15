@@ -32,7 +32,8 @@
 </template> 
 
 <script>
-import identity from "@/api/identity";
+import identity from "./api/identity";
+import User from "./api/user"
 
 export default {
   name: "app",
@@ -43,6 +44,7 @@ export default {
     onSelect(name) {
       if (name === "/logout") {
         identity.clear();
+        this.$router.push("/login");
         return window.location.reload();
       }
       this.$router.push(name);
@@ -51,6 +53,17 @@ export default {
   computed: {
     isLogined() {
       return !identity.isExpired();
+    }
+  },
+  async mounted(){
+    try{
+      let result = await User.validateToken()
+      console.log(result)
+    }catch(err){
+      if(err.status && err.status == 401){
+        identity.clear()
+      }else
+        console.error(err)
     }
   }
 };

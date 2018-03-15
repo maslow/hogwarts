@@ -7,7 +7,9 @@ export default {
   getPublishedCourses,
   getCourse,
 
-  getSection
+  getSection,
+  getSectionCodeFiles,
+  getSectionCodeFileContent,
 }
 
 /**************** Courses  ****************/
@@ -43,6 +45,23 @@ function getSection(sectionId) {
   })
 }
 
+/**************** Codes ***************/
+function getSectionCodeFiles(section_id, path) {
+  return $.ajax({
+    url: G_API + `/getSectionCodeFiles?sid=${section_id}&path=${path}`,
+    method: 'get',
+    headers: { 'Authorization': getBearer() }
+  })
+}
+
+function getSectionCodeFileContent(section_id, path) {
+  return $.ajax({
+    url: G_API + `/getSectionCodeFileContent?sid=${section_id}&path=${path}`,
+    method: 'get',
+    headers: { 'Authorization': getBearer() }
+  })
+}
+
 function getBearer() {
   const token = Identity.getAccessToken()
   if (!token)
@@ -50,3 +69,4 @@ function getBearer() {
     
   return 'Bearer ' + token
 }
+

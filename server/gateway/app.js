@@ -102,9 +102,9 @@ async function validate_token(token) {
     try {
         const _url = services['/validateToken'].target + '/validateToken'
         const res = await request
-            .get(_url)
+            .post(_url)
             .type('json')
-            .query({ token })
+            .send({ token })
 
         _debug("Request [%s] for Validating token (%s)  , response body: %o", _url, token, res.body)
         return res.body

@@ -26,11 +26,7 @@
                     </Tooltip>
 
                     <router-link :to="'/job/' + s._id" class="section-name" v-if="isLogined()">{{s.name}}</router-link>
-                    <a v-if="!isLogined()">
-                        <Tooltip placement="top" content="用户登陆后进行该操作">
-                          <span class="section-name">{{s.name}}</span>
-                        </Tooltip>
-                    </a>
+                    <router-link  v-if="!isLogined()" :to="'/section/' + s._id" class="section-name">{{s.name}}</router-link>
                     <div class="section-description">
                         <i>{{s.desc}}</i>
                     </div>

@@ -28,6 +28,10 @@ export default new Router({
     {
       path: '/job/:sid',
       component: () => import('@/pages/Job')
+    },
+    {
+      path: '/section/:sid',
+      component: () => import('@/pages/Section')
     }
   ]
 })

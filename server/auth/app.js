@@ -126,8 +126,8 @@ app.post('/login', async (req, res) => {
 /**
  * Validate token
  */
-app.get('/validateToken', async (req, res) => {
-    const token = req.query.token || ''
+app.post('/validateToken', async (req, res) => {
+    const token = req.body.token || ''
 
     const payload = fromToken(token)
     if (!payload)
