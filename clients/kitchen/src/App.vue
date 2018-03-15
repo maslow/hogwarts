@@ -26,77 +26,98 @@
 </template> 
 
 <script>
-import identity from '@/api/identity'
+import identity from "./api/identity";
+import User from "./api/user";
 
 export default {
-    name: 'app',
-    data() {
-        return {
-        }
-    },
-    methods: {
-        onSelect(name) {
-            if(name === '/logout'){
-                identity.clear()
-                return window.location.reload()
-            }
-            this.$router.push(name)
-        }
-    },
-    computed: {
-        isLogined(){
-            return !identity.isExpired()
-        }
+  name: "app",
+  data() {
+    return {};
+  },
+  methods: {
+    onSelect(name) {
+      if (name === "/logout") {
+        identity.clear();
+        return window.location.reload();
+      }
+      this.$router.push(name);
     }
-}
+  },
+  computed: {
+    isLogined() {
+      return !identity.isExpired();
+    }
+  },
+  async mounted() {
+    try {
+      const result = await User.validateToken();
+      const roles = result.roles;
+      if (roles.indexOf("author") < 0) {
+        this.$Modal.warning({
+          title: "未认证用户",
+          content: "抱歉，只有认证作者才可以访问课程制作系统，请联系管理员认证。",
+          onOk: () => {
+              identity.clear();
+              return window.location.reload()
+          } 
+        });
+      }
+      console.log(result);
+    } catch (err) {
+      if (err.status && err.status == 401) {
+        identity.clear();
+      } else console.error(err);
+    }
+  }
+};
 </script>
 
 <style scoped>
 .layout {
-    border: 1px solid #d7dde4;
-    background: #f5f7f9;
+  border: 1px solid #d7dde4;
+  background: #f5f7f9;
 }
 
 .layout-logo {
-    width: 30px;
-    height: 30px;
-    background: white;
-    border-radius: 15px;
-    float: left;
-    position: relative;
-    top: 15px;
-    left: 20px;
-    background-image: url("./assets/wizard-hat.png");
-    background-size: 80% 80%;
-    background-repeat: no-repeat;
-    background-position: center;
+  width: 30px;
+  height: 30px;
+  background: white;
+  border-radius: 15px;
+  float: left;
+  position: relative;
+  top: 15px;
+  left: 20px;
+  background-image: url("./assets/wizard-hat.png");
+  background-size: 80% 80%;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .layout-nav {
-    width: 420px;
-    margin: 0 auto;
+  width: 420px;
+  margin: 0 auto;
 }
 
 .layout-content {
-    z-index: 999;
-    min-height: 200px;
-    margin: 12px 3px;
-    overflow: hidden;
-    background: #fefefe;
-    border-radius: 4px;
-    padding: 8px;
-    border: 1px solid whitesmoke;
-    border-radius: 0px;
-    box-shadow: 0 0 15px lightblue;
+  z-index: 999;
+  min-height: 200px;
+  margin: 12px 3px;
+  overflow: hidden;
+  background: #fefefe;
+  border-radius: 4px;
+  padding: 8px;
+  border: 1px solid whitesmoke;
+  border-radius: 0px;
+  box-shadow: 0 0 15px lightblue;
 }
 
 .layout-content-main {
-    padding: 10px;
+  padding: 10px;
 }
 
 .layout-copy {
-    text-align: center;
-    padding: 10px 0 20px;
-    color: #9ea7b4;
+  text-align: center;
+  padding: 10px 0 20px;
+  color: #9ea7b4;
 }
 </style>
