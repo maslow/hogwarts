@@ -20,7 +20,8 @@
             </transition>
         </div>
         <div class="layout-copy">
-            2016-2017 &copy; step8step.com
+            （内测）2018 &copy; step8step.com  &nbsp;&nbsp;
+            <b style="color:darkcyan">申请课程作者QQ群：603059673</b>
         </div>
     </div>
 </template> 

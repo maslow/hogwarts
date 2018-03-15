@@ -26,7 +26,8 @@
             </transition>
         </div>
         <div class="layout-copy">
-            2016-2017 &copy; step8step.com
+            （内测）2018 &copy; step8step.com  &nbsp;&nbsp;
+            <b style="color:darkcyan">反馈讨论QQ群：603059673</b>
         </div>
     </div>
 </template> 
