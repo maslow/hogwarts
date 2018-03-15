@@ -71,18 +71,11 @@ app.post('/createUser', async (req, res) => {
         if (!$.isEmail(email) || !$.isLength(email, { min: 6, max: 64 }))
             return res.status(422).send('Invalid email')
 
-        if (!$.isLength(username, { min: 2, max: 32 }))
-            return res.status(422).send('Invalid username')
-
         if (!$.isLength(password, { min: 5, max: 16 }))
             return res.status(422).send('Invalid password')
 
         let user = await UserModel.find({ email })
-        if (!user)
-            return res.status(422).send('Email already existed')
-
-        user = await UserModel.find({ email })
-        if (!user)
+        if (user)
             return res.status(422).send('Email already existed')
 
         // create new user
