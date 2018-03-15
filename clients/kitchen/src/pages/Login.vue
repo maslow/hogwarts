@@ -21,9 +21,6 @@
             <Button type="primary" style="width: 300px" @click="login">Login</Button>
             </Col>
         </Row>
-        <Row style="margin-top: 15px;">
-            <router-link to="/register">没有账户？注册</router-link>
-        </Row>
     </div>
 </template>
 

@@ -10,10 +10,6 @@ export default new Router({
       component: () => import('@/pages/Login')
     },
     {
-      path: '/register',
-      component: () => import('@/pages/Register')
-    },
-    {
       path: '/',
       component: () => import('@/pages/MyCourses.vue')
     },

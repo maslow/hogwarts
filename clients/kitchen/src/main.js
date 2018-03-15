@@ -15,7 +15,7 @@ async function main() {
 
   router.beforeEach((to, from, next) => {
     iView.Spin.show()
-    if (identity.isExpired() && to.path !== '/login' && to.path !== '/register') {
+    if (identity.isExpired() && to.path !== '/login') {
       router.push('/login')
     } else if (!identity.isExpired() && to.path === '/login') {
       router.push('/')
