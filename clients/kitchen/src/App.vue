@@ -50,19 +50,21 @@ export default {
   },
   async mounted() {
     try {
-      const result = await User.validateToken();
-      const roles = result.roles;
-      if (roles.indexOf("author") < 0) {
-        this.$Modal.warning({
-          title: "未认证用户",
-          content: "抱歉，只有认证作者才可以访问课程制作系统，请联系管理员认证。",
-          onOk: () => {
+      if (this.isLogined) {
+        const result = await User.validateToken();
+        const roles = result.roles;
+        if (roles.indexOf("author") < 0) {
+          this.$Modal.warning({
+            title: "未认证用户",
+            content:
+              "抱歉，只有认证作者才可以访问课程制作系统，请联系管理员认证。",
+            onOk: () => {
               identity.clear();
-              return window.location.reload()
-          } 
-        });
+              return window.location.reload();
+            }
+          });
+        }
       }
-      console.log(result);
     } catch (err) {
       if (err.status && err.status == 401) {
         identity.clear();

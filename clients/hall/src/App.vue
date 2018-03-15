@@ -33,7 +33,7 @@
 
 <script>
 import identity from "./api/identity";
-import User from "./api/user"
+import User from "./api/user";
 
 export default {
   name: "app",
@@ -55,15 +55,14 @@ export default {
       return !identity.isExpired();
     }
   },
-  async mounted(){
-    try{
-      let result = await User.validateToken()
-      console.log(result)
-    }catch(err){
-      if(err.status && err.status == 401){
-        identity.clear()
-      }else
-        console.error(err)
+  async mounted() {
+    try {
+      if (this.isLogined) 
+        await User.validateToken();
+    } catch (err) {
+      if (err.status && err.status == 401) {
+        identity.clear();
+      } else console.error(err);
     }
   }
 };
@@ -90,7 +89,7 @@ export default {
   background-repeat: no-repeat;
   background-position: center;
 }
-.layout-logo::after{
+.layout-logo::after {
   clear: both;
 }
 
