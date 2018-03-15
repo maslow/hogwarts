@@ -107,7 +107,7 @@ export default {
   padding: 10px;
 }
 
-pre {
+.html-container pre {
     display: block;
     padding: 9.5px;
     margin: 0 0 10px;
@@ -121,12 +121,19 @@ pre {
     border-radius: 4px;
 }
 
-pre code {
+.html-container pre code {
     padding: 0;
     font-size: inherit;
     color: inherit;
     white-space: pre-wrap;
     background-color: transparent;
     border-radius: 0;
+}
+
+.html-container p code {
+  background-color: #d3d3d373;
+    border-radius: 3px;
+    padding: 2px 3px;
+    color: darkcyan;
 }
 </style>

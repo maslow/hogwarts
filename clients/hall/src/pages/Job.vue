@@ -107,12 +107,6 @@ export default {
     if (!this.isLogined()) {
       window.location.href = `/#/section/${sectionId}`
       return ;
-      // return this.$Modal.warning({
-      //   title: "请登陆后访问本页面",
-      //   content:
-      //     "抱歉，因本页面功能是编辑和测试用户作业，所以只有登陆用户可正常使用，点击确定即跳往登陆页面。",
-      //   onOk: () => this.$router.push("/login")
-      // });
     }
 
     this.job = await Job.getUserJobBySectionId(sectionId);
@@ -339,5 +333,12 @@ h2 {
   white-space: pre-wrap;
   background-color: transparent;
   border-radius: 0;
+}
+
+.document-container p code {
+  background-color: #d3d3d373;
+    border-radius: 3px;
+    padding: 2px 3px;
+    color: darkcyan;
 }
 </style>
