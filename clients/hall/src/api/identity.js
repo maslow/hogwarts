@@ -1,4 +1,4 @@
-const G_API = "http://api.step8step.tech:8888";
+const G_API = process.env.API_ROOT;
 
 export default {
     G_API,
