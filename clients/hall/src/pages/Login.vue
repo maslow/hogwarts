@@ -40,16 +40,18 @@ export default {
   },
   methods: {
     async login() {
-      let msg = null;
-      if (validator.isEmail(this.email) === false) msg = "邮件格式不正确";
+      if(!this.email)
+        return this.$Notice.error({ title: "邮箱不为空" })
+
+      if (validator.isEmail(this.email) === false) 
+        return this.$Notice.error({ title: "邮箱格式不正确" })
+
+      if(!this.password)
+        return this.$Notice.error({ title: "密码不为空" })
 
       if (this.password.length < 6 || this.password.length > 18)
-        msg = "密码长度不少于6, 不大于18";
+        return this.$Notice.error({ title: "密码长度不少于6, 不大于18" })
 
-      if (msg)
-        return this.$Notice.error({
-          title: msg
-        });
 
       this.$Spin.show();
       try {
@@ -58,6 +60,9 @@ export default {
         return window.location.reload();
       } catch (err) {
         console.log(err);
+        if (err.status === 422) {
+          return this.$Notice.error({ title: err.responseText });
+        }
         this.$Notice.error({
           title: "Failed to login"
         });

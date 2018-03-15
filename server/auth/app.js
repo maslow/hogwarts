@@ -96,13 +96,13 @@ app.post('/createUser', async (req, res) => {
  * Login, get token
  */
 app.post('/login', async (req, res) => {
-    const username = req.body.username || req.body.email
+    const email = req.body.email
     const password = req.body.password || ''
     const password_hash = hash(password)
 
     try {
         // find user
-        const user = await UserModel.findOne({ username, password_hash })
+        const user = await UserModel.findOne({ email, password_hash })
         if (!user)
             return res.status(422).send('Username or password is invalid')
 
