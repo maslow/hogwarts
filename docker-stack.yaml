@@ -1,11 +1,26 @@
 version: '3.1'
 services:
-  frontend:
-    image: registry.cn-hongkong.aliyuncs.com/step8step/hogwarts-frontend:0.1
+  router:
+    image: registry.cn-hongkong.aliyuncs.com/step8step/hogwarts-router:0.1
     deploy:
       replicas: 1
     ports:
       - "80:80"
+    networks:
+      - frontend
+      - backend
+
+  hall:
+    image: registry.cn-hongkong.aliyuncs.com/step8step/hogwarts-hall:0.1
+    deploy:
+      replicas: 1
+    networks:
+      - frontend
+
+  kitchen:
+    image: registry.cn-hongkong.aliyuncs.com/step8step/hogwarts-kitchen:0.1
+    deploy:
+      replicas: 1
     networks:
       - frontend
 
@@ -75,8 +90,6 @@ services:
       SERVER_AUTH: auth
       SERVER_COURSE: course
       SERVER_JOB: job
-    ports:
-      - "8888:80"
     networks:
       - backend
 
@@ -97,7 +110,6 @@ services:
       - portainer-data:/data
     networks:
       - backend
-      - frontend
 
 networks:
   backend:
