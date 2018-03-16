@@ -5,9 +5,9 @@ Just do it!
 
 Cluster Setup (Production)
 ==========================
-> Install Docker [Reference](https://www.docker-cn.com/community-edition)
+#### Install Docker [Reference](https://www.docker-cn.com/community-edition)
 
-> Setup cluster
+#### Setup cluster
 ```sh
     # clone repo
     git clone https://code.aliyun.com/step8step/hogwarts.git
@@ -32,8 +32,8 @@ Localhost Setup (Development)
 =============================
 
 ### Server
-> See [/server/README.md](server/README.md)
+ See [/server/README.md](server/README.md)
 
 ### Client
-> Hall [/clients/hall/README.md](clients/hall/README.md)
-> Kitchen [/clients/kitchen/README.md](clients/kitchen/README.md)
+ Hall [/clients/hall/README.md](clients/hall/README.md)
+ Kitchen [/clients/kitchen/README.md](clients/kitchen/README.md)

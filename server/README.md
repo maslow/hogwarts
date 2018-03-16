@@ -6,7 +6,9 @@
     - gateway: 提供代理服务，以上所有服务均通过该网关对外提供；  (Nodejs)
 
 ### 请求过程说明：
+
 > 所有来自客户端的请求，都由gateway来转发给实际服务；
+
 > gateway负责对请求的权限进行验证；
     
     -> gateway  
@@ -21,6 +23,7 @@
 
 ### 开发环境部署说明
 > 安装docker, 其它系统[参考](https://www.docker-cn.com/community-edition))
+
 ```shell
     # centos 7.x
     yum install docker -y
@@ -28,11 +31,13 @@
 ```
 
 > 启动服务端服务组
+
 ```shell
     docker-compose up
 ```
 
 > 初始化测试数据[可选]
+
 ```sh
     curl -d "email=test@step8step.com&password=kissme" http://localhost:8888/users
 
