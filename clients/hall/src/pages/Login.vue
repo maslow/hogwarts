@@ -61,11 +61,12 @@ export default {
       } catch (err) {
         console.log(err);
         if (err.status === 422) {
-          return this.$Notice.error({ title: err.responseText });
+           this.$Notice.error({ title: err.responseText });
+        }else{
+          this.$Notice.error({
+            title: "Failed to login"
+          });
         }
-        this.$Notice.error({
-          title: "Failed to login"
-        });
       }
       this.$Spin.hide();
     },

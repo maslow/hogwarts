@@ -14,8 +14,8 @@
           {{test.title}}   
         </div>
         <div class="test-err-detail" v-if="!test.passed">
-          <pre class="err-message">{{test.err.message}}</pre>
-          <pre class="err-stack" v-if="show_detail">{{test.err.stack}}</pre>
+          <pre class="err-message" v-html="test.err.message"></pre>
+          <pre class="err-stack" v-if="show_detail" v-html="test.err.stack"></pre>
         </div>
       </div>
     </div>
