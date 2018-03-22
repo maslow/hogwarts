@@ -268,4 +268,11 @@ h2 {
   background-color: transparent;
   border-radius: 0;
 }
+
+.document-container p code {
+  background-color: #d3d3d373;
+    border-radius: 3px;
+    padding: 2px 3px;
+    color: darkcyan;
+}
 </style>
