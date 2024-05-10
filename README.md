@@ -1,4 +1,5 @@
-Just do it!
+![image](https://github.com/maslow/hogwarts/assets/7122237/cdf5982b-9626-4ffb-9beb-15492553f4fd)
+
 ==========
 > Hogwarts , Interactive Programming Teaching Platform
 
